@@ -1,0 +1,5 @@
+(library
+ (public_name fuse)
+ (name fuse)
+ (libraries threads)
+ (flags (:standard -w +A-20 -rectypes)))

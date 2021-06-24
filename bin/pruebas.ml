@@ -6,7 +6,7 @@
 type 'a st = S of 'a
 
 type _ prob =
-| B :  'a -> 'a prob
+  | B :  'a -> 'a prob
   | C :  'a * 'b * 'c -> ('a * 'b * 'c) prob
 
 
