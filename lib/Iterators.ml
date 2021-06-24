@@ -22,52 +22,56 @@ let select_iter f =
     match xs with
     | [] -> select_false ep
     | x :: xs ->
-       let ep = select_true ep in
-       let ep = f x @> ep in
-       aux xs ep
-  in aux
+        let ep = select_true ep in
+        let ep = f x @> ep in
+        aux xs ep
+  in
+  aux
 
 let accept_iter f =
   let rec aux ep =
-    match branch ep with
-    | `False ep -> ep
-    | `True ep -> aux (f @> ep)
-  in aux
+    match branch ep with `False ep -> ep | `True ep -> aux (f @> ep)
+  in
+  aux
 
 let select_map f =
   let rec aux ys xs ep =
     match xs with
-    | [] -> List.rev ys, select_false ep
+    | [] -> (List.rev ys, select_false ep)
     | x :: xs ->
-       let ep = select_true ep in
-       let y, ep = f x @= ep in
-       aux (y :: ys) xs ep
-  in aux []
+        let ep = select_true ep in
+        let y, ep = f x @= ep in
+        aux (y :: ys) xs ep
+  in
+  aux []
 
 let accept_map f =
   let rec aux xs ep =
     match branch ep with
-    | `False ep -> List.rev xs, ep
+    | `False ep -> (List.rev xs, ep)
     | `True ep ->
-       let x, ep = f @= ep in
-       aux (x :: xs) ep
-  in aux []
+        let x, ep = f @= ep in
+        aux (x :: xs) ep
+  in
+  aux []
 
 let select_fold f =
   let rec aux acc xs ep =
     match xs with
-    | [] -> acc, select_false ep
+    | [] -> (acc, select_false ep)
     | x :: xs ->
-       let ep = select_true ep in
-       let acc, ep = f acc x @= ep in
-       aux acc xs ep
-  in aux
-       
+        let ep = select_true ep in
+        let acc, ep = f acc x @= ep in
+        aux acc xs ep
+  in
+  aux
+
 let accept_fold f =
   let rec aux acc ep =
     match branch ep with
-    | `False ep -> acc, ep
+    | `False ep -> (acc, ep)
     | `True ep ->
-       let acc, ep = f acc @= ep in
-       aux acc ep
-  in aux
+        let acc, ep = f acc @= ep in
+        aux acc ep
+  in
+  aux

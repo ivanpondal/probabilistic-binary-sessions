@@ -23,7 +23,8 @@ let accept ch = Event.sync (Event.receive ch)
 
 let request ch =
   let a, b = Session.Bare.create () in
-  Event.sync (Event.send ch a); b
+  Event.sync (Event.send ch a);
+  b
 
 let spawn f =
   let ch = create () in

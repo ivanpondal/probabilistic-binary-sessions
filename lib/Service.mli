@@ -20,19 +20,19 @@
 (*                                                                      *)
 (* Copyright 2015-2017 Luca Padovani                                    *)
 
-(** The type of a service that accepts sessions of type ['a]. *)
 type 'a t
+(** The type of a service that accepts sessions of type ['a]. *)
 
+val create : unit -> 'a t
 (** [create ()] creates a new service. *)
-val create  : unit -> 'a t
 
+val accept : ('a, 'b) Session.st t -> ('a, 'b) Session.st
 (** [accept s] waits for a connection from a client to service [s].
  @return the endpoint of the established session. *)
-val accept  : ('a, 'b) Session.st t -> ('a, 'b) Session.st
 
+val request : ('a, 'b) Session.st t -> ('b, 'a) Session.st
 (** [request s] requests a connection to a service [s].
  @return the endpoint of the established session. *)
-val request : ('a, 'b) Session.st t -> ('b, 'a) Session.st
 
+val spawn : (('a, 'b) Session.st -> unit) -> ('a, 'b) Session.st t
 (** [spawn f] creates a persistent service that spawns a new thread [f ep] for each connection with endpoint [ep] accepted from a client. *)
-val spawn   : (('a, 'b) Session.st -> unit) -> ('a, 'b) Session.st t

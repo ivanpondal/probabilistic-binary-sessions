@@ -17,7 +17,7 @@
 
 module S = Fuse.Session.Bare
 
-let echo_client ep x  =
+let echo_client ep x =
   let ep = S.send x ep in
   let res, ep = S.receive ep in
   S.close ep;
