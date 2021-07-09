@@ -51,7 +51,7 @@ end = struct
   let create () = ref true
 
   let use f =
-  (* BEGIN ATOMIC *)
+    (* BEGIN ATOMIC *)
     if !f then f := false else raise InvalidEndpoint
   (* END ATOMIC *)
 
@@ -77,10 +77,6 @@ type et = (_0, _0) st
 type +'a it = ('a, _0) st
 
 type -'a ot = (_0, 'a) st
-
-type 'p _p
-
-type ('a, 'p) pbranch = 'a it
 
 module Bare = struct
   let fresh ep = { ep with once = Flag.create () }
@@ -150,6 +146,9 @@ module Bare = struct
   let select_true ep = select (fun x -> `True x) ep
 
   let select_false ep = select (fun x -> `False x) ep
+
+  let pick fTrue fFalse ep =
+    if Random.bool () then fTrue (select_true ep) else fFalse (select_false ep)
 
   let branch ep =
     Flag.use ep.once;

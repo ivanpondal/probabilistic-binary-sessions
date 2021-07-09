@@ -41,10 +41,6 @@ type -'a ot = (_0, 'a) st
 (** The type of endpoints for {e sending} messages of type
 ['a]. *)
 
-type 'p _p
-
-type ('a, 'p) pbranch
-
 module Bare : sig
   (** {2 Session initiation and termination} *)
 
@@ -76,17 +72,23 @@ valid endpoints and dual types. *)
 is used to compute the received message.  @return the endpoint [ep].
 @raise InvalidEndpoint if the endpoint [ep] is invalid. *)
 
-  val select_true : [> `True of ('a, 'b) st ] ot -> ('b, 'a) st
+  val select_true : ([> `True of ('a, 'b) st ] * 'p) ot -> ('b, 'a) st
   (** [select_true ep] selects the [True] branch of a choice.  @return
  the endpoint [ep] after the selection.  @raise InvalidEndpoint if the
  endpoint [ep] is invalid. *)
 
-  val select_false : [> `False of ('a, 'b) st ] ot -> ('b, 'a) st
+  val select_false : ([> `False of ('a, 'b) st ] * 'p) ot -> ('b, 'a) st
   (** [select_false ep] selects the [False] branch of a choice.
  @return the endpoint [ep] after the selection.  @raise
  InvalidEndpoint if the endpoint [ep] is invalid. *)
 
-  val branch : (([> ] as 'm) it, 'p _p) pbranch -> 'm
+  val pick :
+    (('a, 'b) st -> 'c) ->
+    (('d, 'e) st -> 'c) ->
+    ([> `True of ('b, 'a) st | `False of ('e, 'd) st ] * 'p) ot ->
+    'c
+
+  val branch : (([> ] as 'm) * 'p) it -> 'm
   (** [branch ep] receives a selection from the endpoint [ep] with
  input capability.  @return the endpoint [ep] injected through the
  selected tag.  @raise InvalidEndpoint if the endpoint [ep] is
@@ -117,5 +119,4 @@ is used to compute the received message.  @return the endpoint [ep].
   val string_of_endpoint : ('a, 'b) st -> string
   (** [string_of_endpoint ep] returns a textual representation of the
 endpoint [ep]. *)
-
 end
