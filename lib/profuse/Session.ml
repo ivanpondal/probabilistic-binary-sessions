@@ -65,18 +65,24 @@ end
 
 type _0
 
-type (+'a, -'b) st = {
+type (+'a, -'b, 'p) pst = {
   name : string;
   channel : UnsafeChannel.t;
   polarity : int;
   once : Flag.t;
 }
 
-type et = (_0, _0) st
+type _p_1
 
-type +'a it = ('a, _0) st
+type _p_0
 
-type -'a ot = (_0, 'a) st
+type et = (_0, _0, _p_1) pst
+
+type nt = (_0, _0, _p_0) pst
+
+type (+'a, 'p) it = ('a, _0, 'p) pst
+
+type (-'a, 'p) ot = (_0, 'a, 'p) pst
 
 module Bare = struct
   let fresh ep = { ep with once = Flag.create () }
@@ -100,6 +106,7 @@ module Bare = struct
     (ep1, ep2)
 
   let close ep = Flag.use ep.once
+  let idle ep = Flag.use ep.once
 
   (****************)
   (*** IDENTITY ***)
