@@ -84,6 +84,8 @@ type (+'a, 'p) it = ('a, _0, 'p) pst
 
 type (-'a, 'p) ot = (_0, 'a, 'p) pst
 
+type ('p, 'q, 'r) pchoice
+
 module Bare = struct
   let fresh ep = { ep with once = Flag.create () }
 
@@ -106,6 +108,7 @@ module Bare = struct
     (ep1, ep2)
 
   let close ep = Flag.use ep.once
+
   let idle ep = Flag.use ep.once
 
   (****************)
@@ -154,8 +157,7 @@ module Bare = struct
 
   let select_false ep = select (fun x -> `False x) ep
 
-  let pick fTrue fFalse ep =
-    if Random.bool () then fTrue (select_true ep) else fFalse (select_false ep)
+  let pick fFalse fTrue ep = if Random.bool () then fTrue (fresh ep) else fFalse (fresh ep)
 
   let branch ep =
     Flag.use ep.once;
