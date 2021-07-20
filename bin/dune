@@ -1,4 +1,0 @@
-(executable
- (name Techo)
- (libraries fuse proFuse threads)
- (flags (:standard -w +A-20 -rectypes)))
