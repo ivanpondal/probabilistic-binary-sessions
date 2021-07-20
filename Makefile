@@ -1,4 +1,4 @@
-.PHONY: default build install uninstall clean utop
+.PHONY: default build install uninstall test clean utop
 
 default: build
 
@@ -10,6 +10,9 @@ install:
 
 uninstall:
 	dune uninstall
+
+test:
+	dune runtest
 
 clean:
 	dune clean

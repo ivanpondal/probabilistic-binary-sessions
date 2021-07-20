@@ -1,0 +1,4 @@
+(test
+ (name test)
+ (libraries proFuse ounit2)
+ (flags (:standard -w +A-20 -rectypes)))
