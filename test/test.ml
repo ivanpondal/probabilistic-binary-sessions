@@ -37,7 +37,9 @@ let test_random_client_picks_true _ =
   (* seed forcing true *)
   let ep1, ep2 = create () in
   let _ = Thread.create echo_server ep1 in
+
   let res = random_client ep2 in
+
   assert_equal 42 res
 
 let test_random_client_picks_false _ =
@@ -45,6 +47,7 @@ let test_random_client_picks_false _ =
   (* seed forcing false *)
   let ep1, ep2 = create () in
   let _ = Thread.create echo_server ep1 in
+
   let res = random_client ep2 in
 
   assert_equal 0 res
@@ -52,6 +55,7 @@ let test_random_client_picks_false _ =
 let test_idle_client_picks_false _ =
   let ep1, ep2 = create () in
   let _ = Thread.create echo_server ep1 in
+
   let res = idle_client ep2 in
 
   assert_equal 0 res
@@ -59,6 +63,7 @@ let test_idle_client_picks_false _ =
 let test_echo_client_picks_true _ =
   let ep1, ep2 = create () in
   let _ = Thread.create echo_server ep1 in
+
   let res = echo_client ep2 in
 
   assert_equal 42 res
