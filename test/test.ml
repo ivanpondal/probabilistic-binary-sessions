@@ -68,7 +68,57 @@ let test_echo_client_picks_true _ =
 
   assert_equal 42 res
 
-let suite =
+let rec seller ep =
+  let bid, ep = receive ep in
+  pick
+    (fun ep ->
+      let ep = select_false ep in
+      close ep)
+    (fun ep ->
+      let ep = select_true ep in
+      let ep = send (bid + 10) ep in
+      match branch ep with `True ep -> seller ep | `False ep -> idle ep)
+    ep
+
+let rec buyer ep offer =
+  let ep = send offer ep in
+  match branch ep with
+  | `True ep ->
+      let counteroffer, ep = receive ep in
+      pick
+        (fun ep ->
+          let ep = select_false ep in
+          idle ep;
+          -1)
+        (fun ep ->
+          let ep = select_true ep in
+          buyer ep counteroffer)
+        ep
+  | `False ep ->
+      close ep;
+      offer
+
+let test_buyer_seller _ =
+  Random.init 1;
+  (* seed forcing agreement *)
+  let ep1, ep2 = create () in
+  let _ = Thread.create seller ep1 in
+
+  let offer = buyer ep2 42 in
+
+  assert_equal ~printer:string_of_int 62 offer
+
+let test_buyer_seller_no_agreement _ =
+  Random.init 3;
+  (* seed forcing no agreement *)
+  let ep1, ep2 = create () in
+  let _ = Thread.create seller ep1 in
+
+  let offer = buyer ep2 42 in
+
+  assert_equal ~printer:string_of_int (-1) offer
+
+let pick_suite =
   "Pick"
   >::: [
          "random client chooses true" >:: test_random_client_picks_true;
@@ -77,4 +127,13 @@ let suite =
          "echo client chooses true" >:: test_echo_client_picks_true;
        ]
 
-let () = run_test_tt_main suite
+let examples_suite =
+  "Examples"
+  >::: [
+         "buyer seller" >:: test_buyer_seller;
+         "buyer seller no agreement" >:: test_buyer_seller_no_agreement;
+       ]
+
+let () =
+  run_test_tt_main pick_suite;
+  run_test_tt_main examples_suite

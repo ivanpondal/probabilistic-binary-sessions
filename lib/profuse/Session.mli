@@ -95,10 +95,7 @@ is used to compute the received message.  @return the endpoint [ep].
  InvalidEndpoint if the endpoint [ep] is invalid. *)
 
   val pick :
-    ((([> `False of ('a, 'b, 's) pst | `True of ('c, 'd, 't) pst ] as 'm) * 'q,
-       'u )
-     ot ->
-    'e) ->
+    (( ([> `False of ('a, 'b, 's) pst | `True of ('c, 'd, 't) pst ] as 'm) * 'q, 'u ) ot -> 'e) ->
     (('m * 'r, 'v) ot -> 'e) ->
     ('m * ('p, 'q, 'r) pchoice, 'w) ot ->
     'e

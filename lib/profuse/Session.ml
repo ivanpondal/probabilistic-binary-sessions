@@ -157,7 +157,8 @@ module Bare = struct
 
   let select_false ep = select (fun x -> `False x) ep
 
-  let pick fFalse fTrue ep = if Random.bool () then fTrue (fresh ep) else fFalse (fresh ep)
+  let pick fFalse fTrue ep =
+    if Random.bool () then fTrue (fresh ep) else fFalse (fresh ep)
 
   let branch ep =
     Flag.use ep.once;
