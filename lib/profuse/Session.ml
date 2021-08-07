@@ -87,6 +87,23 @@ type (-'a, 'p) ot = (_0, 'a, 'p) pst
 type ('p, 'q, 'r) pchoice
 
 module Bare = struct
+  type _ unif =
+    | Equal :
+        ((('a, 'b, 'p) pst -> unit) * ('a, 'b, 'p) pst)
+        -> ((('a, 'b, 'p) pst -> unit) * ('a, 'b, 'p) pst) unif
+    | Choice :
+        ((( ([> `False of ('a, 'b, 's) pst | `True of ('c, 'd, 't) pst ] as 'm)
+            * 'q,
+            'u )
+          ot ->
+         unit)
+        * (('m * 'r, 'v) ot -> unit)
+        * ('m * ('p, 'q, 'r) pchoice, 'w) ot)
+        -> ((('m * 'q, 'u) ot -> unit)
+           * (('m * 'r, 'v) ot -> unit)
+           * ('m * ('p, 'q, 'r) pchoice, 'w) ot)
+           unif
+
   let fresh ep = { ep with once = Flag.create () }
 
   (**********************************)
@@ -160,7 +177,20 @@ module Bare = struct
   let pick fFalse fTrue ep =
     if Random.bool () then fTrue (fresh ep) else fFalse (fresh ep)
 
+  let poly_pick : type a. a unif -> unit = function
+    | Equal (fCont, ep) -> fCont ep
+    | Choice (fFalse, fTrue, ep) ->
+        if Random.bool () then fTrue (fresh ep) else fFalse (fresh ep)
+  
+  let pick_2ch fFalse fTrue epX epY =
+    if Random.bool () then fTrue (fresh epX) (fresh epY)
+    else fFalse (fresh epX) (fresh epY)
+
   let branch ep =
     Flag.use ep.once;
     (UnsafeChannel.receive ep.channel) (fresh ep)
+
+  (* let branch_2ch epX epY =
+     Flag.use epX.once;
+     ((UnsafeChannel.receive epX.channel) (fresh epX), epY) *)
 end

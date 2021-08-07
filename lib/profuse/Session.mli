@@ -50,6 +50,23 @@ type (-'a, 'p) ot = (_0, 'a, 'p) pst
 type ('p, 'q, 'r) pchoice
 
 module Bare : sig
+  type _ unif =
+    | Equal :
+        ((('a, 'b, 'p) pst -> unit) * ('a, 'b, 'p) pst)
+        -> ((('a, 'b, 'p) pst -> unit) * ('a, 'b, 'p) pst) unif
+    | Choice :
+        ((( ([> `False of ('a, 'b, 's) pst | `True of ('c, 'd, 't) pst ] as 'm)
+            * 'q,
+            'u )
+          ot ->
+         unit)
+        * (('m * 'r, 'v) ot -> unit)
+        * ('m * ('p, 'q, 'r) pchoice, 'w) ot)
+        -> ((('m * 'q, 'u) ot -> unit)
+           * (('m * 'r, 'v) ot -> unit)
+           * ('m * ('p, 'q, 'r) pchoice, 'w) ot)
+           unif
+
   (** {2 Session initiation and termination} *)
 
   val create : ?name:string -> unit -> ('a, 'b, 'p) pst * ('b, 'a, 'p) pst
@@ -95,9 +112,29 @@ is used to compute the received message.  @return the endpoint [ep].
  InvalidEndpoint if the endpoint [ep] is invalid. *)
 
   val pick :
-    (( ([> `False of ('a, 'b, 's) pst | `True of ('c, 'd, 't) pst ] as 'm) * 'q, 'u ) ot -> 'e) ->
+    (( ([> `False of ('a, 'b, 's) pst | `True of ('c, 'd, 't) pst ] as 'm) * 'q,
+       'u )
+     ot ->
+    'e) ->
     (('m * 'r, 'v) ot -> 'e) ->
     ('m * ('p, 'q, 'r) pchoice, 'w) ot ->
+    'e
+
+  val poly_pick : 'a unif -> unit
+
+  val pick_2ch :
+    (( ([> `False of ('a1, 'b1, 's1) pst | `True of ('c1, 'd1, 't1) pst ] as 'm)
+       * 'q1,
+       'u1 )
+     ot ->
+    ( ([> `False of ('a2, 'b2, 's2) pst | `True of ('c2, 'd2, 't2) pst ] as 'n)
+      * 'q2,
+      'u2 )
+    ot ->
+    'e) ->
+    (('m * 'r1, 'v1) ot -> ('n * 'r2, 'v2) ot -> 'e) ->
+    ('m * ('p1, 'q1, 'r1) pchoice, 'w) ot ->
+    ('n * ('p2, 'q2, 'r2) pchoice, 'x) ot ->
     'e
 
   val branch : (([> ] as 'm) * 'p, 'q) it -> 'm
@@ -105,6 +142,14 @@ is used to compute the received message.  @return the endpoint [ep].
  input capability.  @return the endpoint [ep] injected through the
  selected tag.  @raise InvalidEndpoint if the endpoint [ep] is
  invalid.  *)
+
+  (* val branch_2ch :
+     (([> ] as 'm) * 'p, 'q) it ->
+     ( ([> `False of ('a, 'b, 's) pst | `True of ('c, 'd, 't) pst ] as 'n)
+       * ('p, 'q, 'r) pchoice,
+       'u )
+     ot ->
+     'm * ('n * 'r, 'u) ot *)
 
   (** {2 Endpoint validity and identity} *)
 
