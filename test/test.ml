@@ -68,7 +68,7 @@ let test_echo_client_picks_true _ =
 
   assert_equal 42 res
 
-let equal_pick ep = poly_pick (Equal ((fun ep -> close ep), ep))
+(* let equal_pick ep = poly_pick (Equal ((fun ep -> close ep), ep))
 
 let closing_time ep =
   close ep;
@@ -103,6 +103,7 @@ let test_choicer_pick _ =
   let _ = choice_pick ep2 in
 
   assert_equal true true
+*)
 
 let pick_suite =
   "Pick"
@@ -111,8 +112,8 @@ let pick_suite =
          "random client chooses false" >:: test_random_client_picks_false;
          "idle client chooses false" >:: test_idle_client_picks_false;
          "echo client chooses true" >:: test_echo_client_picks_true;
-         "idempotent pick" >:: test_idempotent_pick;
-       ]
+(*         "idempotent pick" >:: test_idempotent_pick;
+*)       ]
 
 let rec seller ep =
   let bid, ep = receive ep in
@@ -199,10 +200,10 @@ let examples_suite =
          "buyer seller no agreement" >:: test_buyer_seller_no_agreement;
        ]
 
-let () =
+(* let () =
   run_test_tt_main pick_suite;
   run_test_tt_main examples_suite
-
+*)
 
   type _1
   type _0 

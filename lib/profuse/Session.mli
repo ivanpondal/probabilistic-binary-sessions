@@ -39,18 +39,20 @@ type et = (_0, _0, _p_1) pst
 
 type nt = (_0, _0, _p_0) pst
 
-type (+'a, 'p) it = ('a, _0, 'p) pst
+type +'a it = ('a, _0, _p_1) pst
 (** The type of endpoints for {e receiving} messages of type
 ['a]. *)
 
-type (-'a, 'p) ot = (_0, 'a, 'p) pst
+type -'a ot = (_0, 'a, _p_1) pst
 (** The type of endpoints for {e sending} messages of type
 ['a]. *)
 
-type ('p, 'q, 'r) pchoice
+
+(*type 
+*)
 
 module Bare : sig
-  type _ unif =
+(*  type _ unif =
     | Equal :
         ((('a, 'b, 'p) pst -> unit) * ('a, 'b, 'p) pst)
         -> ((('a, 'b, 'p) pst -> unit) * ('a, 'b, 'p) pst) unif
@@ -66,7 +68,7 @@ module Bare : sig
            * (('m * 'r, 'v) ot -> unit)
            * ('m * ('p, 'q, 'r) pchoice, 'w) ot)
            unif
-
+*)
   (** {2 Session initiation and termination} *)
 
   val create : ?name:string -> unit -> ('a, 'b, 'p) pst * ('b, 'a, 'p) pst
@@ -81,12 +83,12 @@ valid endpoints and dual types. *)
 
   (** {2 Basic message passing} *)
 
-  val send : 'm -> ('m * ('a, 'b, 'q) pst, 'p) ot -> ('b, 'a, 'q) pst
+  val send : 'm -> ('m * ('a, 'b, 'p) pst) ot -> ('b, 'a, 'p) pst
   (** [send e ep] sends [e] on the endpoint [ep] with output
  capability.  @return the endpoint [ep].  @raise InvalidEndpoint if
  [ep] is invalid. *)
 
-  val receive : ('m * ('a, 'b, 'q) pst, 'p) it -> 'm * ('a, 'b, 'q) pst
+  val receive : ('m * ('a, 'b, 'p) pst) it -> 'm * ('a, 'b, 'p) pst
   (** [receive ep] receives a message from the endpoint [ep] with
  input capability.  @return a pair [(v, ep)] with the received message
  [v] and the endpoint [ep].  @raise InvalidEndpoint if the endpoint
@@ -94,33 +96,33 @@ valid endpoints and dual types. *)
 
   (** {2 Choices} *)
 
-  val select : (('a, 'b, 'p) pst -> 'm) -> ('m, 'q) ot -> ('b, 'a, 'p) pst
+  val select : (('a, 'b, 'p) pst -> 'm) -> 'm ot -> ('b, 'a, 'p) pst
   (** [select f ep] sends [f] to the peer endpoint of [ep], where it
 is used to compute the received message.  @return the endpoint [ep].
 @raise InvalidEndpoint if the endpoint [ep] is invalid. *)
 
   val select_true :
-    ([> `True of ('a, 'b, 'q) pst ] * _p_0, 'r) ot -> ('b, 'a, 'q) pst
+  (_0, [>`True of ('c, 'd, 'q) pst], _p_1) pst -> ('d, 'c,  'q) pst
+ (*   ([> `True of ('a, 'b,  'p) pst ]) ot -> ('b, 'a,  'p) pst
+ *)
   (** [select_true ep] selects the [True] branch of a choice.  @return
  the endpoint [ep] after the selection.  @raise InvalidEndpoint if the
  endpoint [ep] is invalid. *)
 
   val select_false :
-    ([> `False of ('a, 'b, 'p) pst ] * _p_1, 'r) ot -> ('b, 'a, 'p) pst
-  (** [select_false ep] selects the [False] branch of a choice.
+  (_0, [> `False of ('a, 'b, 'p) pst | `True of ('c, 'd, 'q) pst], _p_0) pst -> ('b, 'a,  'p) pst
+
+(*    ([> `False of ('a, 'b,  'p) pst ]) ot -> ('b, 'a, 'p) pst
+*)  (** [select_false ep] selects the [False] branch of a choice.
  @return the endpoint [ep] after the selection.  @raise
  InvalidEndpoint if the endpoint [ep] is invalid. *)
 
   val pick :
-    (( ([> `False of ('a, 'b, 's) pst | `True of ('c, 'd, 't) pst ] as 'm) * 'q,
-       'u )
-     ot ->
-    'e) ->
-    (('m * 'r, 'v) ot -> 'e) ->
-    ('m * ('p, 'q, 'r) pchoice, 'w) ot ->
-    'e
+    ((_0, ([`False of ('a, 'b, 'p) pst | `True of ('c, 'd, 'q) pst]) as 'm, _p_0) pst -> 'e) ->
+    ((_0, 'm, _p_1) pst -> 'e) ->
+    (_0,'m, 'r) pst -> 'e
 
-  val poly_pick : 'a unif -> unit
+(*  val poly_pick : 'a unif -> unit
 
   val pick_2ch :
     (( ([> `False of ('a1, 'b1, 's1) pst | `True of ('c1, 'd1, 't1) pst ] as 'm)
@@ -136,8 +138,9 @@ is used to compute the received message.  @return the endpoint [ep].
     ('m * ('p1, 'q1, 'r1) pchoice, 'w) ot ->
     ('n * ('p2, 'q2, 'r2) pchoice, 'x) ot ->
     'e
-
-  val branch : (([> ] as 'm) * 'p, 'q) it -> 'm
+*)
+  val branch : ([> `False of ('a, 'b, 'p) pst | `True of ('c, 'd, 'q) pst], _0, 'r) pst ->
+  [> `False of ('a, 'b, 'p) pst | `True of ('c, 'd, 'q) pst]
   (** [branch ep] receives a selection from the endpoint [ep] with
  input capability.  @return the endpoint [ep] injected through the
  selected tag.  @raise InvalidEndpoint if the endpoint [ep] is
