@@ -86,7 +86,7 @@ type +'a it = ('a, _0) pst
 
 type -'a ot = (_0, 'a) pst
 
-type (+'a, +'b, 'p) choice = [ `True of 'a | `False of 'b ]
+type (+'a, +'b, 'p) choice = [ `True of 'a | `False of 'b ] 
 
 
 module Bare = struct
@@ -178,29 +178,27 @@ module Bare = struct
 
   let select_false ep = select (fun x -> `False x) ep
 
-(** MIRAR **)
-
   let pick fFalse fTrue ep =
-    if Random.bool () then fTrue (fresh ep) else fFalse (fresh ep)
-
+    if Random.bool () then fTrue ep else fFalse ep
 (*
   let poly_pick : type a. a unif -> unit = function
     | Equal (fCont, ep) -> fCont ep
     | Choice (fFalse, fTrue, ep) ->
         if Random.bool () then fTrue (fresh ep) else fFalse (fresh ep)
-  
-  let pick_2ch fFalse fTrue epX epY =
-    if Random.bool () then fTrue (fresh epX) (fresh epY)
-    else fFalse (fresh epX) (fresh epY)
 *)
+
+  let pick_2ch fFalse fTrue epX epY =
+    if Random.bool () then fTrue epX  epY
+    else fFalse epX epY
+
 
   let branch ep =
     Flag.use ep.once;
     (UnsafeChannel.receive ep.channel) (fresh ep)
 
-(*
-   let branch_2ch epX epY =
-     Flag.use epX.once;
-     ((UnsafeChannel.receive epX.channel) (fresh epX), epY) 
-*)
+  let branch_2ch epX epY =
+     match branch epX with
+     |  `True  x -> `True (x, epY)
+     |  `False  x -> `False (x, epY)
+
 end

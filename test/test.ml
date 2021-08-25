@@ -166,7 +166,34 @@ let test_buyer_seller_no_agreement _ =
 
   assert_equal ~printer:string_of_int (-1) offer
 
-(* let inversion epX epY =
+
+let a c ep = if c then close (select_false ep) else idle (select_true ep)
+
+let f = pick_2ch 
+let g epX epY =
+  match branch_2ch epX epY with
+  | `True (epX, epY) ->
+      let epY = select_false epY in
+      idle epY;
+      idle epX
+  | `False (epX, epY) ->
+      let epY = select_true epY in
+      close epY;
+      close epX
+
+let h epX epY =
+  match branch epX with
+  | `True epX ->
+      let epY = select_true epY in
+      close epY;
+      idle epX
+  | `False epX ->
+      let epY = select_false epY in
+      close epY;
+      close epX
+
+
+(*let inversion epX epY =
   match branch_2ch epX epY with
   | `True (epX, epY) ->
       let epY = select_false epY in
@@ -177,7 +204,9 @@ let test_buyer_seller_no_agreement _ =
       match branch_2ch epX epY with
       | `True (epX, epY) -> close epX; idle epY
       | `False (epX, epY) -> idle epX; idle epY
+*)
 
+(*
 let inversion_client epX epY =
   pick_2ch
     (fun epX epY ->

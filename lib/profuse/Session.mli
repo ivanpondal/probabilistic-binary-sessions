@@ -51,6 +51,7 @@ type -'a ot = (_0, 'a) pst
 type (+'a, +'b, 'p) choice = [ `True of 'a | `False of 'b ]
 
 
+
 module Bare : sig
 (*  type _ unif =
     | Equal :
@@ -119,23 +120,13 @@ is used to compute the received message.  @return the endpoint [ep].
     ((('a,'b) pst, ('c,'d) pst, _p_1) choice ot -> 'e) ->
     (('a,'b) pst, ('c,'d) pst, 'p) choice ot-> 'e 
 
-(*  val poly_pick : 'a unif -> unit
+(*  val poly_pick : 'a unif -> unit *)
 
   val pick_2ch :
-    (( ([> `False of ('a1, 'b1, 's1) pst | `True of ('c1, 'd1, 't1) pst ] as 'm)
-       * 'q1,
-       'u1 )
-     ot ->
-    ( ([> `False of ('a2, 'b2, 's2) pst | `True of ('c2, 'd2, 't2) pst ] as 'n)
-      * 'q2,
-      'u2 )
-    ot ->
-    'e) ->
-    (('m * 'r1, 'v1) ot -> ('n * 'r2, 'v2) ot -> 'e) ->
-    ('m * ('p1, 'q1, 'r1) pchoice, 'w) ot ->
-    ('n * ('p2, 'q2, 'r2) pchoice, 'x) ot ->
-    'e
-*)
+    ((('a,'b) pst, ('c,'d) pst, _p_0) choice ot -> (('l,'m) pst, ('n,'o) pst,'t) choice ot -> 'e) ->
+    ((('a,'b) pst, ('c,'d) pst, _p_1) choice ot -> (('l,'m) pst, ('n,'o) pst,'v) choice ot -> 'e) ->
+    (('a,'b) pst, ('c,'d) pst, 'p) choice ot -> (('l,'m) pst, ('n,'o) pst, 'p*'t*'v) choice ot  -> 'e 
+
   val branch : (('a,'b) pst, ('c,'d) pst, 'p) choice it ->
   [> `True of ('a, 'b) pst | `False of ('c, 'd) pst]
   (** [branch ep] receives a selection from the endpoint [ep] with
@@ -143,14 +134,11 @@ is used to compute the received message.  @return the endpoint [ep].
  selected tag.  @raise InvalidEndpoint if the endpoint [ep] is
  invalid.  *)
 
-  (* val branch_2ch :
-     (([> ] as 'm) * 'p, 'q) it ->
-     ( ([> `False of ('a, 'b, 's) pst | `True of ('c, 'd, 't) pst ] as 'n)
-       * ('p, 'q, 'r) pchoice,
-       'u )
-     ot ->
-     'm * ('n * 'r, 'u) ot *)
-
+ val branch_2ch :
+     (('a,'b) pst, ('c,'d) pst, 'p) choice it ->
+     (('l,'m) pst, ('n,'o) pst, 'p*'t*'v) choice ot ->
+     [> `True of ('a, 'b) pst * (('l,'m) pst, ('n,'o) pst, 't) choice ot
+        | `False of ('c, 'd) pst * (('l,'m) pst, ('n,'o) pst, 'v) choice ot]
   (** {2 Endpoint validity and identity} *)
 
   val is_valid : ('a, 'b) pst -> bool
