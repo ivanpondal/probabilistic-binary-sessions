@@ -8,6 +8,7 @@ let echo_server ep =
       close ep
   | `False ep -> idle ep
 
+
 let random_client ep =
   pick
     (fun ep ->
@@ -193,6 +194,7 @@ let inversion_client epX epY =
           idle epX)
     epX epY *)
 
+
 let examples_suite =
   "Examples"
   >::: [
@@ -205,6 +207,7 @@ let examples_suite =
   run_test_tt_main examples_suite
 *)
 
+(*
   type _1
   type _0 
   type _ prob = Left: _1 prob | Right: _0 prob | Convex: ('p * 'q * 'r) -> ('p prob* 'q prob* 'r prob) prob;;
@@ -212,3 +215,5 @@ let examples_suite =
   type _ convex = | Same: int ->  (int*int*(_1 prob)) convex | Diff: (int*bool*'q*'r) -> (int*bool* ('p*'q*'r) prob) convex;;
 
   let exp: type a b p. (a -> bool) -> (b -> bool) -> (a *b*p) convex -> bool  = fun fTrue fFalse ep -> match ep with Same x -> fTrue x && fFalse x | Diff (x, y,_,_) -> fTrue x && fFalse y | _ -> .;;
+
+*)

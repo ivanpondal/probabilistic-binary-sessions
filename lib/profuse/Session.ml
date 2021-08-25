@@ -65,7 +65,9 @@ end
 
 type _0
 
-type (+'a, -'b, 'p) pst = {
+type _1
+
+type (+'a, -'b) pst = {
   name : string;
   channel : UnsafeChannel.t;
   polarity : int;
@@ -76,16 +78,16 @@ type _p_1
 
 type _p_0
 
-type et = (_0, _0, _p_1) pst
+type et = (_1, _1) pst
 
-type nt = (_0, _0, _p_0) pst
+type nt = (_0, _0) pst
 
-type +'a it = ('a, _0, _p_1) pst
+type +'a it = ('a, _0) pst
 
-type -'a ot = (_0, 'a, _p_1) pst
+type -'a ot = (_0, 'a) pst
 
-(*type ('a,'b,'c) pchoice = 
-*)
+type (+'a, +'b, 'p) choice = [ `True of 'a | `False of 'b ]
+
 
 module Bare = struct
 (*  type _ unif =
