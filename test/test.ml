@@ -8,7 +8,6 @@ let echo_server ep =
       close ep
   | `False ep -> idle ep
 
-
 let random_client ep =
   pick
     (fun ep ->
@@ -69,43 +68,6 @@ let test_echo_client_picks_true _ =
 
   assert_equal 42 res
 
-(* let equal_pick ep = poly_pick (Equal ((fun ep -> close ep), ep))
-
-let closing_time ep =
-  close ep;
-  true
-
-let branch_pick ep =
-  match branch ep with `False ep -> close ep | `True ep -> idle ep
-
-let choice_pick ep =
-  poly_pick
-    (Choice
-       ( (fun ep ->
-           let ep = select_false ep in
-           close ep),
-         (fun ep ->
-           let ep = select_true ep in
-           idle ep),
-         ep ))
-
-let test_idempotent_pick _ =
-  let ep1, ep2 = create () in
-  let _ = Thread.create equal_pick ep1 in
-
-  let res = closing_time ep2 in
-
-  assert_equal true res
-
-let test_choicer_pick _ =
-  let ep1, ep2 = create () in
-  let _ = Thread.create branch_pick ep1 in
-
-  let _ = choice_pick ep2 in
-
-  assert_equal true true
-*)
-
 let pick_suite =
   "Pick"
   >::: [
@@ -113,8 +75,7 @@ let pick_suite =
          "random client chooses false" >:: test_random_client_picks_false;
          "idle client chooses false" >:: test_idle_client_picks_false;
          "echo client chooses true" >:: test_echo_client_picks_true;
-(*         "idempotent pick" >:: test_idempotent_pick;
-*)       ]
+       ]
 
 let rec seller ep =
   let bid, ep = receive ep in
@@ -166,64 +127,6 @@ let test_buyer_seller_no_agreement _ =
 
   assert_equal ~printer:string_of_int (-1) offer
 
-
-let a c ep = if c then close (select_false ep) else idle (select_true ep)
-
-let f = pick_2ch 
-let g epX epY =
-  match branch_2ch epX epY with
-  | `True (epX, epY) ->
-      let epY = select_false epY in
-      idle epY;
-      idle epX
-  | `False (epX, epY) ->
-      let epY = select_true epY in
-      close epY;
-      close epX
-
-let h epX epY =
-  match branch epX with
-  | `True epX ->
-      let epY = select_true epY in
-      close epY;
-      idle epX
-  | `False epX ->
-      let epY = select_false epY in
-      close epY;
-      close epX
-
-
-(*let inversion epX epY =
-  match branch_2ch epX epY with
-  | `True (epX, epY) ->
-      let epY = select_false epY in
-      close epY;
-      idle epX
-  | `False (epX, epY) ->
-      let epY = select_true epY in
-      match branch_2ch epX epY with
-      | `True (epX, epY) -> close epX; idle epY
-      | `False (epX, epY) -> idle epX; idle epY
-*)
-
-(*
-let inversion_client epX epY =
-  pick_2ch
-    (fun epX epY ->
-      let epX = select_false epX in
-      match branch_2ch epY epX with
-      | `True (epY, epX) ->
-        let epX = select_true epX in
-        close epX; idle epY
-    (fun epX epY ->
-      let epX = select_true epX in
-      match branch_2ch epY epX with
-      | `False (epY, epX) ->
-          close epY;
-          idle epX)
-    epX epY *)
-
-
 let examples_suite =
   "Examples"
   >::: [
@@ -231,18 +134,6 @@ let examples_suite =
          "buyer seller no agreement" >:: test_buyer_seller_no_agreement;
        ]
 
-(* let () =
+let () =
   run_test_tt_main pick_suite;
   run_test_tt_main examples_suite
-*)
-
-(*
-  type _1
-  type _0 
-  type _ prob = Left: _1 prob | Right: _0 prob | Convex: ('p * 'q * 'r) -> ('p prob* 'q prob* 'r prob) prob;;
-
-  type _ convex = | Same: int ->  (int*int*(_1 prob)) convex | Diff: (int*bool*'q*'r) -> (int*bool* ('p*'q*'r) prob) convex;;
-
-  let exp: type a b p. (a -> bool) -> (b -> bool) -> (a *b*p) convex -> bool  = fun fTrue fFalse ep -> match ep with Same x -> fTrue x && fFalse x | Diff (x, y,_,_) -> fTrue x && fFalse y | _ -> .;;
-
-*)

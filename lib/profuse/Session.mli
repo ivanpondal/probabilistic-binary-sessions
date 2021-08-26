@@ -101,19 +101,6 @@ is used to compute the received message.  @return the endpoint [ep].
     (('a, 'b) pst, ('c, 'd) pst, 'p) choice ot ->
     'e
 
-  (*  val poly_pick : 'a unif -> unit *)
-
-  val pick_2ch :
-    ((('a, 'b) pst, ('c, 'd) pst, _p_0) choice ot ->
-    (('l, 'm) pst, ('n, 'o) pst, 't) choice ot ->
-    'e) ->
-    ((('a, 'b) pst, ('c, 'd) pst, _p_1) choice ot ->
-    (('l, 'm) pst, ('n, 'o) pst, 'v) choice ot ->
-    'e) ->
-    (('a, 'b) pst, ('c, 'd) pst, 'p) choice ot ->
-    (('l, 'm) pst, ('n, 'o) pst, 'p * 't * 'v) choice ot ->
-    'e
-
   val branch :
     (('a, 'b) pst, ('c, 'd) pst, 'p) choice it ->
     [> `True of ('a, 'b) pst | `False of ('c, 'd) pst ]
@@ -122,11 +109,6 @@ is used to compute the received message.  @return the endpoint [ep].
  selected tag.  @raise InvalidEndpoint if the endpoint [ep] is
  invalid.  *)
 
-  val branch_2ch :
-    (('a, 'b) pst, ('c, 'd) pst, 'p) choice it ->
-    (('l, 'm) pst, ('n, 'o) pst, 'p * 't * 'v) choice ot ->
-    [> `True of ('a, 'b) pst * (('l, 'm) pst, ('n, 'o) pst, 't) choice ot
-    | `False of ('c, 'd) pst * (('l, 'm) pst, ('n, 'o) pst, 'v) choice ot ]
   (** {2 Endpoint validity and identity} *)
 
   val is_valid : ('a, 'b) pst -> bool
