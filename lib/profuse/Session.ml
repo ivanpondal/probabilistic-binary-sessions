@@ -155,7 +155,8 @@ module Bare = struct
   let select_false ep = select (fun x -> `False x) ep
 
   let pick fFalse fTrue ep = if Random.bool () then fTrue ep else fFalse ep
-  (*
+
+(*
   let poly_pick : type a. a unif -> unit = function
     | Equal (fCont, ep) -> fCont ep
     | Choice (fFalse, fTrue, ep) ->
@@ -165,6 +166,7 @@ module Bare = struct
   let pick_2ch fFalse fTrue epX epY =
     if Random.bool () then fTrue epX epY else fFalse epX epY
 
+
   let branch ep =
     Flag.use ep.once;
     (UnsafeChannel.receive ep.channel) (fresh ep)
@@ -173,4 +175,5 @@ module Bare = struct
     match branch epX with
     | `True x -> `True (x, epY)
     | `False x -> `False (x, epY)
+
 end

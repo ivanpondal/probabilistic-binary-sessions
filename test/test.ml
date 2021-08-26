@@ -116,6 +116,7 @@ let pick_suite =
 (*         "idempotent pick" >:: test_idempotent_pick;
 *)       ]
 
+
 let rec seller ep =
   let bid, ep = receive ep in
   pick
@@ -165,7 +166,6 @@ let test_buyer_seller_no_agreement _ =
   let offer = buyer ep2 42 in
 
   assert_equal ~printer:string_of_int (-1) offer
-
 
 let a c ep = if c then close (select_false ep) else idle (select_true ep)
 
@@ -222,7 +222,6 @@ let inversion_client epX epY =
           close epY;
           idle epX)
     epX epY *)
-
 
 let examples_suite =
   "Examples"
