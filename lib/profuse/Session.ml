@@ -65,7 +65,9 @@ end
 
 type _0
 
-type (+'a, -'b, 'p) pst = {
+type _1
+
+type (+'a, -'b) pst = {
   name : string;
   channel : UnsafeChannel.t;
   polarity : int;
@@ -76,15 +78,15 @@ type _p_1
 
 type _p_0
 
-type et = (_0, _0, _p_1) pst
+type et = (_1, _1) pst
 
-type nt = (_0, _0, _p_0) pst
+type nt = (_0, _0) pst
 
-type (+'a, 'p) it = ('a, _0, 'p) pst
+type +'a it = ('a, _0) pst
 
-type (-'a, 'p) ot = (_0, 'a, 'p) pst
+type -'a ot = (_0, 'a) pst
 
-type ('p, 'q, 'r) pchoice
+type (+'a, +'b, 'p) choice = [ `True of 'a | `False of 'b ]
 
 module Bare = struct
   let fresh ep = { ep with once = Flag.create () }
@@ -98,12 +100,7 @@ module Bare = struct
     let ep1 =
       { name = name ^ "⁺"; channel = ch; polarity = 1; once = Flag.create () }
     and ep2 =
-      {
-        name = name ^ "⁻";
-        channel = ch;
-        polarity = -1;
-        once = Flag.create ();
-      }
+      { name = name ^ "⁻"; channel = ch; polarity = -1; once = Flag.create () }
     in
     (ep1, ep2)
 
@@ -157,10 +154,10 @@ module Bare = struct
 
   let select_false ep = select (fun x -> `False x) ep
 
-  let pick fFalse fTrue ep =
-    if Random.bool () then fTrue (fresh ep) else fFalse (fresh ep)
+  let pick fFalse fTrue ep = if Random.bool () then fTrue ep else fFalse ep
 
   let branch ep =
     Flag.use ep.once;
     (UnsafeChannel.receive ep.channel) (fresh ep)
+
 end

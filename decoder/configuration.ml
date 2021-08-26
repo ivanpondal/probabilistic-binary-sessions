@@ -17,8 +17,8 @@
 
 let show_end = ref false
 let sequence_polarity = ref false
-let prefix = ref ["Session"]
-let session_type = ref "st"
+let prefix = ref ["ProFuse__Session"]
+let session_type = ref "pst"
 
 let get_prefix () = !prefix
 let set_prefix s = prefix := s

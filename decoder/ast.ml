@@ -26,6 +26,9 @@ and constructor_t = [
   | `As of string
   | `Empty
   | `End
+  | `Done
+  | `NullProb
+  | `OneProb
   | `Arrow
   | `Tuple
   | `Channel
@@ -44,6 +47,9 @@ let priority_of_constructor =
   function
   | `Empty
     | `End
+    | `Done
+    | `NullProb
+    | `OneProb
     | `Channel
     | `Apply _ -> 5
   | `As _ -> 4
@@ -115,7 +121,10 @@ let occurs x =
   in aux
        
 let t_End = Constructor (`End, [])
+let t_Done = Constructor (`Done, [])
 let t_Empty = Constructor (`Empty, [])
+let t_pNull = Constructor (`NullProb, [])
+let t_pOne = Constructor (`OneProb, [])
 
 let pp t0 =
   let rec aux =
@@ -176,7 +185,10 @@ let pp t0 =
        aux s;
        Format.print_string ">";
        Format.close_box ()
-    | Constructor (`End, []) -> Format.print_string "end"
+    | Constructor (`End, []) -> Format.print_string "idle"
+    | Constructor (`NullProb, []) -> Format.print_string "0"
+    | Constructor (`OneProb, []) -> Format.print_string "1"
+    | Constructor (`Done, []) -> Format.print_string "done"
     | Constructor ((`Send | `Receive) as pol, [t; ct]) ->
        Format.open_hvbox 0;
        Format.print_as 1 (string_of_polarity pol);
@@ -191,7 +203,7 @@ let pp t0 =
     | Tagged (`Variant, tags) -> aux_tags tags
     | Tagged ((`Choice | `Branch) as pol, tags) ->
        Format.print_as 1 (string_of_polarity pol);
-       aux_tags tags
+       aux_tags_prob tags
     | Constructor ((`SelectSequence | `AcceptSequence) as pol, [t; s]) ->
        Format.open_hovbox 0;
        Format.print_as 1 (string_of_polarity pol);
@@ -234,6 +246,27 @@ let pp t0 =
 	 tags;
        Format.print_string " ]";
        Format.close_box ()
+  and aux_tags_prob =
+    function
+    | [] -> Format.print_string "[ ]"
+    | (prob :: tag :: tags) ->
+       Format.open_hvbox 0;
+       aux_tag_prob prob;
+       Format.print_string "[ ";
+       aux_tag tag;
+       List.iter
+	 (fun tag ->
+	   Format.print_break 1 0;
+	   Format.print_string "| ";
+	   aux_tag tag)
+	 tags;
+       Format.print_string " ]";
+       Format.close_box ()
+    | _ -> assert false
+  and aux_tag_prob (name, t) =
+    Format.open_hvbox 0;
+    aux t;
+    Format.close_box ()
   and aux_tag (name, t) =
     Format.open_hvbox 0;
     Format.print_string (name ^ ":");
@@ -293,7 +326,10 @@ let eq =
       
 let phase_one t0 =
   let (++) = List.append in
-  let t_0 = Configuration.get_prefix () ++ ["_0"]
+  let t_0 = Configuration.get_prefix () ++ ["_0"] 
+  and t_1 = Configuration.get_prefix () ++ ["_1"]
+  and t_p0 = Configuration.get_prefix () ++ ["_p_0"]
+  and t_p1 = Configuration.get_prefix () ++ ["_p_1"]
   and t_st = Configuration.get_prefix () ++ [!Configuration.session_type]
   and t_it = Configuration.get_prefix () ++ ["it"]
   and t_ot = Configuration.get_prefix () ++ ["ot"]
@@ -305,6 +341,9 @@ let phase_one t0 =
     function
     | Var _ | RecVar _ as t -> t
     | Constructor (`Apply cs, []) when cs = t_0 -> t_Empty
+    | Constructor (`Apply cs, []) when cs = t_1 -> t_Done
+    | Constructor (`Apply cs, []) when cs = t_p0 -> t_pNull
+    | Constructor (`Apply cs, []) when cs = t_p1 -> t_pOne
     | Constructor (`Apply cs, [it; ot]) when cs = t_st ->
        Constructor (`Channel, [aux it; aux ot])
     | Constructor (`Apply cs, [it]) when cs = t_it ->
@@ -315,8 +354,8 @@ let phase_one t0 =
        Constructor (`Channel, [t_Empty; t_Empty])
     | Constructor (`Apply cs, [t; s]) when cs = t_seq ->
        Constructor (`Sequence, [aux t; aux s])
-    | Constructor (`Apply cs, [t; s]) when cs = t_choice ->
-       Tagged (`Variant, [("True", aux t); ("False", aux s)])
+    | Constructor (`Apply cs, [t; s; p]) when cs = t_choice ->
+       Tagged (`Variant, [("_",aux p); ("True", aux t); ("False", aux s)])
     | Tagged (`Variant, tags) -> Tagged (`Variant, List.map aux_tag tags)
     | Constructor (ctor, ts) -> Constructor (ctor, List.map aux ts)
     | Rec (x, t) -> Rec (x, aux t)
@@ -389,6 +428,8 @@ let phase_two =
     match find it, find ot with
     | Constructor (`Empty, []), Constructor (`Empty, []) ->
        Constructor (`End, [])
+    | Constructor (`Done, []), Constructor (`Done, []) ->
+       Constructor (`Done, [])
     | Constructor (`Tuple, [t; ct]), Constructor (`Empty, []) ->
        Constructor (`Receive, [aux `In t; aux `In ct])
     | Constructor (`Empty, []), Constructor (`Tuple, [t; ct]) ->

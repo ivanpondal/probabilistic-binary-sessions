@@ -68,6 +68,15 @@ let test_echo_client_picks_true _ =
 
   assert_equal 42 res
 
+let pick_suite =
+  "Pick"
+  >::: [
+         "random client chooses true" >:: test_random_client_picks_true;
+         "random client chooses false" >:: test_random_client_picks_false;
+         "idle client chooses false" >:: test_idle_client_picks_false;
+         "echo client chooses true" >:: test_echo_client_picks_true;
+       ]
+
 let rec seller ep =
   let bid, ep = receive ep in
   pick
@@ -117,15 +126,6 @@ let test_buyer_seller_no_agreement _ =
   let offer = buyer ep2 42 in
 
   assert_equal ~printer:string_of_int (-1) offer
-
-let pick_suite =
-  "Pick"
-  >::: [
-         "random client chooses true" >:: test_random_client_picks_true;
-         "random client chooses false" >:: test_random_client_picks_false;
-         "idle client chooses false" >:: test_idle_client_picks_false;
-         "echo client chooses true" >:: test_echo_client_picks_true;
-       ]
 
 let examples_suite =
   "Examples"
