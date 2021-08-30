@@ -8,7 +8,6 @@ let echo_server ep =
       close ep
   | `False ep -> idle ep
 
-
 let random_client ep =
   pick
     (fun ep ->
@@ -113,9 +112,9 @@ let pick_suite =
          "random client chooses false" >:: test_random_client_picks_false;
          "idle client chooses false" >:: test_idle_client_picks_false;
          "echo client chooses true" >:: test_echo_client_picks_true;
-(*         "idempotent pick" >:: test_idempotent_pick;
-*)       ]
-
+         (*         "idempotent pick" >:: test_idempotent_pick;
+*)
+       ]
 
 let rec seller ep =
   let bid, ep = receive ep in
@@ -167,9 +166,17 @@ let test_buyer_seller_no_agreement _ =
 
   assert_equal ~printer:string_of_int (-1) offer
 
-let a c ep = if c then close (select_false ep) else idle (select_true ep)
+let examples_suite =
+  "Examples"
+  >::: [
+         "buyer seller" >:: test_buyer_seller;
+         "buyer seller no agreement" >:: test_buyer_seller_no_agreement;
+       ]
 
-let f = pick_2ch 
+(* let a c ep = if c then close (select_false ep) else idle (select_true ep)
+
+let f = pick_2ch
+
 let g epX epY =
   match branch_2ch epX epY with
   | `True (epX, epY) ->
@@ -190,58 +197,79 @@ let h epX epY =
   | `False epX ->
       let epY = select_false epY in
       close epY;
-      close epX
+      close epX *)
 
-
-(*let inversion epX epY =
+let inversion epX epY =
   match branch_2ch epX epY with
-  | `True (epX, epY) ->
+  | `True (epX, epY) -> (
       let epY = select_false epY in
       close epY;
-      idle epX
-  | `False (epX, epY) ->
+      match branch epX with `True epX -> close epX | `False epX -> idle epX)
+  | `False (epX, epY) -> (
       let epY = select_true epY in
-      match branch_2ch epX epY with
-      | `True (epX, epY) -> close epX; idle epY
-      | `False (epX, epY) -> idle epX; idle epY
-*)
+      idle epY;
+      match branch epX with `True epX -> close epX | `False epX -> idle epX)
 
-(*
 let inversion_client epX epY =
-  pick_2ch
-    (fun epX epY ->
+  pick
+    (fun epX ->
       let epX = select_false epX in
       match branch_2ch epY epX with
       | `True (epY, epX) ->
-        let epX = select_true epX in
-        close epX; idle epY
-    (fun epX epY ->
-      let epX = select_true epX in
-      match branch_2ch epY epX with
+          idle epY;
+          let epX = select_true epX in
+          close epX;
+          true
       | `False (epY, epX) ->
           close epY;
-          idle epX)
-    epX epY *)
+          let epX = select_false epX in
+          idle epX;
+          false)
+    (fun epX ->
+      let epX = select_true epX in
+      match branch_2ch epY epX with
+      | `True (epY, epX) ->
+          idle epY;
+          let epX = select_true epX in
+          close epX;
+          true
+      | `False (epY, epX) ->
+          close epY;
+          let epX = select_false epX in
+          idle epX;
+          false)
+    epX
 
-let examples_suite =
-  "Examples"
+let test_inversion_client_picks_false _ =
+  Random.init 2;
+  (* seed forcing initial choice to be false *)
+  let epX1, epX2 = create () in
+  let epY1, epY2 = create () in
+  let _ = Thread.create (fun (epX, epY) -> inversion epX epY) (epX1, epY1) in
+
+  let choice = inversion_client epX2 epY2 in
+
+  assert_equal true choice
+
+let test_inversion_client_picks_true _ =
+  Random.init 0;
+  (* seed forcing initial choice to be true *)
+  let epX1, epX2 = create () in
+  let epY1, epY2 = create () in
+  let _ = Thread.create (fun (epX, epY) -> inversion epX epY) (epX1, epY1) in
+
+  let choice = inversion_client epX2 epY2 in
+
+  assert_equal false choice
+
+let multi_channel_suite =
+  "Multi-channel"
   >::: [
-         "buyer seller" >:: test_buyer_seller;
-         "buyer seller no agreement" >:: test_buyer_seller_no_agreement;
+         "inversion client picks false" >:: test_inversion_client_picks_false;
+         "inversion client picks true" >:: test_inversion_client_picks_true;
        ]
 
-(* let () =
+let () =
   run_test_tt_main pick_suite;
-  run_test_tt_main examples_suite
-*)
-
-(*
-  type _1
-  type _0 
-  type _ prob = Left: _1 prob | Right: _0 prob | Convex: ('p * 'q * 'r) -> ('p prob* 'q prob* 'r prob) prob;;
-
-  type _ convex = | Same: int ->  (int*int*(_1 prob)) convex | Diff: (int*bool*'q*'r) -> (int*bool* ('p*'q*'r) prob) convex;;
-
-  let exp: type a b p. (a -> bool) -> (b -> bool) -> (a *b*p) convex -> bool  = fun fTrue fFalse ep -> match ep with Same x -> fTrue x && fFalse x | Diff (x, y,_,_) -> fTrue x && fFalse y | _ -> .;;
-
-*)
+  run_test_tt_main examples_suite;
+  run_test_tt_main multi_channel_suite

@@ -49,7 +49,7 @@ type -'a ot = (_0, 'a) pst
 (** The type of endpoints for {e sending} messages of type
 ['a]. *)
 
-type (+'a, +'b, 'p) choice = [ `True of 'a | `False of 'b ]
+type (+'a, +'b) choice = [ `True of 'a | `False of 'b ]
 
 module Bare : sig
   (** {2 Session initiation and termination} *)
@@ -84,38 +84,37 @@ valid endpoints and dual types. *)
 is used to compute the received message.  @return the endpoint [ep].
 @raise InvalidEndpoint if the endpoint [ep] is invalid. *)
 
-  val select_true : (('a, 'b) pst, ('c, 'd) pst, _p_1) choice ot -> ('b, 'a) pst
+  val select_true :
+    ((('a, 'b) pst, ('c, 'd) pst) choice * _p_1) ot -> ('b, 'a) pst
   (** [select_true ep] selects the [True] branch of a choice.  @return
  the endpoint [ep] after the selection.  @raise InvalidEndpoint if the
  endpoint [ep] is invalid. *)
 
   val select_false :
-    (('a, 'b) pst, ('c, 'd) pst, _p_0) choice ot -> ('d, 'c) pst
+    ((('a, 'b) pst, ('c, 'd) pst) choice * _p_0) ot -> ('d, 'c) pst
   (** [select_false ep] selects the [False] branch of a choice.
  @return the endpoint [ep] after the selection.  @raise
  InvalidEndpoint if the endpoint [ep] is invalid. *)
 
   val pick :
-    ((('a, 'b) pst, ('c, 'd) pst, _p_0) choice ot -> 'e) ->
-    ((('a, 'b) pst, ('c, 'd) pst, _p_1) choice ot -> 'e) ->
-    (('a, 'b) pst, ('c, 'd) pst, 'p) choice ot ->
+    (((('a, 'b) pst, ('c, 'd) pst) choice * _p_0) ot -> 'e) ->
+    (((('a, 'b) pst, ('c, 'd) pst) choice * _p_1) ot -> 'e) ->
+    ((('a, 'b) pst, ('c, 'd) pst) choice * 'p) ot ->
     'e
 
-  (*  val poly_pick : 'a unif -> unit *)
-
   val pick_2ch :
-    ((('a, 'b) pst, ('c, 'd) pst, _p_0) choice ot ->
-    (('l, 'm) pst, ('n, 'o) pst, 't) choice ot ->
+    (((('a, 'b) pst, ('c, 'd) pst) choice * _p_0) ot ->
+    ((('l, 'm) pst, ('n, 'o) pst) choice * 't) ot ->
     'e) ->
-    ((('a, 'b) pst, ('c, 'd) pst, _p_1) choice ot ->
-    (('l, 'm) pst, ('n, 'o) pst, 'v) choice ot ->
+    (((('a, 'b) pst, ('c, 'd) pst) choice * _p_1) ot ->
+    ((('l, 'm) pst, ('n, 'o) pst) choice * 'v) ot ->
     'e) ->
-    (('a, 'b) pst, ('c, 'd) pst, 'p) choice ot ->
-    (('l, 'm) pst, ('n, 'o) pst, 'p * 't * 'v) choice ot ->
+    ((('a, 'b) pst, ('c, 'd) pst) choice * 'p) ot ->
+    ((('l, 'm) pst, ('n, 'o) pst) choice * ('p * 't * 'v)) ot ->
     'e
 
   val branch :
-    (('a, 'b) pst, ('c, 'd) pst, 'p) choice it ->
+    ((('a, 'b) pst, ('c, 'd) pst) choice * 'p) it ->
     [> `True of ('a, 'b) pst | `False of ('c, 'd) pst ]
   (** [branch ep] receives a selection from the endpoint [ep] with
  input capability.  @return the endpoint [ep] injected through the
@@ -123,10 +122,11 @@ is used to compute the received message.  @return the endpoint [ep].
  invalid.  *)
 
   val branch_2ch :
-    (('a, 'b) pst, ('c, 'd) pst, 'p) choice it ->
-    (('l, 'm) pst, ('n, 'o) pst, 'p * 't * 'v) choice ot ->
-    [> `True of ('a, 'b) pst * (('l, 'm) pst, ('n, 'o) pst, 't) choice ot
-    | `False of ('c, 'd) pst * (('l, 'm) pst, ('n, 'o) pst, 'v) choice ot ]
+    ((('a, 'b) pst, ('c, 'd) pst) choice * 'p) it ->
+    ((('l, 'm) pst, ('n, 'o) pst) choice * ('p * 't * 'v)) ot ->
+    [> `True of ('a, 'b) pst * ((('l, 'm) pst, ('n, 'o) pst) choice * 't) ot
+    | `False of ('c, 'd) pst * ((('l, 'm) pst, ('n, 'o) pst) choice * 'v) ot ]
+
   (** {2 Endpoint validity and identity} *)
 
   val is_valid : ('a, 'b) pst -> bool
