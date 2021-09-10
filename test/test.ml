@@ -9,7 +9,7 @@ let echo_server ep =
   | `False ep -> idle ep
 
 let random_client ep =
-  pick
+  pick one_half
     (fun ep ->
       let ep = select_false ep in
       idle ep;
@@ -69,7 +69,7 @@ let test_echo_client_picks_true _ =
   assert_equal 42 res
 
 let double_false_success_client ep =
-  pick
+  pick one_half
     (fun ep ->
       let ep = select_false ep in
       let ep = select_false ep in
@@ -122,7 +122,7 @@ let pick_suite =
 
 let rec seller ep =
   let bid, ep = receive ep in
-  pick
+  pick one_half
     (fun ep ->
       let ep = select_false ep in
       close ep)
@@ -137,7 +137,7 @@ let rec buyer ep offer =
   match branch ep with
   | `True ep ->
       let counteroffer, ep = receive ep in
-      pick
+      pick one_half
         (fun ep ->
           let ep = select_false ep in
           idle ep;
@@ -215,7 +215,7 @@ let inversion epX epY =
       match branch epX with `True epX -> close epX | `False epX -> idle epX)
 
 let inversion_client epX epY =
-  pick
+  pick one_half
     (fun epX ->
       let epX = select_false epX in
       match branch_2ch epY epX with

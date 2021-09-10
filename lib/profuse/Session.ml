@@ -74,10 +74,6 @@ type (+'a, -'b) pst = {
   once : Flag.t;
 }
 
-type _p_1
-
-type _p_0
-
 type et = (_1, _1) pst
 
 type nt = (_0, _0) pst
@@ -87,6 +83,23 @@ type +'a it = ('a, _0) pst
 type -'a ot = (_0, 'a) pst
 
 type (+'a, +'b) choice = [ `True of 'a | `False of 'b ]
+
+type _Z
+
+type _S
+
+type _ nat = Z : _Z nat | S : 'n nat -> (_S * 'n) nat
+
+type _ frac =
+  | Fraction : 'n nat * (_S * 'd) nat -> ('n nat * (_S * 'd) nat) frac
+
+type _p_1 = ((_S * _Z) nat * (_S * _Z) nat) frac
+(* 1/1 *)
+
+type _p_0 = (_Z nat * (_S * _Z) nat) frac
+(* 0/1 *)
+
+type ('a, 'b) prob = ('a nat * (_S * 'b) nat) frac
 
 module Bare = struct
   let fresh ep = { ep with once = Flag.create () }
@@ -159,11 +172,21 @@ module Bare = struct
 
   let select_false ep = select (fun x -> `False x) ep
 
-  let pick fFalse fTrue ep =
-    if Random.bool () then fTrue (fresh ep) else fFalse (fresh ep)
+  let rec nat_to_int : type a. a nat -> int = function
+    | Z -> 0
+    | S n -> 1 + nat_to_int n
 
-  let pick_2ch fFalse fTrue epX epY =
-    if Random.bool () then fTrue (fresh epX) (fresh epY)
+  let frac_to_float : _ frac -> float = function
+    | Fraction (n, d) ->
+        float_of_int (nat_to_int n) /. float_of_int (nat_to_int d)
+
+  let pick prob fFalse fTrue ep =
+    let true_prob = frac_to_float prob in
+    if Random.float 1. < true_prob then fTrue (fresh ep) else fFalse (fresh ep)
+
+  let pick_2ch prob fFalse fTrue epX epY =
+    let true_prob = frac_to_float prob in
+    if Random.float 1. < true_prob then fTrue (fresh epX) (fresh epY)
     else fFalse (fresh epX) (fresh epY)
 
   let branch ep =
@@ -174,4 +197,6 @@ module Bare = struct
     match branch epX with
     | `True x -> `True (x, fresh epY)
     | `False x -> `False (x, fresh epY)
+
+  let one_half = Fraction (S Z, S (S Z))
 end

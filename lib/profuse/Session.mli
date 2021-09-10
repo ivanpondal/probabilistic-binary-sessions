@@ -28,10 +28,6 @@ type _0
 
 type _1
 
-type _p_1
-
-type _p_0
-
 type (+'a, -'b) pst
 (** The type of endpoints for {e receiving} messages of type
 ['a] and {e sending} messages of type ['b]. *)
@@ -50,6 +46,21 @@ type -'a ot = (_0, 'a) pst
 ['a]. *)
 
 type (+'a, +'b) choice = [ `True of 'a | `False of 'b ]
+
+type _Z
+
+type _S
+
+type _ nat = Z : _Z nat | S : 'n nat -> (_S * 'n) nat
+
+type _ frac =
+  | Fraction : 'n nat * (_S * 'd) nat -> ('n nat * (_S * 'd) nat) frac
+
+type _p_1 = ((_S * _Z) nat * (_S * _Z) nat) frac
+
+type _p_0 = (_Z nat * (_S * _Z) nat) frac
+
+type ('a, 'b) prob = ('a nat * (_S * 'b) nat) frac
 
 module Bare : sig
   (** {2 Session initiation and termination} *)
@@ -97,20 +108,24 @@ is used to compute the received message.  @return the endpoint [ep].
  InvalidEndpoint if the endpoint [ep] is invalid. *)
 
   val pick :
+    ('p1, 'p2) prob ->
     (((('a, 'b) pst, ('c, 'd) pst) choice * _p_0) ot -> 'e) ->
     (((('a, 'b) pst, ('c, 'd) pst) choice * _p_1) ot -> 'e) ->
-    ((('a, 'b) pst, ('c, 'd) pst) choice * 'p) ot ->
+    ((('a, 'b) pst, ('c, 'd) pst) choice * ('p1, 'p2) prob) ot ->
     'e
 
   val pick_2ch :
+    ('p1, 'p2) prob ->
     (((('a, 'b) pst, ('c, 'd) pst) choice * _p_0) ot ->
-    ((('l, 'm) pst, ('n, 'o) pst) choice * 't) ot ->
+    ((('l, 'm) pst, ('n, 'o) pst) choice * ('t1, 't2) prob) ot ->
     'e) ->
     (((('a, 'b) pst, ('c, 'd) pst) choice * _p_1) ot ->
-    ((('l, 'm) pst, ('n, 'o) pst) choice * 'v) ot ->
+    ((('l, 'm) pst, ('n, 'o) pst) choice * ('v1, 'v2) prob) ot ->
     'e) ->
-    ((('a, 'b) pst, ('c, 'd) pst) choice * 'p) ot ->
-    ((('l, 'm) pst, ('n, 'o) pst) choice * ('p * 't * 'v)) ot ->
+    ((('a, 'b) pst, ('c, 'd) pst) choice * ('p1, 'p2) prob) ot ->
+    ((('l, 'm) pst, ('n, 'o) pst) choice
+    * (('p1, 'p2) prob * ('t1, 't2) prob * ('v1, 'v2) prob))
+    ot ->
     'e
 
   val branch :
@@ -152,4 +167,6 @@ is used to compute the received message.  @return the endpoint [ep].
   val string_of_endpoint : ('a, 'b) pst -> string
   (** [string_of_endpoint ep] returns a textual representation of the
 endpoint [ep]. *)
+
+  val one_half : ((_S * _Z) nat * (_S * (_S * _Z)) nat) frac
 end
