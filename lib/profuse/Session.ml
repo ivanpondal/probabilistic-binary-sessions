@@ -15,6 +15,9 @@
 (*                                                                      *)
 (* Copyright 2015-2017 Luca Padovani                                    *)
 
+open Math.Natural
+open Math.Rational
+
 exception InvalidEndpoint
 
 module UnsafeChannel : sig
@@ -84,29 +87,40 @@ type -'a ot = (_0, 'a) pst
 
 type (+'a, +'b) choice = [ `True of 'a | `False of 'b ]
 
-type _Z
+type ('a, 'b) prob = ('a nat * 'b suc nat) frac
 
-type _S
+type _p_1 = (zero suc, zero) prob
 
-type _ nat = Z : _Z nat | S : 'n nat -> (_S * 'n) nat
-
-type _ frac =
-  | Fraction : 'n nat * (_S * 'd) nat -> ('n nat * (_S * 'd) nat) frac
-
-type _p_1 = ((_S * _Z) nat * (_S * _Z) nat) frac
-(* 1/1 *)
-
-type _p_0 = (_Z nat * (_S * _Z) nat) frac
-(* 0/1 *)
-
-type ('a, 'b) prob = ('a nat * (_S * 'b) nat) frac
+type _p_0 = (zero, zero) prob
 
 module Bare = struct
+  let dummy_ep =
+    {
+      name = "summy st";
+      channel = UnsafeChannel.create ();
+      polarity = 1;
+      once = Flag.create ();
+    }
+
   let fresh ep = { ep with once = Flag.create () }
 
   (**********************************)
   (*** INITIATION AND TERMINATION ***)
   (**********************************)
+  let create_test ?(name = "channel") ?(st = dummy_ep) () =
+    let _ = st in
+    let ch = UnsafeChannel.create () in
+    let ep1 =
+      { name = name ^ "⁺"; channel = ch; polarity = 1; once = Flag.create () }
+    and ep2 =
+      {
+        name = name ^ "⁻";
+        channel = ch;
+        polarity = -1;
+        once = Flag.create ();
+      }
+    in
+    (ep1, ep2)
 
   let create ?(name = "channel") () =
     let ch = UnsafeChannel.create () in
@@ -198,5 +212,4 @@ module Bare = struct
     | `True x -> `True (x, fresh epY)
     | `False x -> `False (x, fresh epY)
 
-  let one_half = Fraction (S Z, S (S Z))
 end

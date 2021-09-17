@@ -1,5 +1,6 @@
 open OUnit2
 open ProFuse.Session.Bare
+open Math.Rational
 
 let echo_server ep =
   match branch ep with
@@ -277,3 +278,5 @@ let () =
   run_test_tt_main pick_suite;
   run_test_tt_main examples_suite;
   run_test_tt_main multi_channel_suite
+
+  (* utop # let exp ?(ste=dummy_ep) = let ep1, ep2 = create_test ~st:ste () in let _ = Thread.create receiver ep1 in sender ep2 4;; *)

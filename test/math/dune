@@ -1,0 +1,5 @@
+(test
+ (name test_math)
+ (libraries math ounit2)
+ (flags
+  (:standard -w +A-20 -rectypes)))

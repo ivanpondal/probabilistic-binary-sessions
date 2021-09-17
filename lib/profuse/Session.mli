@@ -20,6 +20,9 @@
 (*                                                                      *)
 (* Copyright 2015-2017 Luca Padovani                                    *)
 
+open Math.Natural
+open Math.Rational
+
 exception InvalidEndpoint
 (** Exception raised whenever an invalid endpoint is used. *)
 
@@ -47,23 +50,29 @@ type -'a ot = (_0, 'a) pst
 
 type (+'a, +'b) choice = [ `True of 'a | `False of 'b ]
 
-type _Z
+type ('a, 'b) prob = ('a nat * 'b suc nat) frac
 
-type _S
+type _p_1 = (zero suc, zero) prob
 
-type _ nat = Z : _Z nat | S : 'n nat -> (_S * 'n) nat
+type _p_0 = (zero, zero) prob
 
-type _ frac =
-  | Fraction : 'n nat * (_S * 'd) nat -> ('n nat * (_S * 'd) nat) frac
+module UnsafeChannel : sig
+  type t
 
-type _p_1 = ((_S * _Z) nat * (_S * _Z) nat) frac
+  val create : unit -> t
 
-type _p_0 = (_Z nat * (_S * _Z) nat) frac
+  val send : 'a -> t -> unit
 
-type ('a, 'b) prob = ('a nat * (_S * 'b) nat) frac
+  val receive : t -> 'a
+end
 
 module Bare : sig
   (** {2 Session initiation and termination} *)
+
+  val dummy_ep : ('a, 'b) pst
+
+  val create_test :
+    ?name:string -> ?st:('a, 'b) pst -> unit -> ('a, 'b) pst * ('b, 'a) pst
 
   val create : ?name:string -> unit -> ('a, 'b) pst * ('b, 'a) pst
   (** [create ()] creates a new session.  @return a pair with two
@@ -167,6 +176,4 @@ is used to compute the received message.  @return the endpoint [ep].
   val string_of_endpoint : ('a, 'b) pst -> string
   (** [string_of_endpoint ep] returns a textual representation of the
 endpoint [ep]. *)
-
-  val one_half : ((_S * _Z) nat * (_S * (_S * _Z)) nat) frac
 end
