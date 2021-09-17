@@ -186,14 +186,6 @@ module Bare = struct
 
   let select_false ep = select (fun x -> `False x) ep
 
-  let rec nat_to_int : type a. a nat -> int = function
-    | Z -> 0
-    | S n -> 1 + nat_to_int n
-
-  let frac_to_float : _ frac -> float = function
-    | Fraction (n, d) ->
-        float_of_int (nat_to_int n) /. float_of_int (nat_to_int d)
-
   let pick prob fFalse fTrue ep =
     let true_prob = frac_to_float prob in
     if Random.float 1. < true_prob then fTrue (fresh ep) else fFalse (fresh ep)
