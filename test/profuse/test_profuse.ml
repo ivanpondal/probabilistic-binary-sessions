@@ -44,7 +44,7 @@ let test_random_client_picks_true _ =
   assert_equal 42 res
 
 let test_random_client_picks_false _ =
-  Random.init 2;
+  Random.init 4;
   (* seed forcing false *)
   let ep1, ep2 = create () in
   let _ = Thread.create echo_server ep1 in
@@ -91,7 +91,7 @@ let double_false_success_server ep =
       match branch ep with `True ep -> idle ep | `False ep -> close ep)
 
 let test_double_false_picks_false _ =
-  Random.init 2;
+  Random.init 4;
   (* seed forcing initial choice to be false *)
   let ep1, ep2 = create () in
   let _ = Thread.create double_false_success_server ep1 in
@@ -246,7 +246,7 @@ let inversion_client epX epY =
     epX
 
 let test_inversion_client_picks_false _ =
-  Random.init 2;
+  Random.init 4;
   (* seed forcing initial choice to be false *)
   let epX1, epX2 = create () in
   let epY1, epY2 = create () in
