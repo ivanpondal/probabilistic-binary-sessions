@@ -94,9 +94,9 @@ type _p_1 = (zero suc, zero) prob
 type _p_0 = (zero, zero) prob
 
 module Bare = struct
-  let dummy_ep =
+  let st_placeholder =
     {
-      name = "summy st";
+      name = "session_type_placeholder";
       channel = UnsafeChannel.create ();
       polarity = 1;
       once = Flag.create ();
@@ -107,22 +107,8 @@ module Bare = struct
   (**********************************)
   (*** INITIATION AND TERMINATION ***)
   (**********************************)
-  let create_test ?(name = "channel") ?(st = dummy_ep) () =
+  let create ?(name = "channel") ?(st = st_placeholder) () =
     let _ = st in
-    let ch = UnsafeChannel.create () in
-    let ep1 =
-      { name = name ^ "⁺"; channel = ch; polarity = 1; once = Flag.create () }
-    and ep2 =
-      {
-        name = name ^ "⁻";
-        channel = ch;
-        polarity = -1;
-        once = Flag.create ();
-      }
-    in
-    (ep1, ep2)
-
-  let create ?(name = "channel") () =
     let ch = UnsafeChannel.create () in
     let ep1 =
       { name = name ^ "⁺"; channel = ch; polarity = 1; once = Flag.create () }
@@ -203,5 +189,4 @@ module Bare = struct
     match branch epX with
     | `True x -> `True (x, fresh epY)
     | `False x -> `False (x, fresh epY)
-
 end
