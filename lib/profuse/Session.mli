@@ -69,11 +69,6 @@ end
 module Bare : sig
   (** {2 Session initiation and termination} *)
 
-  val dummy_ep : ('a, 'b) pst
-
-  val create_test :
-    ?name:string -> ?st:('a, 'b) pst -> unit -> ('a, 'b) pst * ('b, 'a) pst
-
   val create : ?name:string -> unit -> ('a, 'b) pst * ('b, 'a) pst
   (** [create ()] creates a new session.  @return a pair with two
 valid endpoints and dual types. *)

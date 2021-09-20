@@ -94,33 +94,12 @@ type _p_1 = (zero suc, zero) prob
 type _p_0 = (zero, zero) prob
 
 module Bare = struct
-  let dummy_ep =
-    {
-      name = "summy st";
-      channel = UnsafeChannel.create ();
-      polarity = 1;
-      once = Flag.create ();
-    }
 
   let fresh ep = { ep with once = Flag.create () }
 
   (**********************************)
   (*** INITIATION AND TERMINATION ***)
   (**********************************)
-  let create_test ?(name = "channel") ?(st = dummy_ep) () =
-    let _ = st in
-    let ch = UnsafeChannel.create () in
-    let ep1 =
-      { name = name ^ "⁺"; channel = ch; polarity = 1; once = Flag.create () }
-    and ep2 =
-      {
-        name = name ^ "⁻";
-        channel = ch;
-        polarity = -1;
-        once = Flag.create ();
-      }
-    in
-    (ep1, ep2)
 
   let create ?(name = "channel") () =
     let ch = UnsafeChannel.create () in
