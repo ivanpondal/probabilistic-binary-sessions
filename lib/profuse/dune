@@ -1,5 +1,5 @@
 (library
  (public_name proFuse)
  (name proFuse)
- (libraries threads)
+ (libraries threads math)
  (flags (:standard -w +A-20 -rectypes)))

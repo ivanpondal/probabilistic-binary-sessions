@@ -15,6 +15,9 @@
 (*                                                                      *)
 (* Copyright 2015-2017 Luca Padovani                                    *)
 
+open Math.Natural
+open Math.Rational
+
 exception InvalidEndpoint
 
 module UnsafeChannel : sig
@@ -74,10 +77,6 @@ type (+'a, -'b) pst = {
   once : Flag.t;
 }
 
-type _p_1
-
-type _p_0
-
 type et = (_1, _1) pst
 
 type nt = (_0, _0) pst
@@ -86,9 +85,16 @@ type +'a it = ('a, _0) pst
 
 type -'a ot = (_0, 'a) pst
 
-type (+'a, +'b, 'p) choice = [ `True of 'a | `False of 'b ]
+type (+'a, +'b) choice = [ `True of 'a | `False of 'b ]
+
+type ('a, 'b) prob = ('a nat * 'b suc nat) frac
+
+type _p_1 = (zero suc, zero) prob
+
+type _p_0 = (zero, zero) prob
 
 module Bare = struct
+
   let fresh ep = { ep with once = Flag.create () }
 
   (**********************************)
@@ -100,7 +106,12 @@ module Bare = struct
     let ep1 =
       { name = name ^ "⁺"; channel = ch; polarity = 1; once = Flag.create () }
     and ep2 =
-      { name = name ^ "⁻"; channel = ch; polarity = -1; once = Flag.create () }
+      {
+        name = name ^ "⁻";
+        channel = ch;
+        polarity = -1;
+        once = Flag.create ();
+      }
     in
     (ep1, ep2)
 
@@ -154,10 +165,22 @@ module Bare = struct
 
   let select_false ep = select (fun x -> `False x) ep
 
-  let pick fFalse fTrue ep = if Random.bool () then fTrue ep else fFalse ep
+  let pick prob fFalse fTrue ep =
+    let true_prob = frac_to_float prob in
+    if Random.float 1. < true_prob then fTrue (fresh ep) else fFalse (fresh ep)
+
+  let pick_2ch prob fFalse fTrue epX epY =
+    let true_prob = frac_to_float prob in
+    if Random.float 1. < true_prob then fTrue (fresh epX) (fresh epY)
+    else fFalse (fresh epX) (fresh epY)
 
   let branch ep =
     Flag.use ep.once;
     (UnsafeChannel.receive ep.channel) (fresh ep)
+
+  let branch_2ch epX epY =
+    match branch epX with
+    | `True x -> `True (x, fresh epY)
+    | `False x -> `False (x, fresh epY)
 
 end
