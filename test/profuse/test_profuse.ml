@@ -248,9 +248,110 @@ let multi_channel_suite =
          "inversion client picks true" >:: test_inversion_client_picks_true;
        ]
 
+let receiver ep =
+  let _, ep = receive ep in
+  close ep
+
+let sender ep =
+  let ep = send 42 ep in
+  close ep
+
+let send_and_receive ?(st = cst_placeholder) () =
+  let ep1, ep2 = create ~st () in
+  let _ = Thread.create receiver ep1 in
+  sender ep2
+
+let coin_flip_server ?(st = cst_placeholder) () ep =
+  match branch ep with
+  | `True ep ->
+      close ep;
+      send_and_receive ~st ()
+  | `False ep ->
+      idle ep;
+      send_and_receive ~st ()
+
+let coin_flipper ep =
+  pick one_half
+    (fun ep ->
+      let ep = select_false ep in
+      idle ep;
+      false)
+    (fun ep ->
+      let ep = select_true ep in
+      close ep;
+      true)
+    ep
+
+let test_same_session_type_combination _ =
+  Random.init 0;
+  (* seed forcing initial choice to be true *)
+  let ep1, ep2 = create () in
+  let _ = Thread.create (coin_flip_server ()) ep1 in
+
+  let result = coin_flipper ep2 in
+
+  assert_equal false result
+
+let echo_server_reply ?(st = cst_placeholder) () =
+  let ep1, ep2 = create ~st () in
+  let _ = Thread.create echo_server ep1 in
+  echo_client ep2
+
+let coin_flip_server_mix_sessions ?(st = cst_placeholder) () ep =
+  match branch_2st ep st with
+  | `True (ep, stX) ->
+      close ep;
+      send_and_receive ~st:stX ()
+  | `False (ep, stY) ->
+      idle ep;
+      let _ = echo_server_reply ~st:stY () in
+      ()
+
+let test_diff_session_type_branch_combination _ =
+  Random.init 0;
+  (* seed forcing initial choice to be true *)
+  let ep1, ep2 = create () in
+  let _ = Thread.create (coin_flip_server_mix_sessions ()) ep1 in
+
+  let result = coin_flipper ep2 in
+
+  assert_equal false result
+
+let coin_flipper_mix_sessions ?(st = cst_placeholder) () ep =
+  pick_2st one_half
+    (fun ep stX ->
+      let ep = select_false ep in
+      idle ep;
+      let _ = send_and_receive ~st:stX () in
+      false)
+    (fun ep stY ->
+      let ep = select_true ep in
+      close ep;
+      let _ = echo_server_reply ~st:stY () in
+      true)
+    ep st
+
+let test_diff_session_type_pick_combination _ =
+  Random.init 0;
+  (* seed forcing initial choice to be true *)
+  let ep1, ep2 = create () in
+  let _ = Thread.create (coin_flip_server ()) ep1 in
+
+  let result = coin_flipper ep2 in
+
+  assert_equal false result
+
+let closed_session_combination =
+  "Closed session combination"
+  >::: [
+         "same session type" >:: test_same_session_type_combination;
+         "different session type in branch"
+         >:: test_diff_session_type_branch_combination;
+         "different session type in pick"
+         >:: test_diff_session_type_branch_combination;
+       ]
+
 let () =
   run_test_tt_main pick_suite;
   run_test_tt_main examples_suite;
   run_test_tt_main multi_channel_suite
-
-  (* utop # let exp ?(ste=dummy_ep) = let ep1, ep2 = create_test ~st:ste () in let _ = Thread.create receiver ep1 in sender ep2 4;; *)
