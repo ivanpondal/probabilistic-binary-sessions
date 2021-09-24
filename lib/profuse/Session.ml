@@ -70,6 +70,9 @@ type _0
 
 type _1
 
+type (+'a, -'b) cpst = unit
+(** Closed session type. *)
+
 type (+'a, -'b) pst = {
   name : string;
   channel : UnsafeChannel.t;
@@ -85,6 +88,8 @@ type +'a it = ('a, _0) pst
 
 type -'a ot = (_0, 'a) pst
 
+type -'a cot = (_0, 'a) cpst
+
 type (+'a, +'b) choice = [ `True of 'a | `False of 'b ]
 
 type ('a, 'b) prob = ('a nat * 'b suc nat) frac
@@ -94,14 +99,15 @@ type _p_1 = (zero suc, zero) prob
 type _p_0 = (zero, zero) prob
 
 module Bare = struct
+  let cst_placeholder = ()
 
   let fresh ep = { ep with once = Flag.create () }
 
   (**********************************)
   (*** INITIATION AND TERMINATION ***)
   (**********************************)
-
-  let create ?(name = "channel") () =
+  let create ?(name = "channel") ?(st = cst_placeholder) () =
+    let _ = st in
     let ch = UnsafeChannel.create () in
     let ep1 =
       { name = name ^ "⁺"; channel = ch; polarity = 1; once = Flag.create () }
@@ -169,6 +175,11 @@ module Bare = struct
     let true_prob = frac_to_float prob in
     if Random.float 1. < true_prob then fTrue (fresh ep) else fFalse (fresh ep)
 
+  let pick_2st prob fFalse fTrue ep st =
+    let true_prob = frac_to_float prob in
+    if Random.float 1. < true_prob then fTrue (fresh ep) st
+    else fFalse (fresh ep) st
+
   let pick_2ch prob fFalse fTrue epX epY =
     let true_prob = frac_to_float prob in
     if Random.float 1. < true_prob then fTrue (fresh epX) (fresh epY)
@@ -183,4 +194,6 @@ module Bare = struct
     | `True x -> `True (x, fresh epY)
     | `False x -> `False (x, fresh epY)
 
+  let branch_2st ep st =
+    match branch ep with `True x -> `True (x, st) | `False x -> `False (x, st)
 end

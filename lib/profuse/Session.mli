@@ -31,6 +31,9 @@ type _0
 
 type _1
 
+type (+'a, -'b) cpst
+(** Closed probabilistic session type. *)
+
 type (+'a, -'b) pst
 (** The type of endpoints for {e receiving} messages of type
 ['a] and {e sending} messages of type ['b]. *)
@@ -47,6 +50,8 @@ type +'a it = ('a, _0) pst
 type -'a ot = (_0, 'a) pst
 (** The type of endpoints for {e sending} messages of type
 ['a]. *)
+
+type -'a cot = (_0, 'a) cpst
 
 type (+'a, +'b) choice = [ `True of 'a | `False of 'b ]
 
@@ -69,7 +74,10 @@ end
 module Bare : sig
   (** {2 Session initiation and termination} *)
 
-  val create : ?name:string -> unit -> ('a, 'b) pst * ('b, 'a) pst
+  val cst_placeholder : ('a, 'b) cpst
+
+  val create :
+    ?name:string -> ?st:('a, 'b) cpst -> unit -> ('a, 'b) pst * ('b, 'a) pst
   (** [create ()] creates a new session.  @return a pair with two
 valid endpoints and dual types. *)
 
@@ -118,6 +126,14 @@ is used to compute the received message.  @return the endpoint [ep].
     ((('a, 'b) pst, ('c, 'd) pst) choice * ('p1, 'p2) prob) ot ->
     'e
 
+  val pick_2st :
+    ('p1, 'p2) prob ->
+    (((('a, 'b) pst, ('c, 'd) pst) choice * _p_0) ot -> ('l, 'm) cpst -> 'e) ->
+    (((('a, 'b) pst, ('c, 'd) pst) choice * _p_1) ot -> ('n, 'o) cpst -> 'e) ->
+    ((('a, 'b) pst, ('c, 'd) pst) choice * ('p1, 'p2) prob) ot ->
+    ((('l, 'm) cpst, ('n, 'o) cpst) choice * ('p1, 'p2) prob) cot ->
+    'e
+
   val pick_2ch :
     ('p1, 'p2) prob ->
     (((('a, 'b) pst, ('c, 'd) pst) choice * _p_0) ot ->
@@ -139,6 +155,12 @@ is used to compute the received message.  @return the endpoint [ep].
  input capability.  @return the endpoint [ep] injected through the
  selected tag.  @raise InvalidEndpoint if the endpoint [ep] is
  invalid.  *)
+
+  val branch_2st :
+    ((('a, 'b) pst, ('c, 'd) pst) choice * 'p) it ->
+    ((('l, 'm) cpst, ('n, 'o) cpst) choice * 'p) cot ->
+    [> `True of ('a, 'b) pst * ('l, 'm) cpst
+    | `False of ('c, 'd) pst * ('n, 'o) cpst ]
 
   val branch_2ch :
     ((('a, 'b) pst, ('c, 'd) pst) choice * 'p) it ->
