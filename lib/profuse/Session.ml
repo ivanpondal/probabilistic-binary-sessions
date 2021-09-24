@@ -70,7 +70,7 @@ type _0
 
 type _1
 
-type (+'a, -'b) cpst = bool
+type (+'a, -'b) cpst = unit
 (** Closed session type. *)
 
 type (+'a, -'b) pst = {
@@ -99,7 +99,7 @@ type _p_1 = (zero suc, zero) prob
 type _p_0 = (zero, zero) prob
 
 module Bare = struct
-  let cst_placeholder = true
+  let cst_placeholder = ()
 
   let fresh ep = { ep with once = Flag.create () }
 
