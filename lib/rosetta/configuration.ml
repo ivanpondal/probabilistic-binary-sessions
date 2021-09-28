@@ -16,10 +16,15 @@
 (* Copyright 2015-2016 Luca Padovani                                    *)
 
 let show_end = ref false
+
 let sequence_polarity = ref false
-let prefix = ref ["ProFuse__Session"]
+
+let prefix = ref [ "ProFuse__Session" ]
+
 let session_type = ref "pst"
 
 let get_prefix () = !prefix
+
 let set_prefix s = prefix := s
+
 let reset_prefix () = prefix := []

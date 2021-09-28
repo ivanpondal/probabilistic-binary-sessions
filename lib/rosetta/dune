@@ -1,0 +1,10 @@
+(ocamlyacc parser)
+
+(ocamllex lexer)
+
+(executable
+ (name decoder)
+ (public_name rosetta)
+ (package rosetta)
+ (flags
+  (:standard -w +A-20 -rectypes)))

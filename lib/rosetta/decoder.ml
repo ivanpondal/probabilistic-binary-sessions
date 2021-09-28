@@ -21,48 +21,54 @@ let rec split_string s =
     let s1 = String.sub s 0 i in
     let s2 = String.sub s i (String.length s - i) in
     s1 :: split_string s2
-  with
-    Not_found -> [s]
-      
-let rec pp_specification =
-  function
-  | Specification.Type t ->
-     Ast.pp (Ast.decode t)
+  with Not_found -> [ s ]
 
+let rec pp_specification = function
+  | Specification.Type t -> Ast.pp (Ast.decode t)
   | Specification.Val (x, t) ->
-     Format.open_hvbox 2;
-     Format.print_string ("val " ^ x ^ " :");
-     Format.print_break 1 0;
-     Ast.pp (Ast.decode t);
-     Format.close_box ()
-     
+      Format.open_hvbox 2;
+      Format.print_string ("val " ^ x ^ " :");
+      Format.print_break 1 0;
+      Ast.pp (Ast.decode t);
+      Format.close_box ()
   | Specification.Module (name, sl) ->
-     Format.open_vbox 0;
-     Format.open_vbox 2;
-     Format.print_string ("module " ^ name ^ " : sig");
-     Format.print_cut();
-     pp_specifications sl;
-     Format.close_box ();
-     Format.print_cut ();
-     Format.print_string "end";
-     Format.close_box ()
-     
-and pp_specifications =
-  function
+      Format.open_vbox 0;
+      Format.open_vbox 2;
+      Format.print_string ("module " ^ name ^ " : sig");
+      Format.print_cut ();
+      pp_specifications sl;
+      Format.close_box ();
+      Format.print_cut ();
+      Format.print_string "end";
+      Format.close_box ()
+
+and pp_specifications = function
   | [] -> ()
-  | [x] -> pp_specification x
-  | x :: xs -> pp_specification x;
-	       Format.print_cut ();
-	       pp_specifications xs
-  
+  | [ x ] -> pp_specification x
+  | x :: xs ->
+      pp_specification x;
+      Format.print_cut ();
+      pp_specifications xs
+
 let _ =
   let options =
-    [ "-margin", Arg.Int Format.set_margin, "sets the right margin (in characters)";
-      "-show-end", Arg.Set Configuration.show_end, "show trailing end";
-      "-sequence-polarity", Arg.Set Configuration.sequence_polarity, "show sequence polarity";
-      "-prefix", Arg.String (fun s -> Configuration.set_prefix (split_string s)), "set module path (default is Session)";
-      "-no-prefix", Arg.Unit Configuration.reset_prefix, "reset module path (default is Session)";
-      "-session-type", Arg.Set_string Configuration.session_type, "sets the session type (default is st)";
+    [
+      ( "-margin",
+        Arg.Int Format.set_margin,
+        "sets the right margin (in characters)" );
+      ("-show-end", Arg.Set Configuration.show_end, "show trailing end");
+      ( "-sequence-polarity",
+        Arg.Set Configuration.sequence_polarity,
+        "show sequence polarity" );
+      ( "-prefix",
+        Arg.String (fun s -> Configuration.set_prefix (split_string s)),
+        "set module path (default is Session)" );
+      ( "-no-prefix",
+        Arg.Unit Configuration.reset_prefix,
+        "reset module path (default is Session)" );
+      ( "-session-type",
+        Arg.Set_string Configuration.session_type,
+        "sets the session type (default is st)" );
     ]
   in
   Arg.parse options (fun _ -> ()) "Usage: rosetta [OPTIONS]";
@@ -74,8 +80,8 @@ let _ =
     Format.close_box ()
   with
   | Lexer.UnexpectedCharacter ch ->
-     print_endline ("unexpected character " ^ String.make 1 ch);
-     exit 1
+      print_endline ("unexpected character " ^ String.make 1 ch);
+      exit 1
   | Parsing.Parse_error ->
-     print_endline ("syntax error on line " ^ string_of_int (Lexer.get_line ()));
-     exit 1
+      print_endline ("syntax error on line " ^ string_of_int (Lexer.get_line ()));
+      exit 1
