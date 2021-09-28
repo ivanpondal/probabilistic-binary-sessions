@@ -7,4 +7,4 @@
  (public_name rosetta)
  (package rosetta)
  (flags
-  (:standard -w +A-20 -rectypes)))
+  (:standard -w +A-20-4 -rectypes)))
