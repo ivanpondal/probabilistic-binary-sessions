@@ -1,0 +1,6 @@
+(library
+ (public_name rosettaTestResources)
+ (name rosetta_test_resources)
+ (libraries proFuse ounit2 bos compiler-libs.common dune-build-info)
+ (flags
+  (:standard -w +A-20 -rectypes)))

@@ -1,0 +1,5 @@
+
+(test
+ (name test_rosetta)
+ (libraries proFuse ounit2 rosettaTestResources)
+ (flags (:standard -w +A-20 -rectypes)))
