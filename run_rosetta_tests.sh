@@ -34,4 +34,7 @@ export -f run_compare
 export -f diff_testcase
 export -f get_expected_pretty_print
 
-ls -1 test/rosetta/resources/*_test.ml | xargs -I{} bash -c "run_compare {}"
+tput bold
+echo "ROSETTA TESTS"
+tput sgr0
+ls -1 test/rosetta/*_test.ml | xargs -I{} bash -c "run_compare {}"

@@ -1,5 +1,6 @@
-
-(test
- (name test_rosetta)
- (libraries proFuse ounit2 rosettaTestResources)
- (flags (:standard -w +A-20 -rectypes)))
+(library
+ (public_name rosettaTesting)
+ (name rosetta_testing)
+ (libraries proFuse )
+ (flags
+  (:standard -w +A-20 -rectypes)))
