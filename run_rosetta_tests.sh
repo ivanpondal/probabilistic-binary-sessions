@@ -15,7 +15,7 @@ function diff_testcase() {
     else
         tput bold
         tput setaf 2
-        echo "\"$input_ml\" is ok!"
+        echo "\"$input_ml\" ok!"
         tput sgr0
     fi
 }
@@ -30,9 +30,7 @@ function run_compare(){
     diff_testcase $(get_expected_pretty_print $input_ml) $input_ml
 }
 
-export -f run_compare
-export -f diff_testcase
-export -f get_expected_pretty_print
+export -f run_compare diff_testcase get_expected_pretty_print
 
 tput bold
 echo "ROSETTA TESTS"

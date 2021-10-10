@@ -1,0 +1,7 @@
+(executable
+ (name decoder)
+ (public_name decoder)
+ (libraries rosetta)
+ (package decoder)
+ (flags
+  (:standard -w +A-20-4 -rectypes)))

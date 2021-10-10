@@ -15,6 +15,8 @@
 (*                                                                      *)
 (* Copyright 2015-2016 Luca Padovani                                    *)
 
+open Rosetta
+
 let rec split_string s =
   try
     let i = String.index s '.' in

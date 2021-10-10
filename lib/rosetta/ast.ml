@@ -406,9 +406,7 @@ let phase_two =
   aux `In
 
 let subscript_of_int =
-  let numbers =
-    [ "₀"; "₁"; "₂"; "₃"; "₄"; "₅"; "₆"; "₇"; "₈"; "₉" ]
-  in
+  let numbers = [ "₀"; "₁"; "₂"; "₃"; "₄"; "₅"; "₆"; "₇"; "₈"; "₉" ] in
   let rec aux n =
     (if n < 10 then "" else aux (n / 10)) ^ List.nth numbers (n mod 10)
   in
