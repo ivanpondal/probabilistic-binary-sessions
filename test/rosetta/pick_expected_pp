@@ -1,0 +1,2 @@
+val random_client :
+  ! 0.5 prob ⊞ [ True: done, False: idle ] → unit
