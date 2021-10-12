@@ -1,6 +1,6 @@
-let parse_type s =
+let parse_spec str =
   try
-    let lexbuf = Lexing.from_string s in
+    let lexbuf = Lexing.from_string str in
     Parser.main Lexer.token lexbuf
   with
   | Lexer.UnexpectedCharacter ch ->
@@ -9,6 +9,18 @@ let parse_type s =
   | Parsing.Parse_error ->
       print_endline ("syntax error on line " ^ string_of_int (Lexer.get_line ()));
       exit 1
+
+let parse_first_spec str =
+  match parse_spec str with
+  | x :: _ -> x
+  | [] -> raise (Invalid_argument "Spec must have at least one item")
+
+let get_spec_val_type spec =
+  match spec with
+  | Specification.Val (_, t) -> t
+  | _ -> raise (Invalid_argument "Expected a specification val")
+
+let parse_first_spec_type str = get_spec_val_type (parse_first_spec str)
 
 let rec split_string s =
   try
