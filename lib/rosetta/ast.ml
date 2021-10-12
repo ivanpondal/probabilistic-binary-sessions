@@ -30,6 +30,7 @@ and constructor_t =
   | `Done
   | `NullProb
   | `OneProb
+  | `Nat of int
   | `Arrow
   | `Tuple
   | `Channel
@@ -43,7 +44,9 @@ and constructor_t =
 and tagged_constructor_t = [ `Variant | `Choice | `Branch ]
 
 let priority_of_constructor = function
-  | `Empty | `End | `Done | `NullProb | `OneProb | `Channel | `Apply _ -> 5
+  | `Empty | `End | `Done | `NullProb | `OneProb | `Nat _ | `Channel | `Apply _
+    ->
+      5
   | `As _ -> 4
   | `Send | `Receive | `Sequence | `SelectSequence | `AcceptSequence -> 3
   | `Arrow -> 2
@@ -109,6 +112,8 @@ let t_pNull = Constructor (`NullProb, [])
 
 let t_pOne = Constructor (`OneProb, [])
 
+let t_Nat n = Constructor (`Nat n, [])
+
 let pp t0 =
   let rec aux = function
     | Var x -> Format.print_as 1 x
@@ -173,6 +178,7 @@ let pp t0 =
     | Constructor (`NullProb, []) -> Format.print_string "0"
     | Constructor (`OneProb, []) -> Format.print_string "1"
     | Constructor (`Done, []) -> Format.print_string "done"
+    | Constructor (`Nat n, []) -> Format.print_string (string_of_int n ^ " nat")
     | Constructor (((`Send | `Receive) as pol), [ t; ct ]) ->
         Format.open_hvbox 0;
         Format.print_as 1 (string_of_polarity pol);
@@ -289,6 +295,12 @@ let eq =
   in
   aux []
 
+let rec parse_nat n =
+  match List.hd n with
+  | Constructor (`Apply [ "Math"; "Natural"; "suc" ], suc) -> parse_nat suc + 1
+  | Constructor (`Apply [ "Math"; "Natural"; "zero" ], []) -> 0
+  | _ -> raise (Invalid_argument "Was expecting only natural types")
+
 let phase_one t0 =
   let ( ++ ) = List.append in
   let t_0 = Configuration.get_prefix () ++ [ "_0" ]
@@ -300,13 +312,15 @@ let phase_one t0 =
   and t_ot = Configuration.get_prefix () ++ [ "ot" ]
   and t_et = Configuration.get_prefix () ++ [ "et" ]
   and t_seq = Configuration.get_prefix () ++ [ "seq" ]
-  and t_choice = Configuration.get_prefix () ++ [ "choice" ] in
+  and t_choice = Configuration.get_prefix () ++ [ "choice" ]
+  and t_math_nat = [ "Math"; "Natural"; "nat" ] in
   let rec aux = function
     | (Var _ | RecVar _) as t -> t
     | Constructor (`Apply cs, []) when cs = t_0 -> t_Empty
     | Constructor (`Apply cs, []) when cs = t_1 -> t_Done
     | Constructor (`Apply cs, []) when cs = t_p0 -> t_pNull
     | Constructor (`Apply cs, []) when cs = t_p1 -> t_pOne
+    | Constructor (`Apply cs, nat) when cs = t_math_nat -> t_Nat (parse_nat nat)
     | Constructor (`Apply cs, [ it; ot ]) when cs = t_st ->
         Constructor (`Channel, [ aux it; aux ot ])
     | Constructor (`Apply cs, [ it ]) when cs = t_it ->

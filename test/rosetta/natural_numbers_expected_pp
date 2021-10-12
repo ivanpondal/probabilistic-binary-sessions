@@ -1,0 +1,3 @@
+val const_one : α → 1 nat
+val const_two : α → 2 nat
+val const_four : α → 4 nat
