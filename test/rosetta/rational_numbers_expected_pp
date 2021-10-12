@@ -1,0 +1,2 @@
+val const_one_half : α → 0.5 frac
+val const_one_quarter : α → 0.25 frac
