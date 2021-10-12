@@ -13,6 +13,7 @@ uninstall:
 
 test:
 	dune runtest
+	./run_rosetta_tests.sh
 
 clean:
 	dune clean
