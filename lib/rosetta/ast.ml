@@ -301,19 +301,16 @@ let eq =
   aux []
 
 let rec parse_nat n =
+  let t_suc = List.append Configuration.get_natural_prefix [ "suc" ]
+  and t_zero = List.append Configuration.get_natural_prefix [ "zero" ] in
   match List.hd n with
-  | Constructor (`Apply [ "Math"; "Natural"; "suc" ], suc) -> parse_nat suc + 1
-  | Constructor (`Apply [ "Math"; "Natural"; "zero" ], []) -> 0
+  | Constructor (`Apply cs, suc) when cs = t_suc -> parse_nat suc + 1
+  | Constructor (`Apply cs, []) when cs = t_zero -> 0
   | _ -> raise (Invalid_argument "Was expecting only natural types")
 
 let parse_frac f =
   match List.hd f with
-  | Constructor
-      ( `Tuple,
-        [
-          Constructor (`Apply [ "Math"; "Natural"; "nat" ], n);
-          Constructor (`Apply [ "Math"; "Natural"; "nat" ], d);
-        ] ) ->
+  | Constructor (`Tuple, [ Constructor (_, n); Constructor (_, d) ]) ->
       float_of_int (parse_nat n) /. float_of_int (parse_nat d)
   | _ -> raise (Invalid_argument "Was expecting only fraction types")
 
@@ -329,8 +326,8 @@ let phase_one t0 =
   and t_et = Configuration.get_prefix () ++ [ "et" ]
   and t_seq = Configuration.get_prefix () ++ [ "seq" ]
   and t_choice = Configuration.get_prefix () ++ [ "choice" ]
-  and t_math_nat = [ "Math"; "Natural"; "nat" ]
-  and t_math_frac = [ "Math"; "Rational"; "frac" ] in
+  and t_math_nat = Configuration.get_natural_prefix ++ [ "nat" ]
+  and t_math_frac = Configuration.get_rational_prefix ++ [ "frac" ] in
   let rec aux = function
     | (Var _ | RecVar _) as t -> t
     | Constructor (`Apply cs, []) when cs = t_0 -> t_Empty

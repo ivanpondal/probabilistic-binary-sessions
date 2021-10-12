@@ -28,3 +28,9 @@ let get_prefix () = !prefix
 let set_prefix s = prefix := s
 
 let reset_prefix () = prefix := []
+
+let math_prefix = ref [ "Math" ]
+
+let get_natural_prefix = List.append !math_prefix [ "Natural" ]
+
+let get_rational_prefix = List.append !math_prefix [ "Rational" ]
