@@ -31,6 +31,7 @@ and constructor_t =
   | `NullProb
   | `OneProb
   | `Nat of int
+  | `Frac of float
   | `Arrow
   | `Tuple
   | `Channel
@@ -44,8 +45,8 @@ and constructor_t =
 and tagged_constructor_t = [ `Variant | `Choice | `Branch ]
 
 let priority_of_constructor = function
-  | `Empty | `End | `Done | `NullProb | `OneProb | `Nat _ | `Channel | `Apply _
-    ->
+  | `Empty | `End | `Done | `NullProb | `OneProb | `Nat _ | `Frac _ | `Channel
+  | `Apply _ ->
       5
   | `As _ -> 4
   | `Send | `Receive | `Sequence | `SelectSequence | `AcceptSequence -> 3
@@ -114,6 +115,8 @@ let t_pOne = Constructor (`OneProb, [])
 
 let t_Nat n = Constructor (`Nat n, [])
 
+let t_Frac f = Constructor (`Frac f, [])
+
 let pp t0 =
   let rec aux = function
     | Var x -> Format.print_as 1 x
@@ -179,6 +182,8 @@ let pp t0 =
     | Constructor (`OneProb, []) -> Format.print_string "1"
     | Constructor (`Done, []) -> Format.print_string "done"
     | Constructor (`Nat n, []) -> Format.print_string (string_of_int n ^ " nat")
+    | Constructor (`Frac f, []) ->
+        Format.print_string (string_of_float f ^ " frac")
     | Constructor (((`Send | `Receive) as pol), [ t; ct ]) ->
         Format.open_hvbox 0;
         Format.print_as 1 (string_of_polarity pol);
@@ -301,6 +306,17 @@ let rec parse_nat n =
   | Constructor (`Apply [ "Math"; "Natural"; "zero" ], []) -> 0
   | _ -> raise (Invalid_argument "Was expecting only natural types")
 
+let parse_frac f =
+  match List.hd f with
+  | Constructor
+      ( `Tuple,
+        [
+          Constructor (`Apply [ "Math"; "Natural"; "nat" ], n);
+          Constructor (`Apply [ "Math"; "Natural"; "nat" ], d);
+        ] ) ->
+      float_of_int (parse_nat n) /. float_of_int (parse_nat d)
+  | _ -> raise (Invalid_argument "Was expecting only fraction types")
+
 let phase_one t0 =
   let ( ++ ) = List.append in
   let t_0 = Configuration.get_prefix () ++ [ "_0" ]
@@ -313,7 +329,8 @@ let phase_one t0 =
   and t_et = Configuration.get_prefix () ++ [ "et" ]
   and t_seq = Configuration.get_prefix () ++ [ "seq" ]
   and t_choice = Configuration.get_prefix () ++ [ "choice" ]
-  and t_math_nat = [ "Math"; "Natural"; "nat" ] in
+  and t_math_nat = [ "Math"; "Natural"; "nat" ]
+  and t_math_frac = [ "Math"; "Rational"; "frac" ] in
   let rec aux = function
     | (Var _ | RecVar _) as t -> t
     | Constructor (`Apply cs, []) when cs = t_0 -> t_Empty
@@ -321,6 +338,8 @@ let phase_one t0 =
     | Constructor (`Apply cs, []) when cs = t_p0 -> t_pNull
     | Constructor (`Apply cs, []) when cs = t_p1 -> t_pOne
     | Constructor (`Apply cs, nat) when cs = t_math_nat -> t_Nat (parse_nat nat)
+    | Constructor (`Apply cs, frac) when cs = t_math_frac ->
+        t_Frac (parse_frac frac)
     | Constructor (`Apply cs, [ it; ot ]) when cs = t_st ->
         Constructor (`Channel, [ aux it; aux ot ])
     | Constructor (`Apply cs, [ it ]) when cs = t_it ->
