@@ -55,7 +55,11 @@ type -'a cot = (_0, 'a) cpst
 
 type (+'a, +'b) choice = [ `True of 'a | `False of 'b ]
 
+type (+'a, +'b, 'p) pchoice = ('a, 'b) choice * 'p
+
 type ('a, 'b) prob = ('a nat * 'b suc nat) frac
+
+type ('p, 'q, 'r) conv_sum = 'p * 'q * 'r
 
 type _p_1 = (zero suc, zero) prob
 
@@ -108,48 +112,50 @@ is used to compute the received message.  @return the endpoint [ep].
 @raise InvalidEndpoint if the endpoint [ep] is invalid. *)
 
   val select_true :
-    ((('a, 'b) pst, ('c, 'd) pst) choice * _p_1) ot -> ('b, 'a) pst
+    (('a, 'b) pst, ('c, 'd) pst, _p_1) pchoice ot -> ('b, 'a) pst
   (** [select_true ep] selects the [True] branch of a choice.  @return
  the endpoint [ep] after the selection.  @raise InvalidEndpoint if the
  endpoint [ep] is invalid. *)
 
   val select_false :
-    ((('a, 'b) pst, ('c, 'd) pst) choice * _p_0) ot -> ('d, 'c) pst
+    (('a, 'b) pst, ('c, 'd) pst, _p_0) pchoice ot -> ('d, 'c) pst
   (** [select_false ep] selects the [False] branch of a choice.
  @return the endpoint [ep] after the selection.  @raise
  InvalidEndpoint if the endpoint [ep] is invalid. *)
 
   val pick :
     ('p1, 'p2) prob ->
-    (((('a, 'b) pst, ('c, 'd) pst) choice * _p_0) ot -> 'e) ->
-    (((('a, 'b) pst, ('c, 'd) pst) choice * _p_1) ot -> 'e) ->
-    ((('a, 'b) pst, ('c, 'd) pst) choice * ('p1, 'p2) prob) ot ->
+    ((('a, 'b) pst, ('c, 'd) pst, _p_0) pchoice ot -> 'e) ->
+    ((('a, 'b) pst, ('c, 'd) pst, _p_1) pchoice ot -> 'e) ->
+    (('a, 'b) pst, ('c, 'd) pst, ('p1, 'p2) prob) pchoice ot ->
     'e
 
   val pick_2st :
     ('p1, 'p2) prob ->
-    (((('a, 'b) pst, ('c, 'd) pst) choice * _p_0) ot -> ('l, 'm) cpst -> 'e) ->
-    (((('a, 'b) pst, ('c, 'd) pst) choice * _p_1) ot -> ('n, 'o) cpst -> 'e) ->
-    ((('a, 'b) pst, ('c, 'd) pst) choice * ('p1, 'p2) prob) ot ->
-    ((('l, 'm) cpst, ('n, 'o) cpst) choice * ('p1, 'p2) prob) cot ->
+    ((('a, 'b) pst, ('c, 'd) pst, _p_0) pchoice ot -> ('l, 'm) cpst -> 'e) ->
+    ((('a, 'b) pst, ('c, 'd) pst, _p_1) pchoice ot -> ('n, 'o) cpst -> 'e) ->
+    (('a, 'b) pst, ('c, 'd) pst, ('p1, 'p2) prob) pchoice ot ->
+    (('l, 'm) cpst, ('n, 'o) cpst, ('p1, 'p2) prob) pchoice cot ->
     'e
 
   val pick_2ch :
     ('p1, 'p2) prob ->
-    (((('a, 'b) pst, ('c, 'd) pst) choice * _p_0) ot ->
-    ((('l, 'm) pst, ('n, 'o) pst) choice * ('t1, 't2) prob) ot ->
+    ((('a, 'b) pst, ('c, 'd) pst, _p_0) pchoice ot ->
+    (('l, 'm) pst, ('n, 'o) pst, ('q1, 'q2) prob) pchoice ot ->
     'e) ->
-    (((('a, 'b) pst, ('c, 'd) pst) choice * _p_1) ot ->
-    ((('l, 'm) pst, ('n, 'o) pst) choice * ('v1, 'v2) prob) ot ->
+    ((('a, 'b) pst, ('c, 'd) pst, _p_1) pchoice ot ->
+    (('l, 'm) pst, ('n, 'o) pst, ('r1, 'r2) prob) pchoice ot ->
     'e) ->
-    ((('a, 'b) pst, ('c, 'd) pst) choice * ('p1, 'p2) prob) ot ->
-    ((('l, 'm) pst, ('n, 'o) pst) choice
-    * (('p1, 'p2) prob * ('t1, 't2) prob * ('v1, 'v2) prob))
+    (('a, 'b) pst, ('c, 'd) pst, ('p1, 'p2) prob) pchoice ot ->
+    ( ('l, 'm) pst,
+      ('n, 'o) pst,
+      (('p1, 'p2) prob, ('q1, 'q2) prob, ('r1, 'r2) prob) conv_sum )
+    pchoice
     ot ->
     'e
 
   val branch :
-    ((('a, 'b) pst, ('c, 'd) pst) choice * 'p) it ->
+    (('a, 'b) pst, ('c, 'd) pst, 'p) pchoice it ->
     [> `True of ('a, 'b) pst | `False of ('c, 'd) pst ]
   (** [branch ep] receives a selection from the endpoint [ep] with
  input capability.  @return the endpoint [ep] injected through the
@@ -157,16 +163,16 @@ is used to compute the received message.  @return the endpoint [ep].
  invalid.  *)
 
   val branch_2st :
-    ((('a, 'b) pst, ('c, 'd) pst) choice * 'p) it ->
-    ((('l, 'm) cpst, ('n, 'o) cpst) choice * 'p) cot ->
+    (('a, 'b) pst, ('c, 'd) pst, 'p) pchoice it ->
+    (('l, 'm) cpst, ('n, 'o) cpst, 'p) pchoice cot ->
     [> `True of ('a, 'b) pst * ('l, 'm) cpst
     | `False of ('c, 'd) pst * ('n, 'o) cpst ]
 
   val branch_2ch :
-    ((('a, 'b) pst, ('c, 'd) pst) choice * 'p) it ->
-    ((('l, 'm) pst, ('n, 'o) pst) choice * ('p * 't * 'v)) ot ->
-    [> `True of ('a, 'b) pst * ((('l, 'm) pst, ('n, 'o) pst) choice * 't) ot
-    | `False of ('c, 'd) pst * ((('l, 'm) pst, ('n, 'o) pst) choice * 'v) ot ]
+    (('a, 'b) pst, ('c, 'd) pst, 'p) pchoice it ->
+    (('l, 'm) pst, ('n, 'o) pst, ('p, 'q, 'r) conv_sum) pchoice ot ->
+    [> `True of ('a, 'b) pst * (('l, 'm) pst, ('n, 'o) pst, 'q) pchoice ot
+    | `False of ('c, 'd) pst * (('l, 'm) pst, ('n, 'o) pst, 'r) pchoice ot ]
 
   (** {2 Endpoint validity and identity} *)
 
