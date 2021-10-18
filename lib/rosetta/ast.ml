@@ -187,8 +187,7 @@ let pp t0 =
     | Constructor (`Nat n, []) -> Format.print_string (string_of_int n ^ " nat")
     | Constructor (`Frac f, []) ->
         Format.print_string (string_of_float f ^ " frac")
-    | Constructor (`Prob p, []) ->
-        Format.print_string (string_of_float p ^ " prob")
+    | Constructor (`Prob p, []) -> Format.print_string (string_of_float p)
     | Constructor (((`Send | `Receive) as pol), [ t; ct ]) ->
         Format.open_hvbox 0;
         Format.print_as 1 (string_of_polarity pol);
@@ -257,7 +256,9 @@ let pp t0 =
     | _ -> assert false
   and aux_tag_prob (_, t) =
     Format.open_hvbox 0;
+    Format.print_space ();
     aux t;
+    Format.print_space ();
     Format.close_box ()
   and aux_tag (name, t) =
     Format.open_hvbox 0;
@@ -340,7 +341,7 @@ let phase_one t0 =
   and t_ot = Configuration.get_prefix () ++ [ "ot" ]
   and t_et = Configuration.get_prefix () ++ [ "et" ]
   and t_seq = Configuration.get_prefix () ++ [ "seq" ]
-  and t_choice = Configuration.get_prefix () ++ [ "choice" ]
+  and t_pchoice = Configuration.get_prefix () ++ [ "pchoice" ]
   and t_prob = Configuration.get_prefix () ++ [ "prob" ]
   and t_conv_sum = Configuration.get_prefix () ++ [ "conv_sum" ]
   and t_math_nat = Configuration.get_natural_prefix ++ [ "nat" ]
@@ -369,8 +370,8 @@ let phase_one t0 =
         Constructor (`Sequence, [ aux t; aux s ])
     | Constructor (`Apply cs, [ n; d ]) when cs = t_prob ->
         t_Prob (parse_prob n d)
-    | Constructor (`Apply cs, [ t; s; p ]) when cs = t_choice ->
-        Tagged (`Variant, [ ("_", aux p); ("True", aux t); ("False", aux s) ])
+    | Constructor (`Apply cs, [ t; f; p ]) when cs = t_pchoice ->
+        Tagged (`Variant, [ ("_", aux p); ("True", aux t); ("False", aux f) ])
     | Tagged (`Variant, tags) -> Tagged (`Variant, List.map aux_tag tags)
     | Constructor (ctor, ts) -> Constructor (ctor, List.map aux ts)
     | Rec (x, t) -> Rec (x, aux t)

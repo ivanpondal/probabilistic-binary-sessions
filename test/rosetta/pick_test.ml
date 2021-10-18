@@ -1,7 +1,7 @@
 open ProFuse.Session.Bare
 open Math.Rational
 
-let random_client ep =
+let pick_single_channel ep =
   pick one_half
     (fun ep ->
       let ep = select_false ep in

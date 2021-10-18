@@ -1,2 +1,1 @@
-val random_client :
-  ! 0.5 prob ⊞ [ True: done, False: idle ] → unit
+val pick_single_channel : ⊕ 0.5 [ True: done | False: idle ] → unit
