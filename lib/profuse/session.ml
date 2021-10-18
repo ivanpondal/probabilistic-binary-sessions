@@ -92,7 +92,11 @@ type -'a cot = (_0, 'a) cpst
 
 type (+'a, +'b) choice = [ `True of 'a | `False of 'b ]
 
+type (+'a, +'b, 'p) pchoice = ('a, 'b) choice * 'p
+
 type ('a, 'b) prob = ('a nat * 'b suc nat) frac
+
+type ('p, 'q, 'r) conv_sum = 'p * 'q * 'r
 
 type _p_1 = (zero suc, zero) prob
 
@@ -112,12 +116,7 @@ module Bare = struct
     let ep1 =
       { name = name ^ "⁺"; channel = ch; polarity = 1; once = Flag.create () }
     and ep2 =
-      {
-        name = name ^ "⁻";
-        channel = ch;
-        polarity = -1;
-        once = Flag.create ();
-      }
+      { name = name ^ "⁻"; channel = ch; polarity = -1; once = Flag.create () }
     in
     (ep1, ep2)
 

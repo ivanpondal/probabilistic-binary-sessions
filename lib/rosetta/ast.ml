@@ -30,6 +30,7 @@ and constructor_t =
   | `Done
   | `NullProb
   | `OneProb
+  | `Prob of float
   | `Nat of int
   | `Frac of float
   | `Arrow
@@ -45,8 +46,8 @@ and constructor_t =
 and tagged_constructor_t = [ `Variant | `Choice | `Branch ]
 
 let priority_of_constructor = function
-  | `Empty | `End | `Done | `NullProb | `OneProb | `Nat _ | `Frac _ | `Channel
-  | `Apply _ ->
+  | `Empty | `End | `Done | `NullProb | `OneProb | `Nat _ | `Frac _ | `Prob _
+  | `Channel | `Apply _ ->
       5
   | `As _ -> 4
   | `Send | `Receive | `Sequence | `SelectSequence | `AcceptSequence -> 3
@@ -117,6 +118,8 @@ let t_Nat n = Constructor (`Nat n, [])
 
 let t_Frac f = Constructor (`Frac f, [])
 
+let t_Prob p = Constructor (`Prob p, [])
+
 let pp t0 =
   let rec aux = function
     | Var x -> Format.print_as 1 x
@@ -184,6 +187,7 @@ let pp t0 =
     | Constructor (`Nat n, []) -> Format.print_string (string_of_int n ^ " nat")
     | Constructor (`Frac f, []) ->
         Format.print_string (string_of_float f ^ " frac")
+    | Constructor (`Prob p, []) -> Format.print_string (string_of_float p)
     | Constructor (((`Send | `Receive) as pol), [ t; ct ]) ->
         Format.open_hvbox 0;
         Format.print_as 1 (string_of_polarity pol);
@@ -252,7 +256,9 @@ let pp t0 =
     | _ -> assert false
   and aux_tag_prob (_, t) =
     Format.open_hvbox 0;
+    Format.print_space ();
     aux t;
+    Format.print_space ();
     Format.close_box ()
   and aux_tag (name, t) =
     Format.open_hvbox 0;
@@ -303,16 +309,26 @@ let eq =
 let rec parse_nat n =
   let t_suc = List.append Configuration.get_natural_prefix [ "suc" ]
   and t_zero = List.append Configuration.get_natural_prefix [ "zero" ] in
-  match List.hd n with
-  | Constructor (`Apply cs, suc) when cs = t_suc -> parse_nat suc + 1
+  match n with
+  | Constructor (`Apply cs, [ suc ]) when cs = t_suc -> parse_nat suc + 1
   | Constructor (`Apply cs, []) when cs = t_zero -> 0
   | _ -> raise (Invalid_argument "Was expecting only natural types")
 
 let parse_frac f =
-  match List.hd f with
-  | Constructor (`Tuple, [ Constructor (_, n); Constructor (_, d) ]) ->
+  match f with
+  | Constructor (`Tuple, [ Constructor (_, [ n ]); Constructor (_, [ d ]) ]) ->
       float_of_int (parse_nat n) /. float_of_int (parse_nat d)
   | _ -> raise (Invalid_argument "Was expecting only fraction types")
+
+let parse_prob n d = float_of_int (parse_nat n) /. float_of_int (parse_nat d + 1)
+
+let get_prob p =
+  match p with
+  | Constructor (`Prob p, []) -> p
+  | _ -> raise (Invalid_argument "Was expecting prob type")
+
+let convex_sum p q r =
+  (get_prob p *. get_prob q) +. ((1. -. get_prob p) *. get_prob r)
 
 let phase_one t0 =
   let ( ++ ) = List.append in
@@ -325,7 +341,9 @@ let phase_one t0 =
   and t_ot = Configuration.get_prefix () ++ [ "ot" ]
   and t_et = Configuration.get_prefix () ++ [ "et" ]
   and t_seq = Configuration.get_prefix () ++ [ "seq" ]
-  and t_choice = Configuration.get_prefix () ++ [ "choice" ]
+  and t_pchoice = Configuration.get_prefix () ++ [ "pchoice" ]
+  and t_prob = Configuration.get_prefix () ++ [ "prob" ]
+  and t_conv_sum = Configuration.get_prefix () ++ [ "conv_sum" ]
   and t_math_nat = Configuration.get_natural_prefix ++ [ "nat" ]
   and t_math_frac = Configuration.get_rational_prefix ++ [ "frac" ] in
   let rec aux = function
@@ -334,8 +352,11 @@ let phase_one t0 =
     | Constructor (`Apply cs, []) when cs = t_1 -> t_Done
     | Constructor (`Apply cs, []) when cs = t_p0 -> t_pNull
     | Constructor (`Apply cs, []) when cs = t_p1 -> t_pOne
-    | Constructor (`Apply cs, nat) when cs = t_math_nat -> t_Nat (parse_nat nat)
-    | Constructor (`Apply cs, frac) when cs = t_math_frac ->
+    | Constructor (`Apply cs, [ p; q; r ]) when cs = t_conv_sum ->
+        t_Prob (convex_sum (aux p) (aux q) (aux r))
+    | Constructor (`Apply cs, [ nat ]) when cs = t_math_nat ->
+        t_Nat (parse_nat nat)
+    | Constructor (`Apply cs, [ frac ]) when cs = t_math_frac ->
         t_Frac (parse_frac frac)
     | Constructor (`Apply cs, [ it; ot ]) when cs = t_st ->
         Constructor (`Channel, [ aux it; aux ot ])
@@ -347,8 +368,10 @@ let phase_one t0 =
         Constructor (`Channel, [ t_Empty; t_Empty ])
     | Constructor (`Apply cs, [ t; s ]) when cs = t_seq ->
         Constructor (`Sequence, [ aux t; aux s ])
-    | Constructor (`Apply cs, [ t; s; p ]) when cs = t_choice ->
-        Tagged (`Variant, [ ("_", aux p); ("True", aux t); ("False", aux s) ])
+    | Constructor (`Apply cs, [ n; d ]) when cs = t_prob ->
+        t_Prob (parse_prob n d)
+    | Constructor (`Apply cs, [ t; f; p ]) when cs = t_pchoice ->
+        Tagged (`Variant, [ ("_", aux p); ("True", aux t); ("False", aux f) ])
     | Tagged (`Variant, tags) -> Tagged (`Variant, List.map aux_tag tags)
     | Constructor (ctor, ts) -> Constructor (ctor, List.map aux ts)
     | Rec (x, t) -> Rec (x, aux t)
