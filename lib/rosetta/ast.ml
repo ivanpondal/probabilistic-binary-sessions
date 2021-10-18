@@ -321,6 +321,14 @@ let parse_frac f =
 
 let parse_prob n d = float_of_int (parse_nat n) /. float_of_int (parse_nat d + 1)
 
+let get_prob p =
+  match p with
+  | Constructor (`Prob p, []) -> p
+  | _ -> raise (Invalid_argument "Was expecting prob type")
+
+let convex_sum p q r =
+  (get_prob p *. get_prob q) +. ((1. -. get_prob p) *. get_prob r)
+
 let phase_one t0 =
   let ( ++ ) = List.append in
   let t_0 = Configuration.get_prefix () ++ [ "_0" ]
@@ -334,6 +342,7 @@ let phase_one t0 =
   and t_seq = Configuration.get_prefix () ++ [ "seq" ]
   and t_choice = Configuration.get_prefix () ++ [ "choice" ]
   and t_prob = Configuration.get_prefix () ++ [ "prob" ]
+  and t_conv_sum = Configuration.get_prefix () ++ [ "conv_sum" ]
   and t_math_nat = Configuration.get_natural_prefix ++ [ "nat" ]
   and t_math_frac = Configuration.get_rational_prefix ++ [ "frac" ] in
   let rec aux = function
@@ -342,6 +351,8 @@ let phase_one t0 =
     | Constructor (`Apply cs, []) when cs = t_1 -> t_Done
     | Constructor (`Apply cs, []) when cs = t_p0 -> t_pNull
     | Constructor (`Apply cs, []) when cs = t_p1 -> t_pOne
+    | Constructor (`Apply cs, [ p; q; r ]) when cs = t_conv_sum ->
+        t_Prob (convex_sum (aux p) (aux q) (aux r))
     | Constructor (`Apply cs, [ nat ]) when cs = t_math_nat ->
         t_Nat (parse_nat nat)
     | Constructor (`Apply cs, [ frac ]) when cs = t_math_frac ->
