@@ -1,0 +1,12 @@
+val seller :
+  rec X.
+  ?int.⊕ 0.25 [ True: !int.& α [ True: X | False: idle ] | False: done ] →
+  unit
+val buyer :
+  rec X.
+  !int.& α [ True: ?int.⊕ 0.67 [ True: X | False: idle ] | False: done ] →
+  int → int
+val test_buyer_seller :
+  rec X.
+  ?int.⊕ 0.25 [ True: !int.& 0.67 [ True: X | False: idle ] | False: done ] →
+  unit → int

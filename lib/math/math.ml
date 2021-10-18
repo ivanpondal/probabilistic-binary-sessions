@@ -34,4 +34,6 @@ module Rational = struct
   let one_half = Fraction (one, two)
 
   let one_quarter = Fraction (one, four)
+
+  let two_thirds = Fraction (two, three)
 end

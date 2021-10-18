@@ -36,6 +36,7 @@ and constructor_t =
   | `Arrow
   | `Tuple
   | `Channel
+  | `ClosedChannel
   | `Apply of string list
   | `Send
   | `Receive
@@ -47,7 +48,7 @@ and tagged_constructor_t = [ `Variant | `Choice | `Branch ]
 
 let priority_of_constructor = function
   | `Empty | `End | `Done | `NullProb | `OneProb | `Nat _ | `Frac _ | `Prob _
-  | `Channel | `Apply _ ->
+  | `Channel | `ClosedChannel | `Apply _ ->
       5
   | `As _ -> 4
   | `Send | `Receive | `Sequence | `SelectSequence | `AcceptSequence -> 3
@@ -120,6 +121,8 @@ let t_Frac f = Constructor (`Frac f, [])
 
 let t_Prob p = Constructor (`Prob p, [])
 
+let round_float_2_dec f = Float.round (f *. 100.) /. 100.
+
 let pp t0 =
   let rec aux = function
     | Var x -> Format.print_as 1 x
@@ -180,14 +183,16 @@ let pp t0 =
         aux s;
         Format.print_string ">";
         Format.close_box ()
+    | Constructor (`ClosedChannel, [ t ]) -> aux t
     | Constructor (`End, []) -> Format.print_string "idle"
     | Constructor (`NullProb, []) -> Format.print_string "0"
     | Constructor (`OneProb, []) -> Format.print_string "1"
     | Constructor (`Done, []) -> Format.print_string "done"
     | Constructor (`Nat n, []) -> Format.print_string (string_of_int n ^ " nat")
     | Constructor (`Frac f, []) ->
-        Format.print_string (string_of_float f ^ " frac")
-    | Constructor (`Prob p, []) -> Format.print_string (string_of_float p)
+        Format.print_string (string_of_float (round_float_2_dec f) ^ " frac")
+    | Constructor (`Prob p, []) ->
+        Format.print_string (string_of_float (round_float_2_dec p))
     | Constructor (((`Send | `Receive) as pol), [ t; ct ]) ->
         Format.open_hvbox 0;
         Format.print_as 1 (string_of_polarity pol);
@@ -337,6 +342,7 @@ let phase_one t0 =
   and t_p0 = Configuration.get_prefix () ++ [ "_p_0" ]
   and t_p1 = Configuration.get_prefix () ++ [ "_p_1" ]
   and t_st = Configuration.get_prefix () ++ [ !Configuration.session_type ]
+  and t_cst = Configuration.get_prefix () ++ [ "cpst" ]
   and t_it = Configuration.get_prefix () ++ [ "it" ]
   and t_ot = Configuration.get_prefix () ++ [ "ot" ]
   and t_et = Configuration.get_prefix () ++ [ "et" ]
@@ -358,6 +364,9 @@ let phase_one t0 =
         t_Nat (parse_nat nat)
     | Constructor (`Apply cs, [ frac ]) when cs = t_math_frac ->
         t_Frac (parse_frac frac)
+    | Constructor (`Apply cs, [ it; ot ]) when cs = t_cst ->
+        Constructor
+          (`ClosedChannel, [ Constructor (`Channel, [ aux it; aux ot ]) ])
     | Constructor (`Apply cs, [ it; ot ]) when cs = t_st ->
         Constructor (`Channel, [ aux it; aux ot ])
     | Constructor (`Apply cs, [ it ]) when cs = t_it ->
