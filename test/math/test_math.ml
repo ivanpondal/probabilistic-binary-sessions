@@ -59,18 +59,20 @@ let rationals_suite =
        ]
 
 let test_paper_example_absortion_matrix _ =
+  (* create Q matrix *)
   let q = Mat.create 4 4 0. in
   Mat.set q 0 1 1.;
   Mat.set q 1 2 (3. /. 4.);
   Mat.set q 2 3 1.;
   Mat.set q 3 0 (1. /. 3.);
-
+  (* create R matrix *)
   let r = Mat.create 4 2 0. in
   Mat.set r 1 0 0.25;
   Mat.set r 3 1 (2. /. 3.);
 
   let b = absortion_matrix q r in
 
+  (* create expected B matrix *)
   let expected_b = Mat.create 4 2 0. in
   Mat.set expected_b 0 0 (1. /. 3.);
   Mat.set expected_b 0 1 (2. /. 3.);
