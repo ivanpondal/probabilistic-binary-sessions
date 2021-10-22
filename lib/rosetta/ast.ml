@@ -380,7 +380,7 @@ let phase_one t0 =
     | Constructor (`Apply cs, [ n; d ]) when cs = t_prob ->
         t_Prob (parse_prob n d)
     | Constructor (`Apply cs, [ t; f; p ]) when cs = t_pchoice ->
-        Tagged (`Variant, [ ("_", aux p); ("True", aux t); ("False", aux f) ])
+        Tagged (`Variant, [ ("Prob", aux p); ("True", aux t); ("False", aux f) ])
     | Tagged (`Variant, tags) -> Tagged (`Variant, List.map aux_tag tags)
     | Constructor (ctor, ts) -> Constructor (ctor, List.map aux ts)
     | Rec (x, t) -> Rec (x, aux t)

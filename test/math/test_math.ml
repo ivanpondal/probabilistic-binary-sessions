@@ -51,7 +51,7 @@ let test_rational_number_aliases _ =
   assert_equal 0.25 result
 
 let rationals_suite =
-  "rational numbers"
+  "Rational numbers"
   >::: [
          "create one over one" >:: test_create_one_over_one;
          "create one over two" >:: test_create_one_over_two;
@@ -85,7 +85,7 @@ let test_paper_example_absortion_matrix _ =
   assert_equal expected_b b
 
 let markov_suite =
-  "markov"
+  "Markov"
   >::: [
          "paper example absortion matrix"
          >:: test_paper_example_absortion_matrix;

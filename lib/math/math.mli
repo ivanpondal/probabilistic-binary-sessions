@@ -37,6 +37,6 @@ end
 module Markov : sig
   val absortion_matrix :
     Owl_linalg_d.mat -> Owl_linalg_d.mat -> Owl_linalg_d.mat
-  (** [absortion_matrix q r] calculates absortion matrix [b] = (I - [q])^(-1) x [r].
+  (** [absortion_matrix q r] calculates absortion matrix [b] = (I - [q])^(-1) * [r].
   @return the absortion matrix [b]. *)
 end
