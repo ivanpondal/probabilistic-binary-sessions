@@ -555,17 +555,4 @@ let rec compute_adj prev_state p rec_states adj_list t =
 
 let compute_adj_list = compute_adj Init 1.0 [] [ (Init, []) ]
 
-(* let compute_success_prob t =
-   let rec_vars_ptr = ref [] in
-   let put k v map = if List.mem_assoc k map then map else (k, v) :: map in
-   let build_graph = function
-     | Var _ -> rec_vars
-     | RecVar x -> rec_vars_ptr := put x 2 !rec_vars_ptr
-     | SessionTypeVar (_, _) -> rec_vars
-     | Rec (x, _) -> rec_vars_ptr := put x 1 !rec_vars_ptr
-     | Tagged (_, _) -> rec_vars
-     | Constructor (, _) -> rec_vars
-   in
-   build_graph t *)
-
 let decode t = phase_one t |> phase_two |> refold |> rename_vars
