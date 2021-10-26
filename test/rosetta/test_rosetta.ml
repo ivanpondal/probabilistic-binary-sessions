@@ -93,6 +93,64 @@ let test_choice _ =
   assert_equal result
     [ (State 0, [ (Idle, 0.4); (Done, 0.6) ]); (Init, [ (State 0, 1.) ]) ]
 
+let test_recursion _ =
+  let result =
+    compute_adj_list
+      (Rec
+         ( "X",
+           Constructor
+             (`Receive, [ Constructor (`Apply [ "string" ], []); RecVar "X" ])
+         ))
+  in
+
+  assert_equal result
+    [
+      (State 1, [ (State 0, 1.) ]);
+      (State 0, [ (State 1, 1.) ]);
+      (Init, [ (State 0, 1.) ]);
+    ]
+
+let test_buyer_seller_example _ =
+  let result =
+    compute_adj_list
+      (Rec
+         ( "X",
+           Constructor
+             ( `Receive,
+               [
+                 Constructor (`Apply [ "int" ], []);
+                 Tagged
+                   ( `Choice,
+                     [
+                       ("Prob", Constructor (`Prob 0.25, []));
+                       ( "True",
+                         Constructor
+                           ( `Send,
+                             [
+                               Constructor (`Apply [ "int" ], []);
+                               Tagged
+                                 ( `Branch,
+                                   [
+                                     ("Prob", Constructor (`Prob 0.6, []));
+                                     ("True", RecVar "X");
+                                     ("False", Constructor (`End, []));
+                                   ] );
+                             ] ) );
+                       ("False", Constructor (`Done, []));
+                     ] );
+               ] ) ))
+  in
+
+  assert_equal result
+    [
+      (State 4, [ (Idle, 0.4); (State 0, 0.6) ]);
+      (State 3, [ (State 4, 1.) ]);
+      (State 2, [ (Done, 0.75); (State 3, 0.25) ]);
+      (State 1, [ (State 2, 1.) ]);
+      (State 0, [ (State 1, 1.) ]);
+      (Init, [ (State 0, 1.) ]);
+    ]
+
 let success_prob_suite =
   "Success probability suite"
   >::: [
@@ -103,6 +161,8 @@ let success_prob_suite =
          "Branch" >:: test_branch;
          "Branch and send" >:: test_branch_and_send;
          "Choice" >:: test_choice;
+         "Recursion" >:: test_recursion;
+         "Buyer seller example" >:: test_buyer_seller_example;
        ]
 
 let () = run_test_tt_main success_prob_suite

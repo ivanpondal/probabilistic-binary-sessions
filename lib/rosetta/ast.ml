@@ -518,7 +518,7 @@ let new_state = function
   | (state, _) :: _ -> inc_state state
   | _ -> raise (Invalid_argument "Can't get next from empty list")
 
-let rec compute_adj prev_state p _ adj_list t =
+let rec compute_adj prev_state p rec_states adj_list t =
   let add_transition current_state =
     List.map (fun (state, children) ->
         if prev_state = state then (prev_state, (current_state, p) :: children)
@@ -528,8 +528,14 @@ let rec compute_adj prev_state p _ adj_list t =
   match t with
   | Constructor (`Done, []) -> add_transition Done adj_list
   | Constructor (`End, []) -> add_transition Idle adj_list
+  | Rec (rec_var, t) ->
+      compute_adj current_state 1.0
+        ((rec_var, current_state) :: rec_states)
+        ((current_state, []) :: add_transition current_state adj_list)
+        t
+  | RecVar rec_var -> add_transition (List.assoc rec_var rec_states) adj_list
   | Constructor ((`Send | `Receive), [ _; t ]) ->
-      compute_adj current_state 1.0 []
+      compute_adj current_state 1.0 rec_states
         ((current_state, []) :: add_transition current_state adj_list)
         t
   | Tagged
@@ -540,12 +546,12 @@ let rec compute_adj prev_state p _ adj_list t =
           ("False", false_branch);
         ] ) ->
       let true_adj_list =
-        compute_adj current_state p []
+        compute_adj current_state p rec_states
           ((current_state, []) :: add_transition current_state adj_list)
           true_branch
       in
-      compute_adj current_state (1.0 -. p) [] true_adj_list false_branch
-  | _ -> []
+      compute_adj current_state (1.0 -. p) rec_states true_adj_list false_branch
+  | _ -> adj_list
 
 let compute_adj_list = compute_adj Init 1.0 [] [ (Init, []) ]
 
