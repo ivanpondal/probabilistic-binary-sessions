@@ -283,7 +283,7 @@ let coin_flipper ep =
     ep
 
 let test_same_session_type_combination _ =
-  Random.init 0;
+  Random.init 1;
   (* seed forcing initial choice to be true *)
   let ep1, ep2 = create () in
   let _ = Thread.create (coin_flip_server ()) ep1 in

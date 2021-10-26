@@ -507,4 +507,59 @@ let rename_vars t =
   and aux_tag (name, t) = (name, aux t) in
   aux t
 
-let decode t = rename_vars (refold (phase_two (phase_one t)))
+type st = State of int | Done | Idle | Init
+
+let inc_state = function
+  | Init -> State 0
+  | State s -> State (s + 1)
+  | _ -> raise (Invalid_argument "Must not be final state")
+
+let new_state = function
+  | (state, _) :: _ -> inc_state state
+  | _ -> raise (Invalid_argument "Can't get next from empty list")
+
+let rec compute_adj prev_state p _ adj_list t =
+  let add_transition current_state =
+    List.map (fun (state, children) ->
+        if prev_state = state then (prev_state, (current_state, p) :: children)
+        else (state, children))
+  in
+  let current_state = new_state adj_list in
+  match t with
+  | Constructor (`Done, []) -> add_transition Done adj_list
+  | Constructor (`End, []) -> add_transition Idle adj_list
+  | Constructor ((`Send | `Receive), [ _; t ]) ->
+      compute_adj current_state 1.0 []
+        ((current_state, []) :: add_transition current_state adj_list)
+        t
+  | Tagged
+      ( (`Choice | `Branch),
+        [
+          ("Prob", Constructor (`Prob p, []));
+          ("True", true_branch);
+          ("False", false_branch);
+        ] ) ->
+      let true_adj_list =
+        compute_adj current_state p []
+          ((current_state, []) :: add_transition current_state adj_list)
+          true_branch
+      in
+      compute_adj current_state (1.0 -. p) [] true_adj_list false_branch
+  | _ -> []
+
+let compute_adj_list = compute_adj Init 1.0 [] [ (Init, []) ]
+
+(* let compute_success_prob t =
+   let rec_vars_ptr = ref [] in
+   let put k v map = if List.mem_assoc k map then map else (k, v) :: map in
+   let build_graph = function
+     | Var _ -> rec_vars
+     | RecVar x -> rec_vars_ptr := put x 2 !rec_vars_ptr
+     | SessionTypeVar (_, _) -> rec_vars
+     | Rec (x, _) -> rec_vars_ptr := put x 1 !rec_vars_ptr
+     | Tagged (_, _) -> rec_vars
+     | Constructor (, _) -> rec_vars
+   in
+   build_graph t *)
+
+let decode t = phase_one t |> phase_two |> refold |> rename_vars
