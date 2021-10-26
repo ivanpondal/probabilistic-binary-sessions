@@ -69,6 +69,6 @@ let map_adj_list adj_list =
               | Idle -> Mat.set r i idle_col_idx p
               | State j -> Mat.set q i j p)
             children
-      | _ -> raise (Invalid_argument "asdf"))
+      | _ -> ())
     adj_list;
   (q, r)

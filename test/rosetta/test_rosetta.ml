@@ -32,7 +32,8 @@ let test_receive _ =
            [ Constructor (`Apply [ "int" ], []); Constructor (`Done, []) ] ))
   in
 
-  assert_equal result [ (State 1, [ (Done, 1.) ]); (State 0, [ (State 1, 1.) ]) ]
+  assert_equal result
+    [ (State 1, [ (Done, 1.) ]); (State 0, [ (State 1, 1.) ]) ]
 
 let test_branch _ =
   let result =
@@ -126,7 +127,8 @@ let test_buyer_seller_example _ =
                    ( `Choice,
                      [
                        ("Prob", Constructor (`Prob 0.25, []));
-                       ( "True",
+                       ("True", Constructor (`Done, []));
+                       ( "False",
                          Constructor
                            ( `Send,
                              [
@@ -135,20 +137,19 @@ let test_buyer_seller_example _ =
                                  ( `Branch,
                                    [
                                      ("Prob", Constructor (`Prob 0.6, []));
-                                     ("True", RecVar "X");
-                                     ("False", Constructor (`End, []));
+                                     ("True", Constructor (`End, []));
+                                     ("False", RecVar "X");
                                    ] );
                              ] ) );
-                       ("False", Constructor (`Done, []));
                      ] );
                ] ) ))
   in
 
   assert_equal result
     [
-      (State 5, [ (Idle, 0.4); (State 1, 0.6) ]);
+      (State 5, [ (State 1, 0.4); (Idle, 0.6) ]);
       (State 4, [ (State 5, 1.) ]);
-      (State 3, [ (Done, 0.75); (State 4, 0.25) ]);
+      (State 3, [ (State 4, 0.75); (Done, 0.25) ]);
       (State 2, [ (State 3, 1.) ]);
       (State 1, [ (State 2, 1.) ]);
       (State 0, [ (State 1, 1.) ]);
