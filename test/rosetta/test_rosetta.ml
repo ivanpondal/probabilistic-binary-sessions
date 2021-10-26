@@ -1,5 +1,7 @@
 open OUnit2
 open Rosetta.Ast
+open Rosetta.Mapping
+open Owl
 
 let test_done _ =
   let result = compute_adj_list (Constructor (`Done, [])) in
@@ -154,15 +156,30 @@ let test_buyer_seller_example _ =
 let success_prob_suite =
   "Success probability suite"
   >::: [
-         "Done" >:: test_done;
-         "Idle" >:: test_idle;
-         "Send" >:: test_send;
-         "Receive" >:: test_receive;
-         "Branch" >:: test_branch;
-         "Branch and send" >:: test_branch_and_send;
-         "Choice" >:: test_choice;
-         "Recursion" >:: test_recursion;
-         "Buyer seller example" >:: test_buyer_seller_example;
+         "done" >:: test_done;
+         "idle" >:: test_idle;
+         "send" >:: test_send;
+         "receive" >:: test_receive;
+         "branch" >:: test_branch;
+         "branch and send" >:: test_branch_and_send;
+         "choice" >:: test_choice;
+         "recursion" >:: test_recursion;
+         "buyer seller example" >:: test_buyer_seller_example;
        ]
 
-let () = run_test_tt_main success_prob_suite
+let test_done_mapping _ =
+  let adj_list = [ (Init, [ (Done, 1.) ]) ] in
+
+  let result = map_adj_list adj_list in
+
+  let exp_q = Mat.create 1 1 0. in
+  let exp_r = Mat.create 1 2 0. in
+  Mat.set exp_r 0 0 1.0;
+  assert_equal (exp_q, exp_r) result
+
+let adj_list_mapping_suite =
+  "Adjacency list mapping" >::: [ "done" >:: test_done_mapping ]
+
+let () =
+  run_test_tt_main success_prob_suite;
+  run_test_tt_main adj_list_mapping_suite

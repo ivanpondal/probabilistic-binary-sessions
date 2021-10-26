@@ -46,4 +46,5 @@ module Markov = struct
     let id = eye (row_num q) in
     let n = Mat.( - ) id q |> inv in
     dot n r
+
 end
