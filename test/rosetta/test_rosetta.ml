@@ -6,12 +6,12 @@ open Owl
 let test_done _ =
   let result = compute_adj_list (Constructor (`Done, [])) in
 
-  assert_equal result [ (Init, [ (Done, 1.) ]) ]
+  assert_equal result [ (State 0, [ (Done, 1.) ]) ]
 
 let test_idle _ =
   let result = compute_adj_list (Constructor (`End, [])) in
 
-  assert_equal result [ (Init, [ (Idle, 1.) ]) ]
+  assert_equal result [ (State 0, [ (Idle, 1.) ]) ]
 
 let test_send _ =
   let result =
@@ -21,7 +21,8 @@ let test_send _ =
            [ Constructor (`Apply [ "string" ], []); Constructor (`Done, []) ] ))
   in
 
-  assert_equal result [ (State 0, [ (Done, 1.) ]); (Init, [ (State 0, 1.) ]) ]
+  assert_equal result
+    [ (State 1, [ (Done, 1.) ]); (State 0, [ (State 1, 1.) ]) ]
 
 let test_receive _ =
   let result =
@@ -31,7 +32,7 @@ let test_receive _ =
            [ Constructor (`Apply [ "int" ], []); Constructor (`Done, []) ] ))
   in
 
-  assert_equal result [ (State 0, [ (Done, 1.) ]); (Init, [ (State 0, 1.) ]) ]
+  assert_equal result [ (State 1, [ (Done, 1.) ]); (State 0, [ (State 1, 1.) ]) ]
 
 let test_branch _ =
   let result =
@@ -46,7 +47,7 @@ let test_branch _ =
   in
 
   assert_equal result
-    [ (State 0, [ (Idle, 0.4); (Done, 0.6) ]); (Init, [ (State 0, 1.) ]) ]
+    [ (State 1, [ (Idle, 0.4); (Done, 0.6) ]); (State 0, [ (State 1, 1.) ]) ]
 
 let test_branch_and_send _ =
   let result =
@@ -74,10 +75,10 @@ let test_branch_and_send _ =
 
   assert_equal result
     [
-      (State 2, [ (Idle, 1.) ]);
-      (State 1, [ (Done, 1.) ]);
-      (State 0, [ (State 2, 0.4); (State 1, 0.6) ]);
-      (Init, [ (State 0, 1.) ]);
+      (State 3, [ (Idle, 1.) ]);
+      (State 2, [ (Done, 1.) ]);
+      (State 1, [ (State 3, 0.4); (State 2, 0.6) ]);
+      (State 0, [ (State 1, 1.) ]);
     ]
 
 let test_choice _ =
@@ -93,7 +94,7 @@ let test_choice _ =
   in
 
   assert_equal result
-    [ (State 0, [ (Idle, 0.4); (Done, 0.6) ]); (Init, [ (State 0, 1.) ]) ]
+    [ (State 1, [ (Idle, 0.4); (Done, 0.6) ]); (State 0, [ (State 1, 1.) ]) ]
 
 let test_recursion _ =
   let result =
@@ -107,9 +108,9 @@ let test_recursion _ =
 
   assert_equal result
     [
-      (State 1, [ (State 0, 1.) ]);
+      (State 2, [ (State 1, 1.) ]);
+      (State 1, [ (State 2, 1.) ]);
       (State 0, [ (State 1, 1.) ]);
-      (Init, [ (State 0, 1.) ]);
     ]
 
 let test_buyer_seller_example _ =
@@ -145,12 +146,12 @@ let test_buyer_seller_example _ =
 
   assert_equal result
     [
-      (State 4, [ (Idle, 0.4); (State 0, 0.6) ]);
-      (State 3, [ (State 4, 1.) ]);
-      (State 2, [ (Done, 0.75); (State 3, 0.25) ]);
+      (State 5, [ (Idle, 0.4); (State 1, 0.6) ]);
+      (State 4, [ (State 5, 1.) ]);
+      (State 3, [ (Done, 0.75); (State 4, 0.25) ]);
+      (State 2, [ (State 3, 1.) ]);
       (State 1, [ (State 2, 1.) ]);
       (State 0, [ (State 1, 1.) ]);
-      (Init, [ (State 0, 1.) ]);
     ]
 
 let success_prob_suite =
@@ -168,7 +169,7 @@ let success_prob_suite =
        ]
 
 let test_done_mapping _ =
-  let adj_list = [ (Init, [ (Done, 1.) ]) ] in
+  let adj_list = [ (State 0, [ (Done, 1.) ]) ] in
 
   let result = map_adj_list adj_list in
 
@@ -177,8 +178,34 @@ let test_done_mapping _ =
   Mat.set exp_r 0 0 1.0;
   assert_equal (exp_q, exp_r) result
 
+let test_idle_mapping _ =
+  let adj_list = [ (State 0, [ (Idle, 1.) ]) ] in
+
+  let result = map_adj_list adj_list in
+
+  let exp_q = Mat.create 1 1 0. in
+  let exp_r = Mat.create 1 2 0. in
+  Mat.set exp_r 0 1 1.0;
+  assert_equal (exp_q, exp_r) result
+
+let test_send_mapping _ =
+  let adj_list = [ (State 1, [ (Done, 1.) ]); (State 0, [ (State 1, 1.) ]) ] in
+
+  let result = map_adj_list adj_list in
+
+  let exp_q = Mat.create 2 2 0. in
+  Mat.set exp_q 0 1 1.0;
+  let exp_r = Mat.create 2 2 0. in
+  Mat.set exp_r 1 0 1.0;
+  assert_equal (exp_q, exp_r) result
+
 let adj_list_mapping_suite =
-  "Adjacency list mapping" >::: [ "done" >:: test_done_mapping ]
+  "Adjacency list mapping"
+  >::: [
+         "done" >:: test_done_mapping;
+         "idle" >:: test_idle_mapping;
+         "send" >:: test_send_mapping;
+       ]
 
 let () =
   run_test_tt_main success_prob_suite;
