@@ -34,4 +34,17 @@ module Rational = struct
   let one_half = Fraction (one, two)
 
   let one_quarter = Fraction (one, four)
+
+  let two_thirds = Fraction (two, three)
+end
+
+open Owl
+open Owl.Mat
+
+module Markov = struct
+  let absortion_matrix q r =
+    let id = eye (row_num q) in
+    let n = Mat.( - ) id q |> inv in
+    dot n r
+
 end

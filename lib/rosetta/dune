@@ -4,6 +4,7 @@
 
 (library
  (name rosetta)
+ (libraries owl math)
  (public_name rosetta)
  (flags
   (:standard -w +A-20-4 -rectypes)))

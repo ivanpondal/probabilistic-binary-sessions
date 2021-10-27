@@ -1,6 +1,5 @@
-(library
- (public_name rosettaTesting)
- (name rosetta_testing)
- (libraries proFuse math)
+(test
+ (name test_rosetta)
+ (libraries rosetta proFuse math ounit2)
  (flags
   (:standard -w +A-20 -rectypes)))

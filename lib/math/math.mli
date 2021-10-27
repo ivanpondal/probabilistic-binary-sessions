@@ -30,4 +30,13 @@ module Rational : sig
   val one_half : (zero suc nat * zero suc suc nat) frac
 
   val one_quarter : (zero suc nat * zero suc suc suc suc nat) frac
+
+  val two_thirds : (zero suc suc nat * zero suc suc suc nat) frac
+end
+
+module Markov : sig
+  val absortion_matrix :
+    Owl_linalg_d.mat -> Owl_linalg_d.mat -> Owl_linalg_d.mat
+  (** [absortion_matrix q r] calculates absortion matrix [b] = (I - [q])^(-1) * [r].
+  @return the absortion matrix [b]. *)
 end
