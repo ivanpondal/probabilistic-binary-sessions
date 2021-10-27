@@ -1,19 +1,5 @@
 open Ast
 
-let priority_of_constructor = function
-  | `Empty | `End | `Done | `NullProb | `OneProb | `Nat _ | `Frac _ | `Prob _
-  | `Channel | `ClosedChannel | `Apply _ ->
-      5
-  | `As _ -> 4
-  | `Send | `Receive | `Sequence | `SelectSequence | `AcceptSequence -> 3
-  | `Arrow -> 2
-  | `Tuple -> 1
-
-let rec priority_of_type = function
-  | Var _ | RecVar _ | SessionTypeVar _ | Tagged _ -> 5
-  | Rec (_, t) -> priority_of_type t
-  | Constructor (ctor, _) -> priority_of_constructor ctor
-
 let need_parentheses ctor s = priority_of_constructor ctor >= priority_of_type s
 
 let string_of_polarity = function
@@ -58,22 +44,6 @@ let occurs x =
     | Tagged (_, tags) -> List.exists aux_tag tags
   and aux_tag (_, t) = aux t in
   aux
-
-let t_End = Constructor (`End, [])
-
-let t_Done = Constructor (`Done, [])
-
-let t_Empty = Constructor (`Empty, [])
-
-let t_pNull = Constructor (`NullProb, [])
-
-let t_pOne = Constructor (`OneProb, [])
-
-let t_Nat n = Constructor (`Nat n, [])
-
-let t_Frac f = Constructor (`Frac f, [])
-
-let t_Prob p = Constructor (`Prob p, [])
 
 let round_float_2_dec f = Float.round (f *. 100.) /. 100.
 
