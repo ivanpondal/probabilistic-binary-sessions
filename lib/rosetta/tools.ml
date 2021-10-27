@@ -31,12 +31,12 @@ let rec split_string s =
   with Not_found -> [ s ]
 
 let rec pp_specification = function
-  | Specification.Type t -> Ast.pp (Ast.decode t)
+  | Specification.Type t -> Ast_processing.pp (Ast_processing.decode t)
   | Specification.Val (x, t) ->
       Format.open_hvbox 2;
       Format.print_string ("val " ^ x ^ " :");
       Format.print_break 1 0;
-      Ast.pp (Ast.decode t);
+      Ast_processing.pp (Ast_processing.decode t);
       Format.close_box ()
   | Specification.Module (name, sl) ->
       Format.open_vbox 0;

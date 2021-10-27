@@ -16,6 +16,9 @@
 (* Copyright 2015-2016 Luca Padovani                                    *)
 
 open Rosetta
+module Lexer = Rosetta.Lexer
+module Parser = Rosetta.Parser
+
 open Rosetta.Tools
 
 let _ =

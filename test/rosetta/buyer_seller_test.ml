@@ -6,30 +6,30 @@ let rec seller ep =
   pick one_quarter
     (fun ep ->
       let ep = select_false ep in
-      close ep)
+      let ep = send (bid + 10) ep in
+      match branch ep with `True ep -> idle ep | `False ep -> seller ep)
     (fun ep ->
       let ep = select_true ep in
-      let ep = send (bid + 10) ep in
-      match branch ep with `True ep -> seller ep | `False ep -> idle ep)
+      close ep)
     ep
 
 let rec buyer ep offer =
   let ep = send offer ep in
   match branch ep with
   | `True ep ->
+      close ep;
+      offer
+  | `False ep ->
       let counteroffer, ep = receive ep in
       pick two_thirds
         (fun ep ->
           let ep = select_false ep in
-          idle ep;
-          -1)
+          buyer ep counteroffer)
         (fun ep ->
           let ep = select_true ep in
-          buyer ep counteroffer)
+          idle ep;
+          -1)
         ep
-  | `False ep ->
-      close ep;
-      offer
 
 let test_buyer_seller ?(st = cst_placeholder) () =
   let ep1, ep2 = create ~st () in

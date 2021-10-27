@@ -1,4 +1,3 @@
-open Ast
 open Owl
 
 type state = State of int | Done | Idle
@@ -23,22 +22,22 @@ let rec compute_adj prev_state p rec_states adj_list t =
   let current_state = new_state adj_list in
 
   match t with
-  | Constructor (`Done, []) -> add_transition Done adj_list
-  | Constructor (`End, []) -> add_transition Idle adj_list
-  | Rec (rec_var, t) ->
+  | Ast.Constructor (`Done, []) -> add_transition Done adj_list
+  | Ast.Constructor (`End, []) -> add_transition Idle adj_list
+  | Ast.Rec (rec_var, t) ->
       compute_adj current_state 1.0
         ((rec_var, current_state) :: rec_states)
         ((current_state, []) :: add_transition current_state adj_list)
         t
-  | RecVar rec_var -> add_transition (List.assoc rec_var rec_states) adj_list
-  | Constructor ((`Send | `Receive), [ _; t ]) ->
+  | Ast.RecVar rec_var -> add_transition (List.assoc rec_var rec_states) adj_list
+  | Ast.Constructor ((`Send | `Receive), [ _; t ]) ->
       compute_adj current_state 1.0 rec_states
         ((current_state, []) :: add_transition current_state adj_list)
         t
-  | Tagged
+  | Ast.Tagged
       ( (`Choice | `Branch),
         [
-          ("Prob", Constructor (`Prob p, []));
+          ("Prob", Ast.Constructor (`Prob p, []));
           ("True", true_branch);
           ("False", false_branch);
         ] ) ->
