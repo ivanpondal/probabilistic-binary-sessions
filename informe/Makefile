@@ -3,7 +3,7 @@
 LATEX := docker run --rm -v $(PWD):/workdir:z ivanpondal/thesis-latex pdflatex
 LATEXFLAGS := -interaction=nonstopmode
 
-all: main.pdf
+all: tesis.pdf
 
 clean:
 	rm -rf ./*.aux ./*.log ./*.tex~ ./*.toc ./*.pdf ./*.tex.backup ./*.snm \
