@@ -1,0 +1,18 @@
+\chapter{Tipos sesión}
+\section{Introducción}
+
+Los tipos sesión [TODO: citas] se han consolidado como un formalismo para el
+análisis modular de comunicación entre procesos. Una \emph{sesión} es un canal
+privado que conecta dos procesos, cada uno con su conector u \emph{endpoint} que
+establece qué estructura tiene la comunicación mediante una especificación; el
+\emph{tipo sesión}. A modo de ejemplo, el tipo sesión
+
+\begin{equation}
+    \cout \tint \parens {
+        \tbranch [] \tend {
+            \cin \tint \parens {
+                \tchoice [] \tend \T
+            }
+        }
+    }
+\end{equation}
