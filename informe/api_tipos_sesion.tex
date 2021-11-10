@@ -1,0 +1,15 @@
+\section{Interfaz programática}
+
+
+\begin{table}
+    \begin{OCamlD}[frame=single]
+        val create  : unit -> $\etvar$ * $\sdual\etvar$
+        val close   : $\End$ -> unit
+        val send    : $\tvar$ -> $\Out\tvar\etvar$ -> $\etvar$
+        val receive : $\In\tvar\etvar$ -> $\tvar$ * $\etvar$
+        val select  : ($\sdual{\etvar_k}$ -> $\set[i\in I]{\Tag_i : \sdual{\etvar_i}}$) -> $\Choice \set[i\in I]{\Tag_i : \etvar_i}$ -> $\etvar_k$
+        val branch  : $\Branch \set[i\in I]{\Tag_i : \etvar_i}$ -> $\set[i\in I]{\Tag_i : \etvar_i}$
+    \end{OCamlD}
+    \caption{Application programming interface for binary sessions.}
+    \label{tab:api}
+\end{table}
