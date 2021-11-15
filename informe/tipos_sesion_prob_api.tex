@@ -1,0 +1,24 @@
+\section{Gramática}
+
+\[
+\begin{array}{@{}r@{~~}c@{~~}l@{}}
+\TypeT, \TypeS & ::= &
+\tbool
+\rulemid \tint
+\rulemid \tvar
+\rulemid \SessionType
+\rulemid \ClosedSessionType
+\rulemid \cdots
+\\
+\SessionTypeT, \SessionTypeS & ::= &
+\tend
+\rulemid \tdone
+\rulemid \cout\Type\SessionType
+\rulemid \cin\Type\SessionType
+\rulemid \tbranch[p]\SessionTypeT\SessionTypeS
+\rulemid \tchoice[p]\SessionTypeT\SessionTypeS
+\rulemid \etvar
+\rulemid \dual\etvar
+\end{array}
+\]
+
