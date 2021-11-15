@@ -1,0 +1,27 @@
+En~\cite{DBLP:conf/concur/InversoMPTT20} se propuso el uso de tipos de sesión
+para razonar probabilísticamente sobre propiedades de alcanzabilidad, donde se
+dio una interpretación \emph{probabilística} a los operadores de selección. Más
+específicamente, se pasa de una interpretación no determinística a una
+probabilística y se estudia un sistema de tipos que permita determinar la
+probabilidad con la que una sesión en particular termina \emph{exitosamente}.
+Dado que no existe una interpretación universal de ``terminación exitosa'', se
+diferencia la terminación exitosa de la infructuosa por medio de un constructor
+dedicado.
+
+Por ejemplo, podemos refinar \eqref{eq:bare.auction} como
+\begin{equation}
+    \label{eq:refined.auction}
+    \cout\tint\parens{
+        \tbranch[p]\tdone{
+            \cin\tint\parens{
+                \tchoice[q]\tend\T
+            }
+        }
+    }
+\end{equation}
+
+donde el tipo sesión $\tdone$ indica una terminación exitosa y donde las
+ramas  se anotan con probabilidades $p$ y $q$. En particular, el subastador
+declara que el artículo se vende con probabilidad $p$ y  responde con una
+contraoferta con probabilidad $1-p$, mientras que el comprador decide abandonar
+la subasta con probabilidad $q$ o volver a ofertar  con probabilidad $1-q$.
