@@ -623,3 +623,11 @@
 \newcommand{\tchoice}[3][p]{\xpoint{#2}{\prescript{}{#1}{\oplus}}{#3}}
 
 \newcommand{\T}{T}
+
+\newcommand{\OI}{\lstinline[language=OCaml,style=INLINE]}
+
+\newcommand{\InputOCamlC}[2][]{%
+  \lstinputlisting[
+    language=OCaml,
+    style=DISPLAY,#1]{#2}%
+}

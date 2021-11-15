@@ -1,0 +1,58 @@
+\section{Ejemplos básicos}
+
+A continuación damos algunos ejemplos sencillos de esta interfaz. El siguiente
+código implementa el cliente de un servicio ``eco'' que espera un mensaje y
+lo rebota al cliente.
+
+\SimpleEchoClient
+
+El argumento \OI{ep} tiene tipo $\Out\tvarA\In\tvarB\End$ y \OI{x} tipo
+$\tvarA$. La función \OI{echo_client} comienza enviando un mensaje \OI{x} sobre
+el endpoint \OI{ep}. La primitiva \OI{let} reasocia \OI{ep} al endpoint
+retornado por \OI{send}, que ahora tiene tipo $\In\tvarB\End$.
+
+El endpoint es después utilizado para recibir un mensaje de tipo \OI{'b} del
+servicio. Finalmente, \OI{echo_client} cierra la sesión y devuelve el mensaje.
+
+
+El servicio de eco está implementado por el \OI{echo_service} definido a
+continuación, el mismo utiliza el argumento \OI{ep} de tipo
+$\In\tvarA\Out\tvarA\End$ para recibir un mensaje \OI{x} y retornarlo al
+cliente previo al cierre de sesión.
+
+\SimpleEchoService
+
+Podemos notar que $\Out\tvarA\In\tvarB\End$ no es el dual de
+$\In\tvar\Out\tvar\End$ según la definición de dualidad presentada
+anteriormente: para conectar el cliente y servidor, $\tvarB$ debe ser
+\emph{unificado} con $\tvarA$. El código que conecta ambas partes es el
+siguiente:
+
+\SimpleEchoMain
+
+Este código crea una nueva sesión cuyos endpoints se encuentran ligados a los
+nombres \OI{a} y \OI{b}. Luego, lanza un thread que aplica \OI{echo_service} al
+endpoint \OI{a}. Finalmente, aplica \OI{echo_client} al endpoint restante
+\OI{b}.
+
+Ahora deseamos generalizar el servicio para que un cliente pueda escoger
+consumirlo o finalizar la interacción sin uso. Un servicio que ofrece esta
+decisión se ilustra a continuación:
+
+\OptionalEchoService
+
+En este caso, el servicio utiliza la primitiva \OI{branch} para esperar la
+etiqueta seleccionada por el cliente.
+
+El tipo inicial de \OI{ep} es ahora $\Branch\set{\Tag[End] : \End, \Tag[Msg]
+:\In\tvarA\Out\tvar\End}$ y el valor retornado por \OI{branch} es
+$\set{\Tag[End] : \End, \Tag[Msg] :\In\tvarA\Out\tvar\End}$. En la rama
+$\Tag[Msg]$ el servicio se comporta como antes. En $\Tag[End]$ el servicio
+finaliza la sesión.
+
+La siguiente función representa un posible cliente para \OI{opt_echo_service}:
+
+\OptionalEchoClient
+
+Esta función tiene tipo $\Choice\set{\Tag[End] : \End, \Tag[Msg] :
+\Out\tvar\In\tvar\End} \to \tbool \to \tvar \to \tvar$ y su comportamiento depende del argumento booleano \OI{opt}.
