@@ -1,5 +1,7 @@
 \section{Gramática}
 
+Para esta interpretación probabilística consideramos la siguiente gramática
+
 \[
 \begin{array}{@{}r@{~~}c@{~~}l@{}}
 \TypeT, \TypeS & ::= &
@@ -22,3 +24,26 @@
 \end{array}
 \]
 
+donde $\TypeT$ y $\TypeS$ son utilizados para representar los tipos básicos,
+variables libres, tipos sesión para endpoints, sesiones con probabilidad de
+éxito $p$ y otros. Las sesiones representadas por $\ClosedSessionType$ resultan
+de la composición o ``unión'' de un par de endpoints con tipos sesión duales
+$\SessionTypeT$ y $\dual\SessionTypeT$.
+
+Para los tipos sesión descritos por $\SessionTypeT$ y $\SessionTypeS$, $\tend$
+y $\tdone$ marcan el fin de una comunicación. Utilizamos $\tdone$ para denotar
+los puntos de terminación exitosa de un protocolo, la semántica para tal
+terminación siendo dependiente del dominio del problema. Los tipos sesión
+$\cout\Type\SessionType$ y $\cin\Type\SessionType$ describen endpoints para
+enviar y recibir mensajes de tipo $t$ y continuar de acuerdo con $T$. Luego,
+$\tchoice[p]\SessionTypeT\SessionTypeS$ y
+$\tbranch[p]\SessionTypeT\SessionTypeS$ describen endpoints utilizador para
+enviar y recibir una elección binaria que es ``izquierda'' con probabilidad $p$
+y ``derecha'' con probabiliadad $1 - p$. El endpoint es luego consumido acorde
+$\SessionTypeT$ o $\SessionTypeS$ según corresponda. Notamos que $\tchoice{}{}$
+es una elección interna, el proceso comportándose acorde este tipo selecciona
+``izquierda'' o ``derecha'', mientras que $\tbranch{}{}$ es una elección
+externa, el proceso ofrece al exterior ambas ramas. Como consecuencia, la
+probabilidad de $\tbranch{}{}$ queda determinada por su correspondiente
+elección interna. Por último, $\etvar$ y $\dual\etvar$ representan variables
+libres y su dual.
