@@ -47,3 +47,52 @@ externa, el proceso ofrece al exterior ambas ramas. Como consecuencia, la
 probabilidad de $\tbranch{}{}$ queda determinada por su correspondiente
 elección interna. Por último, $\etvar$ y $\dual\etvar$ representan variables
 libres y su dual.
+
+El \emph{dual} de un tipo sesión probabilístico $\SessionType$, escrito como
+$\dual\SessionType$, se obtiene igual que para los tipos sesión; intercambiando
+las operaciones de lectura y escritura. Lo definen las siguientes ecuaciones:
+
+\[
+\begin{array}{c}
+  \begin{array}{@{}r@{~~}c@{~~}l@{}}
+    \dual\tend & = & \tend \\
+    \dual\tdone & = & \tdone \\
+  \end{array}
+  \qquad
+  \begin{array}{@{}r@{~~}c@{~~}l@{}}
+    \dual{\cin\Type\SessionType} & = & \cout\Type\dual\SessionType \\
+    \dual{\cout\Type\SessionType} & = & \cin\Type\dual\SessionType \\
+  \end{array}
+  \qquad
+  \begin{array}{@{}r@{~~}c@{~~}l@{}}
+	  \dual{\tbranch[p]\SessionTypeT\SessionTypeS} & = &
+	  \tchoice[p]{\dual\SessionTypeT}{\dual\SessionTypeS} \\
+	  \dual{\tchoice[p]\SessionTypeT\SessionTypeS} & = &
+	  \tbranch[p]{\dual\SessionTypeT}{\dual\SessionTypeS} \\
+  \end{array}
+\end{array}
+\]
+
+\section{Interfaz programática}
+
+\begin{table}[htb]
+    \begin{OCamlD}[frame=single]
+        val create       : $\ClosedSessionType$ -> unit -> $\etvar$ * $\sdual\etvar$
+        val close        : $\tdone$ -> unit
+        val idle         : $\tend$ -> unit
+        val send         : $\tvar$ -> $\Out\tvar\etvar$ -> $\etvar$
+        val receive      : $\In\tvar\etvar$ -> $\tvar$ * $\etvar$
+        val select_true  : $\tchoice[1]\SessionTypeT\SessionTypeS$ -> $\SessionTypeT$
+        val select_false : $\tchoice[0]\SessionTypeT\SessionTypeS$ -> $\SessionTypeS$
+        val pick         : $p$ -> $(\tchoice[1]\SessionTypeT\SessionTypeS$ -> $\alpha)$ -> $(\tchoice[0]\SessionTypeT\SessionTypeS$ -> $\alpha)$
+                             -> $\tchoice[p]\SessionTypeT\SessionTypeS$ -> $\alpha$
+        val pick_2st     : $\Branch \set[i\in I]{\Tag_i : \etvar_i}$ -> $\set[i\in I]{\Tag_i : \etvar_i}$
+        val pick_2ch     : $\Branch \set[i\in I]{\Tag_i : \etvar_i}$ -> $\set[i\in I]{\Tag_i : \etvar_i}$
+        val branch       : $\tbranch[p]\SessionTypeT\SessionTypeS$ -> $\set{\texttt{True}: \SessionTypeT,\ \texttt{False}: \SessionTypeS}$
+        val branch_2st   : $\Branch \set[i\in I]{\Tag_i : \etvar_i}$ -> $\set[i\in I]{\Tag_i : \etvar_i}$
+        val branch_2ch   : $\Branch \set[i\in I]{\Tag_i : \etvar_i}$ -> $\set[i\in I]{\Tag_i : \etvar_i}$
+    \end{OCamlD}
+    \caption{Interfaz programática para tipos sesión probabilísticos}
+    \label{tab:api}
+\end{table}
+
