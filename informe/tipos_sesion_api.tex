@@ -1,0 +1,103 @@
+\section{Gramática}
+
+Consideramos la siguiente gramática
+
+\[
+\begin{array}{@{}r@{~~}c@{~~}l@{}}
+\TypeT, \TypeS & ::= &
+\tbool
+\rulemid \tint
+\rulemid \tvar
+\rulemid \SessionType
+\rulemid \set[i\in I]{ \Tag_i : \Type_i }
+\rulemid \cdots
+\\
+\SessionTypeT, \SessionTypeS & ::= &
+\tend
+\rulemid \Out\Type\SessionType
+\rulemid \In\Type\SessionType
+\rulemid \Branch \set[i\in I]{\Tag_i : \SessionType_i}
+\rulemid \Choice \set[i\in I]{\Tag_i : \SessionType_i}
+\rulemid \etvar
+\rulemid \dual\etvar
+\end{array}
+\]
+
+donde $\TypeT$ y $\TypeS$ son utilizados para representar los tipos básicos,
+variables libres, tipos sesión, unión disjunta y otros.
+Los tipos sesión quedan descritos por $\SessionTypeT$ y $\SessionTypeS$ con su
+constructor para marcar el cierre de un endpoint, operaciones de
+lectura/escritura, ramas y elecciones así como variables libres y su dual.
+
+El \emph{dual} de un tipo sesión $\SessionType$, escrito como
+$\dual\SessionType$, se obtiene intercambiando las operaciones de lectura y
+escritura. Lo definen las siguientes ecuaciones:
+
+\[
+\begin{array}{c}
+  \begin{array}{@{}r@{~~}c@{~~}l@{}}
+    \smash{\dual{\dual\etvar}} & = & \etvar \\
+    \dual\tend & = & \tend \\
+  \end{array}
+  \qquad
+  \begin{array}{@{}r@{~~}c@{~~}l@{}}
+    \dual{(\In\Type\SessionType)} & = & \Out\Type\dual\SessionType \\
+    \dual{(\Out\Type\SessionType)} & = & \In\Type\dual\SessionType \\
+  \end{array}
+  \qquad
+  \begin{array}{@{}r@{~~}c@{~~}l@{}}
+    \dual{\Branch \set[i\in I]{\Tag_i : \SessionType_i}}
+    & = & \Choice \set[i\in I]{\Tag_i : \dual{\SessionType_i}} \\
+    \dual{\Choice \set[i\in I]{\Tag_i : \SessionType_i}}
+    & = & \Branch \set[i\in I]{\Tag_i : \dual{\SessionType_i}} \\
+  \end{array}
+\end{array}
+\]
+
+\section{Interfaz programática}
+
+\begin{table}[htb]
+    \begin{OCamlD}[frame=single]
+        val create  : unit -> $\etvar$ * $\sdual\etvar$
+        val close   : $\tend$ -> unit
+        val send    : $\tvar$ -> $\Out\tvar\etvar$ -> $\etvar$
+        val receive : $\In\tvar\etvar$ -> $\tvar$ * $\etvar$
+        val select  : ($\sdual{\etvar_k}$ -> $\set[i\in I]{\Tag_i : \sdual{\etvar_i}}$) -> $\Choice \set[i\in I]{\Tag_i : \etvar_i}$ -> $\etvar_k$
+        val branch  : $\Branch \set[i\in I]{\Tag_i : \etvar_i}$ -> $\set[i\in I]{\Tag_i : \etvar_i}$
+    \end{OCamlD}
+    \caption{Interfaz programática para tipos sesión}
+    \label{tab:api}
+\end{table}
+
+En [CITA] se presentó el desarrollo de FuSe, una implementación en OCaml de la interfaz
+de tipos sesión definida en Tabla~\ref{tab:api}.
+
+\begin{itemize}
+	\item \OI{create}: crea una nueva sesión y devuelve un par de endpoints con
+tipos sesión duales.
+	\item \OI{close}: señaliza el fin de una sesión.
+	\item \OI{send}: envía mensaje de tipo $\tvar$ sobre endpoint con tipo
+		$\Out\tvar\etvar$, retorna endpoint con tipo $\etvar$ para
+		denotar el avance en la comunicación.
+	\item \OI{receive}: espera recibir mensaje de tipo $\tvar$ sobre
+		endpoint con tipo $\In\tvar\etvar$, retorna un par con
+		mensaje y endpoint de tipo $\etvar$.
+\end{itemize}
+
+Las primitivas \OI{branch} y \OI{select} permiten tratar con sesiones que
+presentan caminos con distintas interacciones, cada camino siendo identificado
+por una \emph{etiqueta} $\TagVar_i$.
+		
+\begin{itemize}
+	\item \OI{select}: envía etiqueta $\TagVar_k$ con $k\in I$
+		sobre endpoint con tipo $\Choice \set[i\in I]{\Tag_i :
+		\etvar_i}$, retorna endpoint $\etvar_k$ con tipo
+		asociado a la etiqueta seleccionada. En \OCaml, el
+		etiquetado es representado mediante una función que
+		\emph{inyecta} un endpoint (ejemplo, el tipo
+		$\sdual{\etvar_k}$) a la unión disjunta $\set[i\in I]{\Tag_i :
+		\sdual{\etvar_i}}$ donde $k\in I$.
+	\item \OI{branch}: dualmente, espera recibir etiqueta del
+		endpoint con tipo $\Branch \set[i\in I]{\Tag_i : \etvar_i}$,
+		retorna endpoint inyectado a la unión disjunta.
+\end{itemize}
