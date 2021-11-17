@@ -1,35 +1,36 @@
 module ProbEcho = struct
   (*BEGIN*SimpleProbEchoService*)
   let echo_service ep =
-    match branch ep with
+    match Session.branch ep with
     | `True ep ->
-        let x, ep = receive ep in
-        let ep = send x ep in
-        close ep
-    | `False ep -> idle ep
+        let x, ep = Session.receive ep in
+        let ep = Session.send x ep in
+        Session.close ep
+    | `False ep -> Session.idle ep
   (*END*SimpleProbEchoService*)
 
   (*BEGIN*SimpleProbEchoClient*)
-  let echo_client x ep =
-    let ep = select_true ep in
-    let ep = send x ep in
-    let x, ep = receive ep in
-    close ep;
+  let echo_client ep x =
+    let ep = Session.select_true ep in
+    let ep = Session.send x ep in
+    let x, ep = Session.receive ep in
+    Session.close ep;
     x
   (*END*SimpleProbEchoClient*)
 
   (*BEGIN*SimpleIdleClient*)
   let idle_client ep =
-    let ep = select_false ep in
-    idle ep
+    let ep = Session.select_false ep in
+    Session.idle ep
   (*END*SimpleIdleClient*)
 
   (*BEGIN*SimpleCoinFlipEchoClient*)
-  let coin_flip_echo_client x ep =
-    pick one_half
+  let coin_flip_echo_client ep x =
+    Session.pick Rational.one_half
       (fun ep ->
         idle_client ep;
-        x)
-      (echo_client x) ep
+        None)
+      (fun ep -> Some (echo_client ep x))
+      ep
   (*END*SimpleCoinFlipEchoClient*)
 end

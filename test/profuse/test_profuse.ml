@@ -178,26 +178,26 @@ let echo_server ep =
       close ep
   | `False ep -> idle ep
 
-let echo_client x ep =
+let echo_client ep x =
   let ep = select_true ep in
   let ep = send x ep in
   let x, ep = receive ep in
   close ep;
   x
 
-let coin_flip_echo_client x ep =
+let coin_flip_echo_client ep x =
   pick one_half
     (fun ep ->
       idle_client ep;
       None)
-    (fun ep -> Some (echo_client x ep))
+    (fun ep -> Some (echo_client ep x))
     ep
 
 let test_echo_client _ =
   let ep1, ep2 = create () in
   let _ = Thread.create echo_server ep1 in
 
-  let reply = echo_client 42 ep2 in
+  let reply = echo_client ep2 42 in
 
   assert_equal 42 reply
 
@@ -215,7 +215,7 @@ let test_coin_flip_echo_client_picks_true _ =
   let ep1, ep2 = create () in
   let _ = Thread.create echo_server ep1 in
 
-  let reply = coin_flip_echo_client 42 ep2 in
+  let reply = coin_flip_echo_client ep2 42 in
 
   assert_equal (Some 42) reply
 
@@ -225,7 +225,7 @@ let test_coin_flip_echo_client_picks_false _ =
   let ep1, ep2 = create () in
   let _ = Thread.create echo_server ep1 in
 
-  let reply = coin_flip_echo_client 42 ep2 in
+  let reply = coin_flip_echo_client ep2 42 in
 
   assert_equal None reply
 
@@ -234,8 +234,10 @@ let examples_suite =
   >::: [
          "echo client" >:: test_echo_client;
          "idle client" >:: test_idle_client;
-         "coin flip echo client picks true" >:: test_coin_flip_echo_client_picks_true;
-         "coin flip echo client picks false" >:: test_coin_flip_echo_client_picks_false;
+         "coin flip echo client picks true"
+         >:: test_coin_flip_echo_client_picks_true;
+         "coin flip echo client picks false"
+         >:: test_coin_flip_echo_client_picks_false;
          "buyer seller" >:: test_buyer_seller;
          "buyer seller no agreement" >:: test_buyer_seller_no_agreement;
        ]
