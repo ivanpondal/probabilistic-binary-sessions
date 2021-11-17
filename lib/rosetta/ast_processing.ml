@@ -133,8 +133,7 @@ let pp t0 =
         Format.close_box ()
     | Tagged (`Variant, tags) -> aux_tags tags
     | Tagged (((`Choice | `Branch) as pol), tags) ->
-        Format.print_as 1 (string_of_polarity pol);
-        aux_tags_prob tags
+        aux_tags_prob pol tags
     | Constructor (((`SelectSequence | `AcceptSequence) as pol), [ t; s ]) ->
         Format.open_hovbox 0;
         Format.print_as 1 (string_of_polarity pol);
@@ -172,11 +171,12 @@ let pp t0 =
           tags;
         Format.print_string " ]";
         Format.close_box ()
-  and aux_tags_prob = function
+  and aux_tags_prob pol = function
     | [] -> Format.print_string "[ ]"
     | prob :: tag :: tags ->
         Format.open_hvbox 0;
         aux_tag_prob prob;
+        Format.print_as 1 (string_of_polarity pol);
         Format.print_string "[ ";
         aux_tag tag;
         List.iter
@@ -190,9 +190,7 @@ let pp t0 =
     | _ -> assert false
   and aux_tag_prob (_, t) =
     Format.open_hvbox 0;
-    Format.print_space ();
     aux t;
-    Format.print_space ();
     Format.close_box ()
   and aux_tag (name, t) =
     Format.open_hvbox 0;
