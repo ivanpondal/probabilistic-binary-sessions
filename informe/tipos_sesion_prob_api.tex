@@ -58,6 +58,9 @@ $\dual\SessionType$, se obtiene utilizando la misma definición que para los
 
 \section{Interfaz programática}
 
+Para la extensión a tipos sesión probabilísticos de FuSe se hicieron algunas
+modificaciones a la interfaz presentada en Tabla~\ref{tab:api}.
+
 \begin{table}[htb]
     \begin{OCamlD}[frame=single]
         val close        : $\tdone$ -> unit
@@ -73,4 +76,26 @@ $\dual\SessionType$, se obtiene utilizando la misma definición que para los
     \caption{Interfaz programática para  sesión probabilísticos}
     \label{tab:prob_api}
 \end{table}
+
+Comenzamos con los cambios necesarios para la distinción de una terminación
+exitosa, donde \OI{close} adquiere la semántica de terminación exitosa mientras
+que \OI{idle} es utilizada para denotar el fin de la comunicación.
+
+Procedemos con las modificaciones y nuevas primitivas para la selección de
+caminos con cierta probabilidad. Las primitivas \OI{select_true} y
+\OI{select_false} permiten avanzar la comunicación sobre un endpoint que
+presenta una elección determinística por $\Tag[True]$ o $\Tag[False]$
+respectivamente.
+
+La función \OI{pick} (dada una probabilidad $p$) escoge $\Tag[True]$ con probabilidad $p$ y
+$\Tag[False]$ con $p - 1$ sobre el endpoint con tipo
+$\BinaryPChoice[p]{\SessionTypeT}{\SessionTypeS}$. El comportamiento de cada
+rama queda definido por las funciones
+$\BinaryPChoice[1]{\SessionTypeT}{\SessionTypeS} \to \alpha$ y
+$\BinaryPChoice[0]{\SessionTypeT}{\SessionTypeS} \to \alpha$, donde se procede
+con una elección determinística sobre la rama escogida.
+
+Por último \OI{branch} opera sobre una elección externa
+$\BinaryPBranch[p]{\SessionTypeT}{\SessionTypeS}$ y retorna ambos caminos como
+unión disjunta.
 
