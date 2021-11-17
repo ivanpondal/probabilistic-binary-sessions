@@ -8,10 +8,10 @@ establece qué estructura tiene la comunicación mediante una especificación; e
 
 \begin{equation}
     \label{eq:bare.auction}
-    \cout \tint \parens {
-        \tbranch [] \tend {
-            \cin \tint \parens {
-                \tchoice [] \tend \T
+    \Out\tint{
+        \BinaryPBranch[]\tdone{
+            \In\tint{
+                \BinaryPChoice[]\tend\T
             }
         }
     }
@@ -19,10 +19,10 @@ establece qué estructura tiene la comunicación mediante una especificación; e
 
 podría describir (parte de) un protocolo que debe seguir un proceso comprador
 para participar en una subasta: el proceso debe enviar un valor entero que es su
-oferta ($ \cout [] \tint $) y espera una decisión del subastador. El protocolo
+oferta ($ \Out [] \tint $) y espera una decisión del subastador. El protocolo
 puede proceder en este punto en dos formas distintas correspondientes a las dos
-ramas del operador $ \tbranch [] {} {}$. El subastador puede declarar que el
+ramas del operador $\Branch$. El subastador puede declarar que el
 artículo se vende, en cuyo caso la sesión termina inmediatamente ($ \tend $), o
-puede contraofertar un nuevo valor ($ \cin [] \tint $). En ese momento, el
-comprador puede elegir ($ \tchoice [] {} {} $) terminar la subasta o reiniciar
+puede contraofertar un nuevo valor ($ \In [] \tint $). En ese momento, el
+comprador puede elegir ($\Choice$) terminar la subasta o reiniciar
 el protocolo con otra oferta, aquí denotado por $\T$.

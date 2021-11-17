@@ -11,10 +11,10 @@ dedicado.
 Por ejemplo, podemos refinar \eqref{eq:bare.auction} como
 \begin{equation}
     \label{eq:refined.auction}
-    \cout\tint\parens{
-        \tbranch[p]\tdone{
-            \cin\tint\parens{
-                \tchoice[q]\tend\T
+    \Out\tint{
+        \BinaryPBranch[p]\tdone{
+            \In\tint{
+                \BinaryPChoice[q]\tend\T
             }
         }
     }
