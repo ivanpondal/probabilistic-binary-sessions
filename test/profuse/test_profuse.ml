@@ -109,28 +109,6 @@ let test_double_false_picks_true _ =
 
   assert_equal false result
 
-let echo_server ep =
-  match branch ep with
-  | `True ep ->
-      let x, ep = receive ep in
-      let ep = send x ep in
-      close ep
-  | `False ep -> idle ep
-
-let echo_client x ep =
-  let ep = select_true ep in
-  let ep = send x ep in
-  let x, ep = receive ep in
-  close ep;
-  x
-
-let coin_flip_echo_client x ep =
-  pick one_half
-    (fun ep ->
-      idle_client ep;
-      x)
-    (echo_client x) ep
-
 let pick_suite =
   "Pick"
   >::: [
@@ -192,9 +170,72 @@ let test_buyer_seller_no_agreement _ =
 
   assert_equal ~printer:string_of_int (-1) offer
 
+let echo_server ep =
+  match branch ep with
+  | `True ep ->
+      let x, ep = receive ep in
+      let ep = send x ep in
+      close ep
+  | `False ep -> idle ep
+
+let echo_client x ep =
+  let ep = select_true ep in
+  let ep = send x ep in
+  let x, ep = receive ep in
+  close ep;
+  x
+
+let coin_flip_echo_client x ep =
+  pick one_half
+    (fun ep ->
+      idle_client ep;
+      None)
+    (fun ep -> Some (echo_client x ep))
+    ep
+
+let test_echo_client _ =
+  let ep1, ep2 = create () in
+  let _ = Thread.create echo_server ep1 in
+
+  let reply = echo_client 42 ep2 in
+
+  assert_equal 42 reply
+
+let test_idle_client _ =
+  let ep1, ep2 = create () in
+  let _ = Thread.create echo_server ep1 in
+
+  let reply = idle_client ep2 in
+
+  assert_equal () reply
+
+let test_coin_flip_echo_client_picks_true _ =
+  Random.init 3;
+  (* seed forcing true *)
+  let ep1, ep2 = create () in
+  let _ = Thread.create echo_server ep1 in
+
+  let reply = coin_flip_echo_client 42 ep2 in
+
+  assert_equal (Some 42) reply
+
+let test_coin_flip_echo_client_picks_false _ =
+  Random.init 4;
+  (* seed forcing false *)
+  let ep1, ep2 = create () in
+  let _ = Thread.create echo_server ep1 in
+
+  let reply = coin_flip_echo_client 42 ep2 in
+
+  assert_equal None reply
+
 let examples_suite =
   "Examples"
   >::: [
+         "echo client" >:: test_echo_client;
+         "idle client" >:: test_idle_client;
+         "coin flip echo client picks true" >:: test_coin_flip_echo_client_picks_true;
+         "coin flip echo client picks false" >:: test_coin_flip_echo_client_picks_false;
          "buyer seller" >:: test_buyer_seller;
          "buyer seller no agreement" >:: test_buyer_seller_no_agreement;
        ]

@@ -67,8 +67,8 @@ modificaciones a la interfaz presentada en Tabla~\ref{tab:api}.
         val idle         : $\tend$ -> unit
         val select_true  : $\BinaryPChoice[1]{\SessionTypeT}{\SessionTypeS}$ -> $\SessionTypeT$
         val select_false : $\BinaryPChoice[0]{\SessionTypeT}{\SessionTypeS}$ -> $\SessionTypeS$
-        val pick         : $p$ -> $(\BinaryPChoice[1]{\SessionTypeT}{\SessionTypeS}$ -> $\alpha)$
-                             -> $(\BinaryPChoice[0]{\SessionTypeT}{\SessionTypeS}$ -> $\alpha)$
+        val pick         : $p$ -> $(\BinaryPChoice[0]{\SessionTypeT}{\SessionTypeS}$ -> $\alpha)$
+                             -> $(\BinaryPChoice[1]{\SessionTypeT}{\SessionTypeS}$ -> $\alpha)$
                              -> $\BinaryPChoice[p]{\SessionTypeT}{\SessionTypeS}$ -> $\alpha$
         val branch       : $\BinaryPBranch[p]{\SessionTypeT}{\SessionTypeS}$
                              -> $\set{\Tag[True]: \SessionTypeT,\ \Tag[False]: \SessionTypeS}$
@@ -87,15 +87,15 @@ caminos con cierta probabilidad. Las primitivas \OI{select_true} y
 presenta una elección determinística por $\Tag[True]$ o $\Tag[False]$
 respectivamente.
 
-La función \OI{pick} (dada una probabilidad $p$) escoge $\Tag[True]$ con probabilidad $p$ y
-$\Tag[False]$ con $p - 1$ sobre el endpoint con tipo
-$\BinaryPChoice[p]{\SessionTypeT}{\SessionTypeS}$. El comportamiento de cada
-rama queda definido por las funciones
-$\BinaryPChoice[1]{\SessionTypeT}{\SessionTypeS} \to \alpha$ y
-$\BinaryPChoice[0]{\SessionTypeT}{\SessionTypeS} \to \alpha$, donde se procede
-con una elección determinística sobre la rama escogida.
+La función \OI{pick} (dada una probabilidad $p$) escoge $\Tag[True]$ con
+probabilidad $p$ y $\Tag[False]$ con $p - 1$ sobre el endpoint con tipo
+$\BinaryPChoice[p]{\SessionTypeT}{\SessionTypeS}$. El comportamiento sobre la
+rama seleccionada queda definido por la función
+$\BinaryPChoice[1]{\SessionTypeT}{\SessionTypeS} \to \alpha$ para el caso
+$\Tag[True]$ y $\BinaryPChoice[0]{\SessionTypeT}{\SessionTypeS} \to \alpha$
+cuando es $\Tag[False]$, ambas proceden con una elección determinística sobre
+la rama escogida.
 
 Por último \OI{branch} opera sobre una elección externa
 $\BinaryPBranch[p]{\SessionTypeT}{\SessionTypeS}$ y retorna ambos caminos como
 unión disjunta.
-
