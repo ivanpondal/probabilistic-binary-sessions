@@ -23,8 +23,8 @@ Para esta interpretación probabilística consideramos la siguiente gramática
 	& &
 \BinaryPBranch[p]\SessionTypeT\SessionTypeS
 \rulemid \BinaryPChoice[p]\SessionTypeT\SessionTypeS
-\rulemid \etvar
-\rulemid \dual\etvar
+\rulemid \etvarA
+\rulemid \dual\etvarA
 \end{array}
 \]
 
@@ -65,13 +65,13 @@ modificaciones a la interfaz presentada en Tabla~\ref{tab:api}.
     \begin{OCamlD}[frame=single]
         val close        : $\Done$ -> unit
         val idle         : $\Idle$ -> unit
-        val select_true  : $\BinaryPChoice[1]{\SessionTypeT}{\SessionTypeS}$ -> $\SessionTypeT$
-        val select_false : $\BinaryPChoice[0]{\SessionTypeT}{\SessionTypeS}$ -> $\SessionTypeS$
-        val pick         : $p$ -> $(\BinaryPChoice[0]{\SessionTypeT}{\SessionTypeS}$ -> $\alpha)$
-                             -> $(\BinaryPChoice[1]{\SessionTypeT}{\SessionTypeS}$ -> $\alpha)$
-                             -> $\BinaryPChoice[p]{\SessionTypeT}{\SessionTypeS}$ -> $\alpha$
-        val branch       : $\BinaryPBranch[p]{\SessionTypeT}{\SessionTypeS}$
-                             -> $\set{\Tag[True]: \SessionTypeT,\ \Tag[False]: \SessionTypeS}$
+        val select_true  : $\BinaryPChoice[1]{\etvarA}{\etvarB}$ -> $\etvarA$
+        val select_false : $\BinaryPChoice[0]{\etvarA}{\etvarB}$ -> $\etvarB$
+        val pick         : $p$ -> $(\BinaryPChoice[0]{\etvarA}{\etvarB}$ -> $\alpha)$
+                             -> $(\BinaryPChoice[1]{\etvarA}{\etvarB}$ -> $\alpha)$
+                             -> $\BinaryPChoice[p]{\etvarA}{\etvarB}$ -> $\alpha$
+        val branch       : $\BinaryPBranch[p]{\etvarA}{\etvarB}$
+                             -> $\set{\Tag[True]: \etvarA,\ \Tag[False]: \etvarB}$
     \end{OCamlD}
     \caption{Interfaz programática para  sesión probabilísticos}
     \label{tab:prob_api}
@@ -89,13 +89,13 @@ respectivamente.
 
 La función \OI{pick} (dada una probabilidad $p$) escoge $\Tag[True]$ con
 probabilidad $p$ y $\Tag[False]$ con $p - 1$ sobre el endpoint con tipo
-$\BinaryPChoice[p]{\SessionTypeT}{\SessionTypeS}$. El comportamiento sobre la
+$\BinaryPChoice[p]{\etvarA}{\etvarB}$. El comportamiento sobre la
 rama seleccionada queda definido por la función
-$\BinaryPChoice[1]{\SessionTypeT}{\SessionTypeS} \to \alpha$ para el caso
-$\Tag[True]$ y $\BinaryPChoice[0]{\SessionTypeT}{\SessionTypeS} \to \alpha$
+$\BinaryPChoice[1]{\etvarA}{\etvarB} \to \alpha$ para el caso
+$\Tag[True]$ y $\BinaryPChoice[0]{\etvarA}{\etvarB} \to \alpha$
 cuando es $\Tag[False]$, ambas proceden con una elección determinística sobre
 la rama escogida.
 
 Por último \OI{branch} opera sobre una elección externa
-$\BinaryPBranch[p]{\SessionTypeT}{\SessionTypeS}$ y retorna ambos caminos como
+$\BinaryPBranch[p]{\etvarA}{\etvarB}$ y retorna ambos caminos como
 unión disjunta.
