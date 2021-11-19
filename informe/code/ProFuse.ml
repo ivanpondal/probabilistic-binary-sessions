@@ -33,4 +33,11 @@ module ProbEcho = struct
       (fun ep -> Some (echo_client ep x))
       ep
   (*END*SimpleCoinFlipEchoClient*)
+
+  (*BEGIN*SimpleCoinFlipEchoMain*)
+  let _ =
+    let a, b = create () in
+    let _ = Thread.create echo_server a in
+    coin_flip_echo_client b 42
+  (*END*SimpleCoinFlipEchoMain*)
 end

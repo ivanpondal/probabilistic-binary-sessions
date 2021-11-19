@@ -9,9 +9,9 @@ establece qué estructura tiene la comunicación mediante una especificación; e
 \begin{equation}
     \label{eq:bare.auction}
     \Out\tint{
-        \BinaryPBranch[]\tdone{
+        \BinaryPBranch[]\End{
             \In\tint{
-                \BinaryPChoice[]\tend\T
+                \BinaryPChoice[]\End\T
             }
         }
     }
@@ -22,7 +22,7 @@ para participar en una subasta: el proceso debe enviar un valor entero que es su
 oferta ($ \Out [] \tint $) y espera una decisión del subastador. El protocolo
 puede proceder en este punto en dos formas distintas correspondientes a las dos
 ramas del operador $\Branch$. El subastador puede declarar que el
-artículo se vende, en cuyo caso la sesión termina inmediatamente ($ \tend $), o
+artículo se vende, en cuyo caso la sesión termina inmediatamente ($ \End $), o
 puede contraofertar un nuevo valor ($ \In [] \tint $). En ese momento, el
 comprador puede elegir ($\Choice$) terminar la subasta o reiniciar
 el protocolo con otra oferta, aquí denotado por $\T$.

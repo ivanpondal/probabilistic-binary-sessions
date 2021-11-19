@@ -12,15 +12,15 @@ Por ejemplo, podemos refinar \eqref{eq:bare.auction} como
 \begin{equation}
     \label{eq:refined.auction}
     \Out\tint{
-        \BinaryPBranch[p]\tdone{
+        \BinaryPBranch[p]\Done{
             \In\tint{
-                \BinaryPChoice[q]\tend\T
+                \BinaryPChoice[q]\Idle\T
             }
         }
     }
 \end{equation}
 
-donde el tipo sesión $\tdone$ indica una terminación exitosa y donde las
+donde el tipo sesión $\Done$ indica una terminación exitosa y las
 ramas  se anotan con probabilidades $p$ y $q$. En particular, el subastador
 declara que el artículo se vende con probabilidad $p$ y  responde con una
 contraoferta con probabilidad $1-p$, mientras que el comprador decide abandonar

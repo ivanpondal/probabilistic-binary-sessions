@@ -14,8 +14,8 @@ Para esta interpretación probabilística consideramos la siguiente gramática
 \rulemid \cdots
 \\
 \SessionTypeT, \SessionTypeS & ::= &
-\tend
-\rulemid \tdone
+\Done
+\rulemid \Idle
 \rulemid \Out\Type\SessionType
 \rulemid \In\Type\SessionType
 \rulemid
@@ -34,8 +34,8 @@ variables libres,  sesión para endpoints, sesiones con probabilidad de
 de la composición o ``unión'' de un par de endpoints con  sesión duales
 $\SessionTypeT$ y $\dual\SessionTypeT$.
 
-Para los  sesión descritos por $\SessionTypeT$ y $\SessionTypeS$, $\tend$
-y $\tdone$ marcan el fin de una comunicación. Utilizamos $\tdone$ para denotar
+Para los  sesión descritos por $\SessionTypeT$ y $\SessionTypeS$, $\Idle$
+y $\Done$ marcan el fin de una comunicación. Utilizamos $\Done$ para denotar
 los puntos de terminación exitosa de un protocolo, la semántica para tal
 terminación siendo dependiente del dominio del problema. Los  sesión
 $\Out\Type\SessionType$ y $\In\Type\SessionType$ describen endpoints para
@@ -63,8 +63,8 @@ modificaciones a la interfaz presentada en Tabla~\ref{tab:api}.
 
 \begin{table}[htb]
     \begin{OCamlD}[frame=single]
-        val close        : $\tdone$ -> unit
-        val idle         : $\tend$ -> unit
+        val close        : $\Done$ -> unit
+        val idle         : $\Idle$ -> unit
         val select_true  : $\BinaryPChoice[1]{\SessionTypeT}{\SessionTypeS}$ -> $\SessionTypeT$
         val select_false : $\BinaryPChoice[0]{\SessionTypeT}{\SessionTypeS}$ -> $\SessionTypeS$
         val pick         : $p$ -> $(\BinaryPChoice[0]{\SessionTypeT}{\SessionTypeS}$ -> $\alpha)$
