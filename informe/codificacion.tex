@@ -1,0 +1,49 @@
+La implementación toma de base el trabajo realizado en \FuSe. En esta sección
+presentaremos los cambios necesarios en la codificación y tipado de las
+primitivas para modelar elecciones probabilísticas y cualquier información
+adicional necesaria para el cálculo de terminación exitosa de un tipo sesión.
+
+\section{Codificación}
+
+\begin{center}
+$\displaystyle
+  \begin{array}{@{}c@{}}
+    \textbf{Codificación de tipos sesión probabilísticos} \\
+    \hline
+    \hline
+    \begin{array}[t]{@{}r@{~}c@{~}l@{}}
+      \encfun\Done
+      & = &
+      \tsession\DoneBottomType\DoneBottomType
+      \\
+      \encfun\Idle
+      & = &
+      \tsession\tbottom\tbottom
+      \\
+      \encfun{\In\Type\SessionType}
+      & = &
+      \tsession{\encfun\Type\tmul\encfun\SessionType}\tbottom
+      \\
+      \encfun{\Out\Type\SessionType}
+      & = &
+      \tsession\tbottom{\encfun\Type\tmul\encfun{\dual\SessionType}}
+      \\
+      \encfun{\BinaryPBranch[p]{\SessionTypeT}{\SessionTypeS}}
+      & = &
+      \tsession{\BinaryLabels{\encfun{\SessionTypeT}}{\encfun{\SessionTypeS}}\tmul p}\tbottom
+      \\
+      \encfun{\BinaryPChoice[p]{\SessionTypeT}{\SessionTypeS}}
+      & = &
+      \tsession{\tbottom}{\BinaryLabels{\encfun{\dual\SessionTypeT}}{\encfun{\dual\SessionTypeS}}\tmul p}
+      \\
+      \encfun\etvar
+      & = &
+      \tsession{\renc\etvar}{\senc\etvar}
+      \\
+      \encfun{\sdual\etvar}
+      & = &
+      \tsession{\senc\etvar}{\renc\etvar}
+    \end{array}
+  \end{array}
+$
+\end{center}
