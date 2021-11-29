@@ -13,6 +13,7 @@
 \usepackage{xspace}
 \usepackage{stmaryrd}
 \usepackage{mathbbol}
+\usepackage{bm}
 
 \lstdefinestyle{INLINE}{
 }
@@ -41,10 +42,11 @@
   moreemph=[2]{branch,branch_2st,branch_2ch},
   moreemph=[2]{sync,use,fresh},
   moreemph=[2]{InvalidEndpoint},
-  moreemph=[2]{one_half},
+  moreemph=[2]{one_half,zero,one,two},
   showstringspaces=false,
   emphstyle=[2]\color{mymagenta},
   emph=[3]{Service,Session,Rational,List,Thread,Event,Obj,UnsafeChannel,Flag,Mutex,None,Some},
+  emph=[3]{S,Z,Fraction},
   emphstyle=[3]\color{lightblue},
   moredelim=[is][\color{myred}]{\#}{\#},
   mathescape=true,
