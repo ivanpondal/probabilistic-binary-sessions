@@ -5,6 +5,30 @@ adicional necesaria para el cálculo de terminación exitosa de un tipo sesión.
 
 \section{Codificación}
 
+\FuSe toma la codificación propuesta en Dardha et al \todo{Cita Dardha}
+posteriormente refinada por Padovani \todo{Cita Padovani}. La idea principal es que una
+secuencia de mensajes sobre una sesión puede modelarse como una secuencia de
+comunicaciónes de un mensaje sobre canales que pueden utilizarse una única
+vez. En este modelo cada mensaje lleva un valor acompañado de un canal fresco
+sobre el cual continuar la comunicación.
+
+Esta codificación depende de los siguientes tipos:
+
+\begin{itemize}
+	\item $\tbottom$ utilizado para representar la ausencia de
+		valor.
+	\item $\DoneBottomType$ únicamente utilizado para
+		distinguir la terminación exitosa.
+	\item $\tsession{\renc{}}{\senc{}}$ describe canales que
+		reciben mensajes del tipo $\renc{}$ y envían de tipo $\senc{}$.
+		Tanto $\renc{}$ como $\senc{}$ pueden ser instanciados con
+		$\tbottom$ para indicar que no se recibe y/o envía ningún
+		mensaje.
+\end{itemize}
+
+La relación entre los tipos sesión $\SessionType$ y los tipos de la forma
+$\tsession\TypeT\TypeS$ está dada por la función $\encfun\cdot$ definida debajo
+
 \begin{center}
 $\displaystyle
   \begin{array}{@{}c@{}}
@@ -47,6 +71,113 @@ $\displaystyle
   \end{array}
 $
 \end{center}
+
+extendida homomórficamente a todos los tipos. Asumimos que para cada variable
+de tipo sesión $\etvar$ existen dos variables de tipo $\senc\etvar$ y
+$\renc\etvar$ distintas entre sí y de cualquier tipo de variable $\tvar$.
+
+Como ejemplo, el tipo sessión $\In\tvar\etvar$ se codifica como
+$\tsession{\tvar \tmul \tsession{\renc\etvar}{\senc\etvar}}\tbottom$,
+describiendo un canal para recibir un mensaje de tipo $\tvar \tmul
+\tsession{\renc\etvar}{\senc\etvar}$; una componente de tipo $\tvar$ (el valor a
+comunicar) y otra de tipo $\tsession{\renc\etvar}{\senc\etvar}$ (el canal de
+continuación sobre el cual avanza la comunicación).
+
+Para la codificación de los tipos sesión que envían un valor o una elección
+tenemos la particularidad de que la continuación está dualizada. Esto se debe a
+que el tipo asociado a la continuación del canal describe el comportamiento del
+\emph{receptor}. Además, este detalle permite una forma sencilla de expresar la
+dualidad entre tipos sesión aun cuando no se encuentran completamente
+instanciados.
+
+Como ejemplo, tomemos la codificación de
+$\SessionType = \BinaryPChoice[p]{\Tag[\Out\tvarA\In\tvarB\Done]}{\Tag[\Idle]}$
+\[
+\begin{array}{@{}rcl@{}}
+  \encfun\SessionType
+  & = & \tsession\tbottom{
+	  \BinaryLabels{\encfun{\In\tvarA\Out\tvarB\Done}}{\encfun\Idle}\tmul p
+    }
+  \\
+  & = & \tsession\tbottom{
+	  \BinaryLabels{\tsession{\tvarA\tmul\encfun{\Out\tvarB\Done}}{\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }
+  \\
+  & = & \tsession\tbottom{
+	  \BinaryLabels{\tsession{\tvarA\tmul\tsession{\tbottom}
+	                                              {\tvarB\tmul\encfun{\Done}}}
+	                         {\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }\\
+  & = & \tsession\tbottom{
+	  \BinaryLabels{\tsession{\tvarA\tmul\tsession{\tbottom}
+						      {\tvarB\tmul\tsession{\DoneBottomType}
+	                                                                   {\DoneBottomType}}}
+	                         {\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }
+\end{array}
+\]
+
+Luego tomamos la de su dual
+$\dual\SessionType = \BinaryPBranch{\In\tvarA\Out\tvarB\End}{\Idle}$
+\[
+\begin{array}{@{}rcl@{}}
+  \encfun{\dual\SessionType}
+  & = & \tsession{
+	  \BinaryLabels{\encfun{\In\tvarA\Out\tvarB\Done}}{\encfun\Idle}\tmul p
+    }\tbottom
+  \\
+  & = & \tsession{
+	  \BinaryLabels{\tsession{\tvarA\tmul\encfun{\Out\tvarB\Done}}{\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }\tbottom
+  \\
+  & = & \tsession{
+	  \BinaryLabels{\tsession{\tvarA\tmul\tsession{\tbottom}
+	                                              {\tvarB\tmul\encfun{\Done}}}
+	                         {\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }\tbottom
+  \\
+  & = & \tsession{
+	  \BinaryLabels{\tsession{\tvarA\tmul\tsession{\tbottom}
+						      {\tvarB\tmul\tsession{\DoneBottomType}
+	                                                                   {\DoneBottomType}}}
+	                         {\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }\tbottom
+\end{array}
+\]
+
+Con este último ejemplo podemos notar que la codificación de
+$\dual\SessionType$ puede obtenerse de $\SessionType$ permutando las
+componentes de su par codificado. Esta es una propiedad que se cumple siempre
+para esta codificación:
+
+\begin{theorem}
+\todo{Cambiar Theorem a español}
+  \label{thm:duality}
+  Si $\encfun\SessionType = \tsession\TypeT\TypeS$, entonces
+  $\encfun{\dual\SessionType} = \tsession\TypeS\TypeT$.
+\end{theorem}
+
+De forma equivalente podemos decir que si
+$\encfun\SessionTypeT = \tsession{\Type_1}{\Type_2}$ y
+$\encfun\SessionTypeS = \tsession{\TypeS_1}{\TypeS_2}$, entonces
+\[
+\SessionTypeT = \dual\SessionTypeS
+\iff
+\encfun\SessionTypeT = \encfun{\dual\SessionTypeS}
+\iff
+\TypeT_1 = \TypeS_2
+\wedge
+\TypeT_2 = \TypeS_1
+\]
+Esto permite reducir el cáculo del dual de un tipo sesión a la
+equivalencia entre tipos. También vale para tipos sesión desconocidos o parcialmente instanciados: $\encfun\etvar = \tsession{\renc\etvar}{\senc\etvar}$ y
+$\encfun{\sdual\etvar} = \tsession{\senc\etvar}{\renc\etvar}$.
 
 \subsection{Codificación de probabilidad}
 
