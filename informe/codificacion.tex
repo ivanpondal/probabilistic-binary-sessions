@@ -266,3 +266,39 @@ denominador, prohibiendo el cero mediante una restricción de tipo.
 \caption{Representación y ejemplo de racionales}
 \label{tab:def_rational}
 \end{table}
+
+\subsection{Codificación interfaz \OCaml}
+
+\begin{table}[htb]
+	\begin{OCamlD}[frame=single]
+  type _0
+  type _1
+  type $p_0$ (* alias para codificación de probabilidad cero *)
+  type $p_1$ (* alias para codificación de probabilidad uno *)
+  type ('r,'s) pst (* sintáxis en OCaml para $\tsession\tvarR\tvarS$ *)
+  val create  : unit -> ('r,'s) pst * ('s,'r) pst
+  val close   : (_0,_0) pst -> unit
+  val idle    : (_1,_1) pst -> unit
+  val send    : 'a -> (_0,('a * ('s,'r) pst)) pst -> ('r,'s) pst
+  val receive : (('a * ('r,'s) pst),_0) pst -> 'a * ('r,'s) pst
+  val select_true  : (_0,[`True of ('r,'s) pst |
+                         `False of ('c,'d) pst] * $p_1$)
+                      -> ('r,'s) pst
+  val select_false : (_0,[`True of ('r,'s) pst |
+                         `False of ('c,'d) pst] * $p_0$)
+                      -> ('c,'d) pst
+  val pick   : $p$ ->
+             ((_0,[`True of ('r,'s) pst | `False of ('c,'d) pst]
+                  * $p_0$) -> 'a) ->
+             ((_0,[`True of ('r,'s) pst | `False of ('c,'d) pst]
+                  * $p_1$) -> 'a) ->
+             (_0,[`True of ('r,'s) pst | `False of ('c,'d) pst]
+                 * $p$) -> 'a
+  val branch : ([`True of ('r,'s) pst |
+                 `False of ('c,'d) pst] * $p$,_0)
+                -> [> `True of ('r,'s) pst | `False of ('c,'d) pst]
+	\end{OCamlD}
+	\caption{Interfaz \OCaml para tipos sesión probabilísticos.}
+	\label{tab:signature}
+\end{table}
+\todo{Prob uno y etiquetas de tipo}
