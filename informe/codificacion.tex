@@ -179,6 +179,51 @@ Esto permite reducir el cáculo del dual de un tipo sesión a la
 equivalencia entre tipos. También vale para tipos sesión desconocidos o parcialmente instanciados: $\encfun\etvar = \tsession{\renc\etvar}{\senc\etvar}$ y
 $\encfun{\sdual\etvar} = \tsession{\senc\etvar}{\renc\etvar}$.
 
+\begin{table}[htb]
+	\begin{OCamlD}[frame=single]
+  type _0
+  type _1
+  type $p_0$ (* alias para codificación de probabilidad cero *)
+  type $p_1$ (* alias para codificación de probabilidad uno *)
+  type ('r,'s) pst (* sintáxis en OCaml para $\tsession\tvarR\tvarS$ *)
+  val create  : unit -> ('r,'s) pst * ('s,'r) pst
+  val close   : (_0,_0) pst -> unit
+  val idle    : (_1,_1) pst -> unit
+  val send    : 'a -> (_0,('a * ('s,'r) pst)) pst -> ('r,'s) pst
+  val receive : (('a * ('r,'s) pst),_0) pst -> 'a * ('r,'s) pst
+  val select_true  : (_0,[`True of ('r,'s) pst |
+                         `False of ('c,'d) pst] * $p_1$)
+                      -> ('r,'s) pst
+  val select_false : (_0,[`True of ('r,'s) pst |
+                         `False of ('c,'d) pst] * $p_0$)
+                      -> ('c,'d) pst
+  val pick   : $p$ ->
+             ((_0,[`True of ('r,'s) pst | `False of ('c,'d) pst]
+                  * $p_0$) -> 'a) ->
+             ((_0,[`True of ('r,'s) pst | `False of ('c,'d) pst]
+                  * $p_1$) -> 'a) ->
+             (_0,[`True of ('r,'s) pst | `False of ('c,'d) pst]
+                 * $p$) -> 'a
+  val branch : ([`True of ('r,'s) pst |
+                 `False of ('c,'d) pst] * $p$,_0)
+                -> [> `True of ('r,'s) pst | `False of ('c,'d) pst]
+	\end{OCamlD}
+	\caption{Interfaz \OCaml para tipos sesión probabilísticos.}
+	\label{tab:signature}
+\end{table}
+
+Habiendo escogido la representación para tipos sesión probabilísticos podemos
+observar la implementación de la interfaz \OCaml en la Tabla
+\ref{tab:signature}. Existe una correspondencia directa entre la firma de las
+funciones de la Tabla \ref{tab:signature} y las primitivas introducidas en
+Tabla \ref{tab:prob_api}. Queda en evidencia que esta codificación dificulta
+la lectura de los tipos sesión. Este problema se agudiza a medida que los
+protocolos implementados son más complejos. Por este motivo extendimos
+\texttt{rosetta}, una herramienta auxiliar que acompaña \FuSe, para imprimir
+los tipos utilizando la notación presente en la gramática inicial. Al momento
+de presentar tipos sesión inferidos por \OCaml utilizaremos el formato generado
+por \texttt{rosetta} para facilitar la lectura.
+
 \subsection{Codificación de probabilidad}
 
 Podemos notar las elecciones llevan en su codificación una probabilidad
@@ -266,39 +311,3 @@ denominador, prohibiendo el cero mediante una restricción de tipo.
 \caption{Representación y ejemplo de racionales}
 \label{tab:def_rational}
 \end{table}
-
-\subsection{Codificación interfaz \OCaml}
-
-\begin{table}[htb]
-	\begin{OCamlD}[frame=single]
-  type _0
-  type _1
-  type $p_0$ (* alias para codificación de probabilidad cero *)
-  type $p_1$ (* alias para codificación de probabilidad uno *)
-  type ('r,'s) pst (* sintáxis en OCaml para $\tsession\tvarR\tvarS$ *)
-  val create  : unit -> ('r,'s) pst * ('s,'r) pst
-  val close   : (_0,_0) pst -> unit
-  val idle    : (_1,_1) pst -> unit
-  val send    : 'a -> (_0,('a * ('s,'r) pst)) pst -> ('r,'s) pst
-  val receive : (('a * ('r,'s) pst),_0) pst -> 'a * ('r,'s) pst
-  val select_true  : (_0,[`True of ('r,'s) pst |
-                         `False of ('c,'d) pst] * $p_1$)
-                      -> ('r,'s) pst
-  val select_false : (_0,[`True of ('r,'s) pst |
-                         `False of ('c,'d) pst] * $p_0$)
-                      -> ('c,'d) pst
-  val pick   : $p$ ->
-             ((_0,[`True of ('r,'s) pst | `False of ('c,'d) pst]
-                  * $p_0$) -> 'a) ->
-             ((_0,[`True of ('r,'s) pst | `False of ('c,'d) pst]
-                  * $p_1$) -> 'a) ->
-             (_0,[`True of ('r,'s) pst | `False of ('c,'d) pst]
-                 * $p$) -> 'a
-  val branch : ([`True of ('r,'s) pst |
-                 `False of ('c,'d) pst] * $p$,_0)
-                -> [> `True of ('r,'s) pst | `False of ('c,'d) pst]
-	\end{OCamlD}
-	\caption{Interfaz \OCaml para tipos sesión probabilísticos.}
-	\label{tab:signature}
-\end{table}
-\todo{Prob uno y etiquetas de tipo}
