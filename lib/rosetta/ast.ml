@@ -28,9 +28,8 @@ and constructor_t =
   | `Empty
   | `End
   | `Done
-  | `NullProb
-  | `OneProb
   | `Prob of float
+  | `ConvexSum
   | `Nat of int
   | `Frac of float
   | `Arrow
@@ -47,8 +46,8 @@ and constructor_t =
 and tagged_constructor_t = [ `Variant | `Choice | `Branch ]
 
 let priority_of_constructor = function
-  | `Empty | `End | `Done | `NullProb | `OneProb | `Nat _ | `Frac _ | `Prob _
-  | `Channel | `ClosedChannel | `Apply _ ->
+  | `Empty | `End | `Done | `Nat _ | `Frac _ | `Prob _ | `ConvexSum | `Channel
+  | `ClosedChannel | `Apply _ ->
       5
   | `As _ -> 4
   | `Send | `Receive | `Sequence | `SelectSequence | `AcceptSequence -> 3
@@ -66,12 +65,10 @@ let t_Done = Constructor (`Done, [])
 
 let t_Empty = Constructor (`Empty, [])
 
-let t_pNull = Constructor (`NullProb, [])
-
-let t_pOne = Constructor (`OneProb, [])
-
 let t_Nat n = Constructor (`Nat n, [])
 
 let t_Frac f = Constructor (`Frac f, [])
 
 let t_Prob p = Constructor (`Prob p, [])
+
+let t_ConvexSum p q r = Constructor (`ConvexSum, [ p; q; r ])

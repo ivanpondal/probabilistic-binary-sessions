@@ -40,4 +40,20 @@ module ProbEcho = struct
     let _ = Thread.create echo_server a in
     coin_flip_echo_client b 42
   (*END*SimpleCoinFlipEchoMain*)
+
+  (*BEGIN*ValidTwoChannelPick*)
+  let two_channel_pick_example epX epY =
+    pick one_half
+    (fun epX ->
+      let epX = select_false epX in
+      idle epX;
+      let epY = send false epY in
+      close epY)
+    (fun epX ->
+      let epX = select_true epX in
+      close epX;
+      let epY = send true epY in
+      close epY)
+    epX
+  (*END*ValidTwoChannelPick*)
 end

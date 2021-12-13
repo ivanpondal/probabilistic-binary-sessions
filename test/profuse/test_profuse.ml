@@ -419,3 +419,43 @@ let () =
   run_test_tt_main pick_suite;
   run_test_tt_main examples_suite;
   run_test_tt_main multi_channel_suite
+
+let two_channel_pick_example epX epY =
+  pick one_half
+    (fun epX ->
+      let epX = select_false epX in
+      idle epX;
+      let epY = send false epY in
+      close epY)
+    (fun epX ->
+      let epX = select_true epX in
+      close epX;
+      let epY = send true epY in
+      close epY)
+    epX
+
+(* let invalid_two_channel_pick_example epX epY =
+   pick one_half
+     (fun epX ->
+       let epX = select_false epX in
+       idle epX;
+       send false epY)
+     (fun epX ->
+       let epX = select_true epX in
+       close epX;
+       send 42 epY)
+     epX *)
+
+let two_channel_pick_example_2 epX epY =
+  pick_2ch one_half
+    (fun epX epY ->
+      let epX = select_false epX in
+      idle epX;
+      let epY = select_false epY in
+      send false epY)
+    (fun epX epY ->
+      let epX = select_true epX in
+      close epX;
+      let epY = select_true epY in
+      send 42 epY)
+    epX epY
