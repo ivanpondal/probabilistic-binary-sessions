@@ -41,19 +41,63 @@ module ProbEcho = struct
     coin_flip_echo_client b 42
   (*END*SimpleCoinFlipEchoMain*)
 
-  (*BEGIN*ValidTwoChannelPick*)
-  let two_channel_pick_example epX epY =
+  (*BEGIN*TwoSessionsPickSingleBranch*)
+  let two_sessions_pick_single_branch epX epY =
     pick one_half
-    (fun epX ->
-      let epX = select_false epX in
-      idle epX;
-      let epY = send false epY in
-      close epY)
-    (fun epX ->
-      let epX = select_true epX in
-      close epX;
-      let epY = send true epY in
-      close epY)
-    epX
-  (*END*ValidTwoChannelPick*)
+      (fun epX ->
+        let epX = select_false epX in
+        idle epX;
+        let epY = send false epY in
+        close epY)
+      (fun epX ->
+        let epX = select_true epX in
+        close epX)
+      epX
+  (*END*TwoSessionsPickSingleBranch*)
+
+  (*BEGIN*TwoSessionsPickBothBranches*)
+  let two_sessions_pick_both_branches epX epY =
+    pick one_half
+      (fun epX ->
+        let epX = select_false epX in
+        idle epX;
+        let epY = send false epY in
+        close epY)
+      (fun epX ->
+        let epX = select_true epX in
+        close epX;
+        let epY = send true epY in
+        close epY)
+      epX
+  (*END*TwoSessionsPickBothBranches*)
+
+  (*BEGIN*TwoSessionsInvalidPickBothBranches*)
+  let two_sessions_invalid_pick epX epY =
+    pick one_half
+      (fun epX ->
+        let epX = select_false epX in
+        idle epX;
+        send false epY)
+      (fun epX ->
+        let epX = select_true epX in
+        close epX;
+        send 42 epY) (* error de tipado *)
+      epX
+  (*END*TwoSessionsInvalidPickBothBranches*)
+
+  (*BEGIN*TwoSessionsPickTwo*)
+  let two_sessions_valid_pick2 epX epY =
+    pick_2ch one_half
+      (fun epX epY ->
+        let epX = select_false epX in
+        idle epX;
+        let epY = select_false epY in
+        send false epY)
+      (fun epX epY ->
+        let epX = select_true epX in
+        close epX;
+        let epY = select_true epY in
+        send 42 epY)
+      epX epY
+  (*END*TwoSessionsPickTwo*)
 end

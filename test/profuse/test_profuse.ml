@@ -420,7 +420,19 @@ let () =
   run_test_tt_main examples_suite;
   run_test_tt_main multi_channel_suite
 
-let two_channel_pick_example epX epY =
+let two_sessions_pick_single_branch epX epY =
+  pick one_half
+    (fun epX ->
+      let epX = select_false epX in
+      idle epX;
+      let epY = send false epY in
+      close epY)
+    (fun epX ->
+      let epX = select_true epX in
+      close epX)
+    epX
+
+let two_sessions_pick_both_branches epX epY =
   pick one_half
     (fun epX ->
       let epX = select_false epX in
@@ -434,7 +446,7 @@ let two_channel_pick_example epX epY =
       close epY)
     epX
 
-(* let invalid_two_channel_pick_example epX epY =
+(* let invalid_two_ep_pick_example epX epY =
    pick one_half
      (fun epX ->
        let epX = select_false epX in
@@ -446,7 +458,7 @@ let two_channel_pick_example epX epY =
        send 42 epY)
      epX *)
 
-let two_channel_pick_example_2 epX epY =
+let two_ep_pick_example_2 epX epY =
   pick_2ch one_half
     (fun epX epY ->
       let epX = select_false epX in

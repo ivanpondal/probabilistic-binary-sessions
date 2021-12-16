@@ -1,0 +1,43 @@
+Hasta ahora estudiamos programas que trabajan con una única sesión. La
+introducción de múltiples sesiones requiere de algunas consideraciones respecto
+cómo influyen las probabilidades de unas sobre otras. En esta sección veremos
+cómo tales interacciones afectan nuestras primitivas y su tipado.
+
+\section{Limitaciones con \OI{pick} de una sesión}
+
+La primitiva de elección probabilística \OI{pick} opera sobre una única sesión,
+tomando como argumento la misma y el comportamiento sobre cada rama posible.
+Podría suceder que alguna u ambas ramas interactuen con otra sesión, a
+continuación estudiaremos qué ocurre en cada escenario.
+
+Comenzamos con un programa donde la rama $\Tag[False]$ de la elección presenta
+una comunicación con otra sesión:
+
+\TwoSessionsPickSingleBranch
+
+Aquí la sesión \OI{epX} tiene tipo $\BinaryPChoice[\frac{1}{2}]{\Done}{\Idle}$
+mientras que \OI{epY} lleva el tipo $\Out\tbool\Done$. Dado que \OI{epY} no
+realiza ningún tipo de elección tipa correctamente, la sesión es independiente
+de \OI{epX}.
+
+Continuamos con una leve modificación al programa anterior, ahora ambas ramas
+presentan la comunicación con \OI{epY}:
+
+\TwoSessionsPickBothBranches
+
+Tanto \OI{epX} como \OI{epY} preservan los tipos del ejemplo anterior. La
+diferencia se encuentra en que ahora el \emph{valor} comunicado por \OI{epY} se
+ve afectado por la elección. Dado que los tipos no han cambiado, este programa
+continua tipando correctamente.
+
+Ahora sí, veamos qué ocurre cuando difiere el valor del tipo transmitido por
+\OI{epY} según la rama:
+
+\TwoSessionsInvalidPickBothBranches
+
+En este último caso, el sistema de tipo nos indicará que \OI{epY} presenta dos
+tipos incompatibles entre sí: $\Out\tbool\Done$ y $\Out\tint\Done$. Lo que está
+sucediendo es que el comportamiento de \OI{epY} difiere según la elección
+realizada por \OI{epX}.
+
+\TwoSessionsPickTwo
