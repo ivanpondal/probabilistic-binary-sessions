@@ -7,37 +7,54 @@ cómo tales interacciones afectan nuestras primitivas y su tipado.
 
 La primitiva de elección probabilística \OI{pick} opera sobre una única sesión,
 tomando como argumento la misma y el comportamiento sobre cada rama posible.
-Podría suceder que alguna u ambas ramas interactuen con otra sesión, a
-continuación estudiaremos qué ocurre en cada escenario.
+Podría suceder que luego de una elección se interactue con otra sesión, a
+continuación estudiaremos en detalle qué ocurre en tal escenario.
 
-Comenzamos con un programa donde la rama $\Tag[False]$ de la elección presenta
-una comunicación con otra sesión:
-
-\TwoSessionsPickSingleBranch
-
-Aquí la sesión \OI{epX} tiene tipo $\BinaryPChoice[\frac{1}{2}]{\Done}{\Idle}$
-mientras que \OI{epY} lleva el tipo $\Out\tbool\Done$. Dado que \OI{epY} no
-realiza ningún tipo de elección tipa correctamente, la sesión es independiente
-de \OI{epX}.
-
-Continuamos con una leve modificación al programa anterior, ahora ambas ramas
-presentan la comunicación con \OI{epY}:
+Comenzamos con un programa donde ambas ramas de la elección sobre \OI{epX}
+presentan una comunicación con otra sesión \OI{epY}:
 
 \TwoSessionsPickBothBranches
 
-Tanto \OI{epX} como \OI{epY} preservan los tipos del ejemplo anterior. La
-diferencia se encuentra en que ahora el \emph{valor} comunicado por \OI{epY} se
-ve afectado por la elección. Dado que los tipos no han cambiado, este programa
-continua tipando correctamente.
+Aquí la sesión \OI{epX} tiene tipo $\BinaryPChoice[\frac{1}{2}]{\Done}{\Idle}$
+mientras que \OI{epY} lleva el tipo $\Out\tbool\Done$. Por más que el \emph{valor}
+comunicado por \OI{epY} dependa de la elección en \OI{epX}, el programa tipa
+correctamente. Esto sucede porque el tipo de la sesión es idéntico en ambas
+ramas.
 
-Ahora sí, veamos qué ocurre cuando difiere el valor del tipo transmitido por
-\OI{epY} según la rama:
+Veamos qué ocurre cuando difiere el valor del tipo a transmitir sobre \OI{epY}
+según la elección:
 
 \TwoSessionsInvalidPickBothBranches
 
 En este último caso, el sistema de tipo nos indicará que \OI{epY} presenta dos
 tipos incompatibles entre sí: $\Out\tbool\Done$ y $\Out\tint\Done$. Lo que está
 sucediendo es que el comportamiento de \OI{epY} difiere según la elección
-realizada por \OI{epX}.
+realizada por \OI{epX} pero tal dependencia no es capturada por el sistema de
+tipos.
 
-\TwoSessionsPickTwo
+Para poder describir estas relaciones es necesario introducir algunos aspectos
+del sistema de tipos que se enfocan en el resultado de combinar sesiones en
+elecciones.
+
+\section{Reglas de tipado para elecciones}
+
+\begin{definition}[probabilistic type combination]
+  \label{def:ccomb}
+  We write $\csum{t}{s}$ for the \emph{combination of $t$ and $s$
+    weighed by $p$}, which is defined by cases on the form of $t$
+  and $s$ as follows:
+  \[
+    \csum{t}{s}
+    \eqdef
+    \begin{cases}
+      t & \text{si $t = s$}
+      \\
+      \BinaryPChoice[pq+(1-p)r]{\SessionTypeT}{\SessionTypeS} & \text{si $t = \BinaryPChoice[q]{\SessionTypeT}{\SessionTypeS}$} \\ & \text{y $s = \BinaryPChoice[r]{\SessionTypeT}{\SessionTypeS}$}
+      \\
+      \ClosedSessionType[pq+(1-p)r] & \text{si $t = \ClosedSessionType[q]$ y $s = \ClosedSessionType[r]$}
+      \\
+      \text{indefinido} & \text{caso contrario}
+    \end{cases}
+  \]
+\end{definition}
+
