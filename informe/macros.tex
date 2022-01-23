@@ -35,7 +35,7 @@
 %%% INFERENCE RULES %%%
 %%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\rulename}[1]{#1}
+\newcommand{\rulename}[1]{\textsc{\footnotesize#1}}
 
 \newcommand{\defrule}[1]{%
     \hypertarget{rule:#1}{%
@@ -233,7 +233,11 @@
 
 \newcommand{\BasicType}{\mkbasictype{B}}
 
-\newcommand{\Context}{\mathcal{E}}
+\newcommand{\EmptyContext}{\emptyset}
+
+\newcommand{\Context}{\ContextA}
+\newcommand{\ContextA}{\Gamma}
+\newcommand{\ContextB}{\Delta}
 
 \newcommand{\Qualifier}{\rho}
 
@@ -487,7 +491,7 @@
 %%% FUNCTIONS %%%
 %%%%%%%%%%%%%%%%%
 
-\newcommand{\dom}{\mathsf{dom}}
+\newcommand{\dom}[1]{\mathsf{dom}(#1)}
 \newcommand{\Close}{\mathsf{Close}}
 \newcommand{\fn}{\mathsf{fn}}
 \newcommand{\an}{\mathsf{an}}

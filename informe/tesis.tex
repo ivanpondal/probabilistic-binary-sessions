@@ -17,6 +17,7 @@
 \usepackage{todonotes}
 \usepackage{amssymb}
 \usepackage{stmaryrd}
+\usepackage{mathpartir}
 
 \lstdefinestyle{INLINE}{
 }
@@ -88,15 +89,16 @@
 \input{caratula}
 
 %%%% ABSTRACTS, AGRADECIMIENTOS Y DEDICATORIA
+
 \frontmatter
 \pagestyle{empty}
 \input{abstract.tex}
 
 \cleardoublepage
-\input{agradecimientos.tex} % OPCIONAL: comentar si no se quiere
+\input{agradecimientos.tex}
 
 \cleardoublepage
-\input{dedicatoria.tex}  % OPCIONAL: comentar si no se quiere
+\input{dedicatoria.tex}
 
 \cleardoublepage
 \tableofcontents
@@ -107,7 +109,7 @@
 \mainmatter
 \pagestyle{headings}
 
-%%%% ACA VA EL CONTENIDO DE LA TESIS
+%%%% TESIS
 
 \chapter{Tipos sesión}
 
@@ -130,6 +132,7 @@
 \input{elecciones_multi_sesion.tex}
 
 %%%% BIBLIOGRAFIA
+
 \backmatter
 \bibliographystyle{alpha}
 \bibliography{tesis}

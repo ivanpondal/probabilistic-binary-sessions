@@ -99,3 +99,20 @@ la rama escogida.
 Por último \OI{branch} opera sobre una elección externa
 $\BinaryPBranch[p]{\etvarA}{\etvarB}$ y retorna ambos caminos como
 unión disjunta.
+
+\subsection{Modificación al sistema de tipos de FuSe}
+
+Los cambios presentados a la interfaz implican modificaciones al sistema de
+tipos utilizado por FuSe. La sintaxis y semántica es esencialmente la estándar
+para lenguajes de la familia ML sin ninguna extensión específica al chequeo de
+tipos sesión.
+
+Describiremos los cambios necesarios haciendo referencia al trabajo de FuSe
+\todo{linkear paper de FuSe}. Las reglas \rulename{t-left} y \rulename{t-right}
+utilizadas para tipar la expresión correspondiente al tipo unión disjunta
+$\set{ \Tag[L] : T,\ \Tag[R] : S}$ se renombran a \rulename{t-true-branch} y
+\rulename{t-false-branch} para coincidir con el tipo $\BinaryLabels{T}{S}$. Los
+cambios restantes quedan restringidos a la regla \rulename{t-const}, que
+describe los tipos de las primitivas de comunicación presentes. En este caso
+las modificaciones son análogas a las realizados a la interfaz
+programática.
