@@ -36,13 +36,19 @@ Para poder describir estas relaciones es necesario introducir algunos aspectos
 del sistema de tipos que se enfocan en el resultado de combinar sesiones en
 elecciones.
 
-\section{Reglas de tipado para elecciones}
+\section{Combinador de tipo probabilístico}
 
-\begin{definition}[probabilistic type combination]
+Como vimos en el último ejemplo surge la necesidad de capturar el tipo de una
+sesión que diverge acorde una elección. Para esto introducimos un
+\emph{combinador de tipo probabilístico} que permite combinar tipos ponderando
+las distintas formas en las cuales se consume una sesión bajo una probabilidad
+determinada.
+
+\todo{Cambiar idioma de definición}
+\begin{definition}[combinador de tipo probabilístico]
   \label{def:ccomb}
-  We write $\csum{t}{s}$ for the \emph{combination of $t$ and $s$
-    weighed by $p$}, which is defined by cases on the form of $t$
-  and $s$ as follows:
+  Escribimos $\csum{t}{s}$ para la combinación de $t$ y $s$ ponderada por $p$,
+	que se encuentra definida por casos sobre la forma de $t$ y $s$:
   \[
     \csum{t}{s}
     \eqdef
@@ -58,3 +64,66 @@ elecciones.
   \]
 \end{definition}
 
+Intuitivamente, $\csum{t}{s}$ describe un recurso que es utilizado acorde a $t$
+con probabilidad $p$ y como $s$ con probabilidad $1 - p$. La combinación de $t$
+y $s$ se encuentra definida únicamente cuando $t$ y $s$ tienen formas
+``compatibles'', el caso trivial siendo cuando poseen mismo tipo. Los casos
+interesantes se dan cuando $t$ y $s$ describen una elección o una sesión
+completa. Para el primero, la combinación resulta en una nueva elección que
+lleva como probabilidad la suma convexa de sus partes. Al combinar sesiones
+completas se toma la suma convexa sobre la probabilidad de éxito de las
+sesiones involucradas.
+
+\section{Reglas de tipado para elecciones}
+
+A continuación presentamos las reglas de tipado para elecciones del cálculo de
+tipos sesión probabilísticos \todo{Agregar bibliografía} y cómo se emplea el
+combinador.
+
+Utilizaremos contextos de tipado para el seguimiento de variables presentes en
+procesos. Un \emph{contexto de tipado} es un mapa de variables a tipos escrito
+como $x_1 : t_1, \dots, x_n : t_n$. Vamos a definir $\ContextA$ y $\ContextB$ para
+representar estos contextos, escribiendo $\EmptyContext$ para un contexto vacío,
+$\dom\Context$ para el dominio de $\Context$ y $\ContextA, \ContextB$ como la unión de
+los contextos $\ContextA$ y $\ContextB$ cuando $\dom\ContextA \cap \dom\ContextB =
+\EmptyContext$. Además, extendemos $\csum{}{}$ punto a punto sobre contextos.
+
+\begin{table}[htb]
+\begin{gather*}
+\inferrule[\rulename{t-branch}]{
+  \wtp{\ContextA, x : T}P : \sigma
+  \\
+  \wtp{\ContextB, x : S}Q : \sigma
+}{
+  \wtp{\csum[p]\ContextA\ContextB, x : \BinaryPBranch{T}{S}}{
+	  \OI{match} \ (\OI{branch} \ x) \ \OI{with} \
+	  \Tag[True] \rightarrow Q \ | \ \Tag[False] \rightarrow P : \sigma}
+}
+\\\\
+\inferrule[\rulename{t-choice}]{
+  \wtp \EmptyContext prob : p
+  \\
+  \wtp\ContextA P : \sigma
+  \\
+  \wtp\ContextB Q : \sigma
+}{
+  \wtp{\csum\ContextA\ContextB}{\OI{pick}\ prob\ P\ Q} : \sigma
+}
+\end{gather*}
+\caption{\label{tab:rules} Reglas de tipado.}
+\end{table}
+
+En Tabla \ref{tab:rules} adaptamos ligeramente las reglas \rulename{t-choice} y
+\rulename{t-branch} con el equivalente a la sintaxis de nuestra extensión; las
+primitivas \OI{branch} y \OI{pick}. La regla \rulename{t-branch} tipa un
+proceso que recibe una elección mediante la sesión $x$ y continua como
+$\SessionTypeT$ con probabilidad $p$, caso contrario $\SessionTypeS$. El tipo
+de $x$ debe ser de la forma $\BinaryPBranch{T}{S}$, el resto de los recursos
+son lo que nos compete en esta sección, ya que el proceso deberá comportarse
+según $\ContextA$ en caso de ir por $\Tag[True]$ o $\ContextB$ si es
+$\Tag[False]$.  De esta forma el comportamiento del proceso queda descrito por
+$\csum[p]\ContextA\ContextB$, bajo la definición del combinador esto implica
+que futuras elecciones presentes tanto en $\ContextA$ como en $\ContextB$ se
+verán ajustadas como efecto de la elección recibida en $x$. La regla
+\rulename{t-choice} permite tipar elecciones probabilísticas combinando la
+evolución ambos contextos mediante $\csum[p]$.
