@@ -77,13 +77,33 @@ module ProbEcho = struct
       (fun epX ->
         let epX = select_false epX in
         idle epX;
-        send false epY)
+        let epY = send false epY in
+        close epY)
       (fun epX ->
         let epX = select_true epX in
         close epX;
-        send 42 epY) (* error de tipado *)
+        let epY = send 42 epY in (* error de tipado *)
+        close epY)
       epX
   (*END*TwoSessionsInvalidPickBothBranches*)
+
+  (*BEGIN*TwoSessionsInvalidPickBothBranchesWithSelect*)
+  let two_sessions_invalid_pick epX epY =
+    pick one_half
+      (fun epX ->
+        let epX = select_false epX in
+        idle epX;
+        let epY = select_false epY in
+        let epY = send false epY in
+        close epY)
+      (fun epX ->
+        let epX = select_true epX in
+        close epX;
+        let epY = select_true epY in (* error de tipado *)
+        let epY = send 42 epY in
+        close epY)
+      epX
+  (*END*TwoSessionsInvalidPickBothBranchesWithSelect*)
 
   (*BEGIN*TwoSessionsPickTwo*)
   let two_sessions_valid_pick2 epX epY =
@@ -92,12 +112,14 @@ module ProbEcho = struct
         let epX = select_false epX in
         idle epX;
         let epY = select_false epY in
-        send false epY)
+        let epY = send false epY in
+        close epY)
       (fun epX epY ->
         let epX = select_true epX in
         close epX;
         let epY = select_true epY in
-        send 42 epY)
+        let epY = send 42 epY in
+        close epY)
       epX epY
   (*END*TwoSessionsPickTwo*)
 end

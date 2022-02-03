@@ -123,7 +123,26 @@ son lo que nos compete en esta sección, ya que el proceso deberá comportarse
 según $\ContextA$ en caso de ir por $\Tag[True]$ o $\ContextB$ si es
 $\Tag[False]$.  De esta forma el comportamiento del proceso queda descrito por
 $\csum[p]\ContextA\ContextB$, bajo la definición del combinador esto implica
-que futuras elecciones presentes tanto en $\ContextA$ como en $\ContextB$ se
-verán ajustadas como efecto de la elección recibida en $x$. La regla
-\rulename{t-choice} permite tipar elecciones probabilísticas combinando la
-evolución ambos contextos mediante $\csum[p]$.
+que futuras elecciones en $\ContextA$ y $\ContextB$ serán ajustadas como
+efecto de la elección recibida en $x$. La regla \rulename{t-choice} permite
+tipar elecciones probabilísticas combinando la evolución de ambos contextos
+mediante $\csum[p]{}{}$.
+
+Si retomamos nuestro ejemplo anterior, podemos observar que el tipado de
+\OI{epY} en cada rama no era compatible bajo la definición del
+combinador. Veamos qué sucede al utiliazar figuras compatibles:
+
+\TwoSessionsInvalidPickBothBranchesWithSelect
+
+Ahora \OI{epY} tiene tipo $\BinaryPChoice[0]{\Out\tbool\Done}{\SessionTypeS}$
+en la rama $\Tag[False]$ y $\BinaryPChoice[1]{\SessionTypeT}{\Out\tint\Done}$
+cuando se escoge $\Tag[True]$. Estos tipos son compatibles para la combinación,
+aún así el programa no tipa ya que el motor de inferencia no dispone de la
+información necesaria para unirlos. En la Tabla \ref{tab:rules} el combinador
+probabilístico se aplica punto a punto sobre todas los recursos presentes en
+ambos contextos. Nuestra primitiva \OI{pick} está limitada a combinar los tipos
+de \OI{epX}.
+
+\section{Extensión para elecciones multi-sesión}
+
+\TwoSessionsPickTwo

@@ -451,12 +451,30 @@ let two_sessions_pick_both_branches epX epY =
      (fun epX ->
        let epX = select_false epX in
        idle epX;
-       send false epY)
+       let epY = send false epY in
+       close epY)
      (fun epX ->
        let epX = select_true epX in
        close epX;
-       send 42 epY)
+       let epY = send 42 epY in
+       close epY)
      epX *)
+
+(* let invalid_two_ep_pick_example_2 epX epY =
+  pick one_half
+    (fun epX ->
+      let epX = select_false epX in
+      idle epX;
+      let epY = select_false epY in
+      let epY = send false epY in
+      close epY)
+    (fun epX ->
+      let epX = select_true epX in
+      close epX;
+      let epY = select_true epY in
+      let epY = send 42 epY in
+      close epY)
+    epX *)
 
 let two_ep_pick_example_2 epX epY =
   pick_2ch one_half
