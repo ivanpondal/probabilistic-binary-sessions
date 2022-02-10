@@ -1,0 +1,4 @@
+val inversion :
+  α&[ True: β&[ True: done | False: idle ]
+  | False: γ&[ True: done | False: idle ] ] →
+  conv_sum(α, 0., 1.)⊕[ True: idle | False: done ] → unit

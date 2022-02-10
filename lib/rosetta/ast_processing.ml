@@ -47,6 +47,26 @@ let occurs x =
 
 let round_float_2_dec f = Float.round (f *. 100.) /. 100.
 
+let convex_sum p q r = (p *. q) +. ((1. -. p) *. r)
+
+let pp_convex_sum p q r =
+  let pp_prob_var p =
+    match p with
+    | Constructor (`Prob p, []) -> string_of_float (round_float_2_dec p)
+    | Var p -> p
+    | _ -> raise (Invalid_argument "Was expecting prob or var type")
+  in
+  match (p, q, r) with
+  | ( Constructor (`Prob p, []),
+      Constructor (`Prob q, []),
+      Constructor (`Prob r, []) ) ->
+      string_of_float (round_float_2_dec (convex_sum p q r))
+  | _ ->
+      let pp_p = pp_prob_var p
+      and pp_q = pp_prob_var q
+      and pp_r = pp_prob_var r in
+      "conv_sum(" ^ pp_p ^ ", " ^ pp_q ^ ", " ^ pp_r ^ ")"
+
 let pp t0 =
   let rec aux = function
     | Var x -> Format.print_as 1 x
@@ -114,14 +134,14 @@ let pp t0 =
         Format.print_string ">";
         Format.close_box ()
     | Constructor (`End, []) -> Format.print_string "idle"
-    | Constructor (`NullProb, []) -> Format.print_string "0"
-    | Constructor (`OneProb, []) -> Format.print_string "1"
     | Constructor (`Done, []) -> Format.print_string "done"
     | Constructor (`Nat n, []) -> Format.print_string (string_of_int n ^ " nat")
     | Constructor (`Frac f, []) ->
         Format.print_string (string_of_float (round_float_2_dec f) ^ " frac")
     | Constructor (`Prob p, []) ->
         Format.print_string (string_of_float (round_float_2_dec p))
+    | Constructor (`ConvexSum, [ p; q; r ]) ->
+        Format.print_string (pp_convex_sum p q r)
     | Constructor (((`Send | `Receive) as pol), [ t; ct ]) ->
         Format.open_hvbox 0;
         Format.print_as 1 (string_of_polarity pol);
@@ -132,9 +152,7 @@ let pp t0 =
           aux ct);
         Format.close_box ()
     | Tagged (`Variant, tags) -> aux_tags tags
-    | Tagged (((`Choice | `Branch) as pol), tags) ->
-        Format.print_as 1 (string_of_polarity pol);
-        aux_tags_prob tags
+    | Tagged (((`Choice | `Branch) as pol), tags) -> aux_tags_prob pol tags
     | Constructor (((`SelectSequence | `AcceptSequence) as pol), [ t; s ]) ->
         Format.open_hovbox 0;
         Format.print_as 1 (string_of_polarity pol);
@@ -172,11 +190,12 @@ let pp t0 =
           tags;
         Format.print_string " ]";
         Format.close_box ()
-  and aux_tags_prob = function
+  and aux_tags_prob pol = function
     | [] -> Format.print_string "[ ]"
     | prob :: tag :: tags ->
         Format.open_hvbox 0;
         aux_tag_prob prob;
+        Format.print_as 1 (string_of_polarity pol);
         Format.print_string "[ ";
         aux_tag tag;
         List.iter
@@ -190,9 +209,7 @@ let pp t0 =
     | _ -> assert false
   and aux_tag_prob (_, t) =
     Format.open_hvbox 0;
-    Format.print_space ();
     aux t;
-    Format.print_space ();
     Format.close_box ()
   and aux_tag (name, t) =
     Format.open_hvbox 0;
@@ -256,14 +273,6 @@ let parse_frac f =
 
 let parse_prob n d = float_of_int (parse_nat n) /. float_of_int (parse_nat d + 1)
 
-let get_prob p =
-  match p with
-  | Constructor (`Prob p, []) -> p
-  | _ -> raise (Invalid_argument "Was expecting prob type")
-
-let convex_sum p q r =
-  (get_prob p *. get_prob q) +. ((1. -. get_prob p) *. get_prob r)
-
 let phase_one t0 =
   let ( ++ ) = List.append in
   let t_0 = Configuration.get_prefix () ++ [ "_0" ]
@@ -285,10 +294,10 @@ let phase_one t0 =
     | (Var _ | RecVar _) as t -> t
     | Constructor (`Apply cs, []) when cs = t_0 -> t_Empty
     | Constructor (`Apply cs, []) when cs = t_1 -> t_Done
-    | Constructor (`Apply cs, []) when cs = t_p0 -> t_pNull
-    | Constructor (`Apply cs, []) when cs = t_p1 -> t_pOne
+    | Constructor (`Apply cs, []) when cs = t_p0 -> t_Prob 0.0
+    | Constructor (`Apply cs, []) when cs = t_p1 -> t_Prob 1.0
     | Constructor (`Apply cs, [ p; q; r ]) when cs = t_conv_sum ->
-        t_Prob (convex_sum (aux p) (aux q) (aux r))
+        t_ConvexSum (aux p) (aux q) (aux r)
     | Constructor (`Apply cs, [ nat ]) when cs = t_math_nat ->
         t_Nat (parse_nat nat)
     | Constructor (`Apply cs, [ frac ]) when cs = t_math_frac ->

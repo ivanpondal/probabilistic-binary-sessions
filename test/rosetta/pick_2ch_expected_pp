@@ -1,3 +1,2 @@
 val pick_two_channels :
-  ⊕ 0.5 [ True: done | False: idle ] →
-  ⊕ 0.5 [ True: done | False: done ] → unit
+  0.5⊕[ True: done | False: idle ] → 0.5⊕[ True: done | False: done ] → unit

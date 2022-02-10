@@ -1,5 +1,6 @@
 open OUnit2
 open Rosetta.Ast
+open Rosetta.Ast_processing
 open Rosetta.Mapping
 open Owl
 
@@ -208,6 +209,32 @@ let adj_list_mapping_suite =
          "send" >:: test_send_mapping;
        ]
 
+let test_complete_convex_sum_prob _ =
+  let p = Constructor (`Prob 0.5, [])
+  and q = Constructor (`Prob 1.0, [])
+  and r = Constructor (`Prob 0.0, []) in
+
+  let result = pp_convex_sum p q r in
+
+  assert_equal "0.5" result
+
+let test_partial_convex_sum_prob _ =
+  let p = Var "p"
+  and q = Constructor (`Prob 1.0, [])
+  and r = Constructor (`Prob 0.0, []) in
+
+  let result = pp_convex_sum p q r in
+
+  assert_equal "conv_sum(p, 1., 0.)" result
+
+let convex_sum_suite =
+  "Convex sum parsing"
+  >::: [
+         "complete convex sum" >:: test_complete_convex_sum_prob;
+         "partial convex sum" >:: test_partial_convex_sum_prob;
+       ]
+
 let () =
   run_test_tt_main success_prob_suite;
-  run_test_tt_main adj_list_mapping_suite
+  run_test_tt_main adj_list_mapping_suite;
+  run_test_tt_main convex_sum_suite

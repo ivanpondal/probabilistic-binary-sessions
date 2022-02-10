@@ -1,0 +1,49 @@
+\section{Ejemplos básicos}
+
+Procedemos con la presentación de algunos ejemplos donde se aplican estas
+nuevas primitivas. Para ello readaptaremos el servicio de eco presentado
+anteriormente al modelo probabilístico.
+
+\SimpleProbEchoService
+
+Comenzamos con un servicio de eco que presenta dos caminos posibles: brindar
+la función de eco o finalizar la comunicación. El argumento \OI{ep} tiene tipo
+$\BinaryPBranch[p]{\In\tvarA\Out\tvarA\Done}{\Idle}$ donde la probabilidad $p$
+queda libre hasta que el servicio sea unido a un cliente.
+
+Para ello, podemos implementar el siguiente cliente que selecciona
+determinísticamente la rama $\Tag[True]$.
+
+\SimpleProbEchoClient
+
+En este caso, el argumento \OI{ep} tiene tipo
+$\BinaryPChoice[1]{\Out\tvarA\In\tvarB\Done}{\etvar}$ y \OI{x} tipo $\tvarA$.
+Podemos observar que para el tipo sesión de este endpoint la probabilidad se
+encuentra instanciada en $1$ acorde a la selección determinística mientras que
+la rama $\Tag[False]$ queda libre haste ser asociada a su par.
+
+Otra posibilidad es un cliente que selecciona determinísticamente la rama
+$\Tag[False]$.
+
+\SimpleIdleClient
+
+Aquí el argumento \OI{ep} tiene tipo $\BinaryPChoice[0]{\etvar}{\Idle}$,
+dejando libre la rama $\Tag[True]$.
+
+Por úlitmo presentamos un cliente que mediante la primitiva \OI{pick}
+selecciona con probabilidad $\frac{1}{2}$ una rama o la otra mediante
+la composición de los clientes definidos en esta sección.
+
+\SimpleCoinFlipEchoClient
+
+El argumento \OI{ep} tiene tipo
+$\BinaryPChoice[\frac{1}{2}]{\Out\tvarA\In\tvarB\Done}{\Idle}$. El código que
+conecta este último cliente con el servicio de eco es el siguiente:
+
+\SimpleCoinFlipEchoMain
+
+Esta composición fuerza la unificación de tipos para los endpoints \OI{a} y
+\OI{b} de forma tal que el endpoint \OI{a} asociado al servicio de eco toma el
+tipo $\BinaryPBranch[\frac{1}{2}]{\In\tint\Out\tint\Done}{\Idle}$ y
+su dual \OI{b}, asociado al cliente, recibe el tipo
+$\BinaryPChoice[\frac{1}{2}]{\Out\tint\In\tint\Done}{\Idle}$.

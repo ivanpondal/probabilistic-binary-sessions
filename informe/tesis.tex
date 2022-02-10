@@ -11,6 +11,13 @@
 \usepackage{upgreek}
 \usepackage{etoolbox}
 \usepackage{xspace}
+\usepackage{stmaryrd}
+\usepackage{mathbbol}
+\usepackage{bm}
+\usepackage{todonotes}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{mathpartir}
 
 \lstdefinestyle{INLINE}{
 }
@@ -39,18 +46,23 @@
   moreemph=[2]{branch,branch_2st,branch_2ch},
   moreemph=[2]{sync,use,fresh},
   moreemph=[2]{InvalidEndpoint},
+  moreemph=[2]{one_half,zero,one,two},
   showstringspaces=false,
   emphstyle=[2]\color{mymagenta},
-  emph=[3]{Service,Session,List,Thread,Event,Obj,UnsafeChannel,Flag,Mutex},
+  emph=[3]{Service,Session,Rational,List,Thread,Event,Obj,UnsafeChannel,Flag,Mutex,None,Some},
+  emph=[3]{S,Z,Fraction},
   emphstyle=[3]\color{lightblue},
   moredelim=[is][\color{myred}]{\#}{\#},
   mathescape=true,
-  literate={\ ->}{\ $\to$}2
+  literate={ó}{{\'o}}1
+           {á}{{\'a}}1
+           {\ ->}{\ $\to$}2
            {\ ->\ }{$\to$}3
            {\ <-\ }{$\leftarrow$}3
            {\ *\ }{$\tmul$}3
            {(+)}{$\Choice$}1
            {_0}{$\tbottom$}1
+           {_1}{$\DoneBottomType$}1
            {'a}{$\tvarA$}1
            {'b}{$\tvarB$}1
            {'c}{$\tvarC$}1
@@ -77,23 +89,27 @@
 \input{caratula}
 
 %%%% ABSTRACTS, AGRADECIMIENTOS Y DEDICATORIA
+
 \frontmatter
 \pagestyle{empty}
 \input{abstract.tex}
 
 \cleardoublepage
-\input{agradecimientos.tex} % OPCIONAL: comentar si no se quiere
+\input{agradecimientos.tex}
 
 \cleardoublepage
-\input{dedicatoria.tex}  % OPCIONAL: comentar si no se quiere
+\input{dedicatoria.tex}
 
 \cleardoublepage
 \tableofcontents
 
+\setuptodonotes{fancyline}
+\listoftodos
+
 \mainmatter
 \pagestyle{headings}
 
-%%%% ACA VA EL CONTENIDO DE LA TESIS
+%%%% TESIS
 
 \chapter{Tipos sesión}
 
@@ -105,8 +121,18 @@
 
 \input{tipos_sesion_prob_intro.tex}
 \input{tipos_sesion_prob_api.tex}
+\input{tipos_sesion_prob_ej.tex}
+
+\chapter{Implementación}
+
+\input{codificacion.tex}
+
+\chapter{Elecciones multi-sesión}
+
+\input{elecciones_multi_sesion.tex}
 
 %%%% BIBLIOGRAFIA
+
 \backmatter
 \bibliographystyle{alpha}
 \bibliography{tesis}

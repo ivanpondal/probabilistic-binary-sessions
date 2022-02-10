@@ -2,14 +2,14 @@ open OUnit2
 open ProFuse.Session.Bare
 open Math.Rational
 
-let echo_server ep =
+let const_42_server ep =
   match branch ep with
   | `True ep ->
       let ep = send 42 ep in
       close ep
   | `False ep -> idle ep
 
-let random_client ep =
+let coin_flip_recv_client ep =
   pick one_half
     (fun ep ->
       let ep = select_false ep in
@@ -24,10 +24,9 @@ let random_client ep =
 
 let idle_client ep =
   let ep = select_false ep in
-  idle ep;
-  0
+  idle ep
 
-let echo_client ep =
+let recv_client ep =
   let ep = select_true ep in
   let x, ep = receive ep in
   close ep;
@@ -37,9 +36,9 @@ let test_random_client_picks_true _ =
   Random.init 1;
   (* seed forcing true *)
   let ep1, ep2 = create () in
-  let _ = Thread.create echo_server ep1 in
+  let _ = Thread.create const_42_server ep1 in
 
-  let res = random_client ep2 in
+  let res = coin_flip_recv_client ep2 in
 
   assert_equal 42 res
 
@@ -47,25 +46,25 @@ let test_random_client_picks_false _ =
   Random.init 4;
   (* seed forcing false *)
   let ep1, ep2 = create () in
-  let _ = Thread.create echo_server ep1 in
+  let _ = Thread.create const_42_server ep1 in
 
-  let res = random_client ep2 in
+  let res = coin_flip_recv_client ep2 in
 
   assert_equal 0 res
 
 let test_idle_client_picks_false _ =
   let ep1, ep2 = create () in
-  let _ = Thread.create echo_server ep1 in
+  let _ = Thread.create const_42_server ep1 in
 
   let res = idle_client ep2 in
 
-  assert_equal 0 res
+  assert_equal () res
 
-let test_echo_client_picks_true _ =
+let test_recv_client_picks_true _ =
   let ep1, ep2 = create () in
-  let _ = Thread.create echo_server ep1 in
+  let _ = Thread.create const_42_server ep1 in
 
-  let res = echo_client ep2 in
+  let res = recv_client ep2 in
 
   assert_equal 42 res
 
@@ -116,7 +115,7 @@ let pick_suite =
          "random client chooses true" >:: test_random_client_picks_true;
          "random client chooses false" >:: test_random_client_picks_false;
          "idle client chooses false" >:: test_idle_client_picks_false;
-         "echo client chooses true" >:: test_echo_client_picks_true;
+         "receiving client chooses true" >:: test_recv_client_picks_true;
          "double false chooses false" >:: test_double_false_picks_false;
          "double false chooses true" >:: test_double_false_picks_true;
        ]
@@ -171,9 +170,74 @@ let test_buyer_seller_no_agreement _ =
 
   assert_equal ~printer:string_of_int (-1) offer
 
+let echo_server ep =
+  match branch ep with
+  | `True ep ->
+      let x, ep = receive ep in
+      let ep = send x ep in
+      close ep
+  | `False ep -> idle ep
+
+let echo_client ep x =
+  let ep = select_true ep in
+  let ep = send x ep in
+  let x, ep = receive ep in
+  close ep;
+  x
+
+let coin_flip_echo_client ep x =
+  pick one_half
+    (fun ep ->
+      idle_client ep;
+      None)
+    (fun ep -> Some (echo_client ep x))
+    ep
+
+let test_echo_client _ =
+  let ep1, ep2 = create () in
+  let _ = Thread.create echo_server ep1 in
+
+  let reply = echo_client ep2 42 in
+
+  assert_equal 42 reply
+
+let test_idle_client _ =
+  let ep1, ep2 = create () in
+  let _ = Thread.create echo_server ep1 in
+
+  let reply = idle_client ep2 in
+
+  assert_equal () reply
+
+let test_coin_flip_echo_client_picks_true _ =
+  Random.init 3;
+  (* seed forcing true *)
+  let ep1, ep2 = create () in
+  let _ = Thread.create echo_server ep1 in
+
+  let reply = coin_flip_echo_client ep2 42 in
+
+  assert_equal (Some 42) reply
+
+let test_coin_flip_echo_client_picks_false _ =
+  Random.init 4;
+  (* seed forcing false *)
+  let ep1, ep2 = create () in
+  let _ = Thread.create echo_server ep1 in
+
+  let reply = coin_flip_echo_client ep2 42 in
+
+  assert_equal None reply
+
 let examples_suite =
   "Examples"
   >::: [
+         "echo client" >:: test_echo_client;
+         "idle client" >:: test_idle_client;
+         "coin flip echo client picks true"
+         >:: test_coin_flip_echo_client_picks_true;
+         "coin flip echo client picks false"
+         >:: test_coin_flip_echo_client_picks_false;
          "buyer seller" >:: test_buyer_seller;
          "buyer seller no agreement" >:: test_buyer_seller_no_agreement;
        ]
@@ -292,10 +356,10 @@ let test_same_session_type_combination _ =
 
   assert_equal false result
 
-let echo_server_reply ?(st = cst_placeholder) () =
+let const_42_server_reply ?(st = cst_placeholder) () =
   let ep1, ep2 = create ~st () in
-  let _ = Thread.create echo_server ep1 in
-  echo_client ep2
+  let _ = Thread.create const_42_server ep1 in
+  recv_client ep2
 
 let coin_flip_server_mix_sessions ?(st = cst_placeholder) () ep =
   match branch_2st ep st with
@@ -304,7 +368,7 @@ let coin_flip_server_mix_sessions ?(st = cst_placeholder) () ep =
       send_and_receive ~st:stX ()
   | `False (ep, stY) ->
       idle ep;
-      let _ = echo_server_reply ~st:stY () in
+      let _ = const_42_server_reply ~st:stY () in
       ()
 
 let test_diff_session_type_branch_combination _ =
@@ -327,7 +391,7 @@ let coin_flipper_mix_sessions ?(st = cst_placeholder) () ep =
     (fun ep stY ->
       let ep = select_true ep in
       close ep;
-      let _ = echo_server_reply ~st:stY () in
+      let _ = const_42_server_reply ~st:stY () in
       true)
     ep st
 
@@ -355,3 +419,73 @@ let () =
   run_test_tt_main pick_suite;
   run_test_tt_main examples_suite;
   run_test_tt_main multi_channel_suite
+
+let two_sessions_pick_single_branch epX epY =
+  pick one_half
+    (fun epX ->
+      let epX = select_false epX in
+      idle epX;
+      let epY = send false epY in
+      close epY)
+    (fun epX ->
+      let epX = select_true epX in
+      close epX)
+    epX
+
+let two_sessions_pick_both_branches epX epY =
+  pick one_half
+    (fun epX ->
+      let epX = select_false epX in
+      idle epX;
+      let epY = send false epY in
+      close epY)
+    (fun epX ->
+      let epX = select_true epX in
+      close epX;
+      let epY = send true epY in
+      close epY)
+    epX
+
+(* let invalid_two_ep_pick_example epX epY =
+   pick one_half
+     (fun epX ->
+       let epX = select_false epX in
+       idle epX;
+       let epY = send false epY in
+       close epY)
+     (fun epX ->
+       let epX = select_true epX in
+       close epX;
+       let epY = send 42 epY in
+       close epY)
+     epX *)
+
+(* let invalid_two_ep_pick_example_2 epX epY =
+   pick one_half
+     (fun epX ->
+       let epX = select_false epX in
+       idle epX;
+       let epY = select_false epY in
+       let epY = send false epY in
+       close epY)
+     (fun epX ->
+       let epX = select_true epX in
+       close epX;
+       let epY = select_true epY in
+       let epY = send 42 epY in
+       close epY)
+     epX *)
+
+let two_ep_pick_example_2 epX epY =
+  pick_2ch one_half
+    (fun epX epY ->
+      let epX = select_false epX in
+      idle epX;
+      let epY = select_false epY in
+      send false epY)
+    (fun epX epY ->
+      let epX = select_true epX in
+      close epX;
+      let epY = select_true epY in
+      send 42 epY)
+    epX epY
