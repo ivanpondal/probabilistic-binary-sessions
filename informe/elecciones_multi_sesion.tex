@@ -128,16 +128,16 @@ efecto de la elección recibida en $x$. La regla \rulename{t-choice} permite
 tipar elecciones probabilísticas combinando la evolución de ambos contextos
 mediante $\csum[p]{}{}$.
 
-Si retomamos nuestro ejemplo anterior, podemos observar que el tipado de
-\OI{epY} en cada rama no era compatible bajo la definición del
-combinador. Veamos qué sucede al utiliazar figuras compatibles:
+Retomando nuestro ejemplo anterior, podemos observar que el tipo de
+\OI{epY} en cada rama de la elección no era compatible bajo la definición del
+combinador. Veamos qué sucede al utilizar figuras compatibles:
 
 \TwoSessionsInvalidPickBothBranchesWithSelect
 
-Ahora \OI{epY} tiene tipo $\BinaryPChoice[0]{\Out\tbool\Done}{\SessionTypeS}$
-en la rama $\Tag[False]$ y $\BinaryPChoice[1]{\SessionTypeT}{\Out\tint\Done}$
+Ahora \OI{epY} tiene tipo $\BinaryPChoice[0]{\SessionTypeT}{\Out\tbool\Done}$
+en la rama $\Tag[False]$ y $\BinaryPChoice[1]{\Out\tint\Done}{\SessionTypeS}$
 cuando se escoge $\Tag[True]$. Estos tipos son compatibles para la combinación,
-aún así el programa no tipa ya que el motor de inferencia no dispone de la
+sin embargo el programa no tipa ya que el motor de inferencia no dispone de la
 información necesaria para unirlos. En la Tabla \ref{tab:rules} el combinador
 probabilístico se aplica punto a punto sobre todas los recursos presentes en
 ambos contextos. Nuestra primitiva \OI{pick} está limitada a combinar los tipos
@@ -145,4 +145,58 @@ de \OI{epX}.
 
 \section{Extensión para elecciones multi-sesión}
 
+Habiendo presentado las limitaciones del \OI{pick} actual y cómo estas son
+resueltas en el cálculo probabilístico contamos con el contexto suficiente para
+introducir nuestra solución. Luego de las últimas modificaciones a nuestro
+programa, nos falta brindar al motor de inferencia la información necesaria
+para poder combinar elecciones de más de un tipo sesión.
+
+Idealmente, nos gustaría que la primitiva \OI{pick} permitiera la combinación
+de cualquier número de elecciones; un desafío que presenta tal objetivo es el
+de preservar las restricciones de tipo necesarias para evitar combinaciones
+inválidas y poder calcular la probabilidad de éxito de las sesiones
+involucradas. Considerando además la potencial complejidad de esta hipotética
+interfaz, decidimos en cambio agregar primitivas específicas al número de
+sesiones a combinar.
+
+Para ello extendemos nuestro conjunto de primitivas comenzando con la
+introducción de la primitiva \OI{pick_2ch} y su tipo en Tabla
+\ref{tab:prob_api_pick_2ch}. Esta primitiva permite combinar las elecciones de
+exactamente dos sesiones. Dada una probabilidad $p$, escoge $\Tag[True]$ con
+probabilidad $p$ y $\Tag[False]$ con $p - 1$ sobre el endpoint con tipo
+$\BinaryPChoice[p]{\etvarA}{\etvarB}$. Además, cada rama presenta una segunda
+elección cuya combinación se ve reflejada en el endpoint con tipo
+$\BinaryPChoice[pq + (1- p)r]{\etvarC}{\etvarD}$. Al igual que con \OI{pick} el
+comportamiento sobre la rama seleccionada queda definido por las funciones que de
+argumento reciben los tipos sesión correspondientes a la elección. Por ejemplo,
+al escoger $\Tag[True]$ se llama a la función que toma la elección con $p = 1$
+($\BinaryPChoice[1]{\etvarA}{\etvarB}$) y la sesión secundaria con probabilidad
+$q$ ($\BinaryPChoice[q]{\etvarC}{\etvarD}$).
+
+\begin{table}[htb]
+\begin{OCamlD}[frame=single]
+	val pick_2ch:
+	    $p$ -> $(\BinaryPChoice[0]{\etvarA}{\etvarB}$ -> $\BinaryPChoice[r]{\etvarC}{\etvarD}$ -> $\alpha)$
+	      -> $(\BinaryPChoice[1]{\etvarA}{\etvarB}$ -> $\BinaryPChoice[q]{\etvarC}{\etvarD}$ -> $\alpha)$
+	      -> $\BinaryPChoice[p]{\etvarA}{\etvarB}$ -> $\BinaryPChoice[pq + (1 - p)r]{\etvarC}{\etvarD}$
+	      -> $\alpha$
+\end{OCamlD}
+\caption{Interfaz de primitiva \OI{pick_2ch}}
+\label{tab:prob_api_pick_2ch}
+\end{table}
+\todo{Arreglar línea blanca en definición e pick 2}
+
+Veamos cómo queda nuestro ejemplo original utilizando esta nueva primitiva:
+
 \TwoSessionsPickTwo
+
+Ya no tenemos más problemas con el tipado de \OI{epY}, en las funciones que
+definen el comportamiento de cada rama la sesión lleva su tipo como argumento
+($\BinaryPChoice[0]{\Out\tint\Done}{\Out\tbool\Done}$ y
+$\BinaryPChoice[1]{\Out\tint\Done}{\Out\tbool\Done}$). A su vez, la combinación
+de ambos tipos queda reflejada en el tipo
+$\BinaryPChoice[\frac{1}{2}]{\Out\tint\Done}{\Out\tbool\Done}$ simulando así la
+aplicación del combinador probabilístico.
+
+Esta solución puede extenderse a más de dos sesiones siguiendo la misma idea de
+materializar la combinación probabilística en el tipo de la primitiva.
