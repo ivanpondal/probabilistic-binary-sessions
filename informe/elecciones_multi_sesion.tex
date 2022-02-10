@@ -1,0 +1,202 @@
+Hasta ahora estudiamos programas que trabajan con una única sesión. La
+introducción de múltiples sesiones requiere de algunas consideraciones respecto
+cómo influyen las probabilidades de unas sobre otras. En esta sección veremos
+cómo tales interacciones afectan nuestras primitivas y su tipado.
+
+\section{Limitaciones con \OI{pick} de una sesión}
+
+La primitiva de elección probabilística \OI{pick} opera sobre una única sesión,
+tomando como argumento la misma y el comportamiento sobre cada rama posible.
+Podría suceder que luego de una elección se interactue con otra sesión, a
+continuación estudiaremos en detalle qué ocurre en tal escenario.
+
+Comenzamos con un programa donde ambas ramas de la elección sobre \OI{epX}
+presentan una comunicación con otra sesión \OI{epY}:
+
+\TwoSessionsPickBothBranches
+
+Aquí la sesión \OI{epX} tiene tipo $\BinaryPChoice[\frac{1}{2}]{\Done}{\Idle}$
+mientras que \OI{epY} lleva el tipo $\Out\tbool\Done$. Por más que el \emph{valor}
+comunicado por \OI{epY} dependa de la elección en \OI{epX}, el programa tipa
+correctamente. Esto sucede porque el tipo de la sesión es idéntico en ambas
+ramas.
+
+Veamos qué ocurre cuando difiere el valor del tipo a transmitir sobre \OI{epY}
+según la elección:
+
+\TwoSessionsInvalidPickBothBranches
+
+En este último caso, el sistema de tipo nos indicará que \OI{epY} presenta dos
+tipos incompatibles entre sí: $\Out\tbool\Done$ y $\Out\tint\Done$. Lo que está
+sucediendo es que el comportamiento de \OI{epY} difiere según la elección
+realizada por \OI{epX} pero tal dependencia no es capturada por el sistema de
+tipos.
+
+Para poder describir estas relaciones es necesario introducir algunos aspectos
+del sistema de tipos que se enfocan en el resultado de combinar sesiones en
+elecciones.
+
+\section{Combinador de tipo probabilístico}
+
+Como vimos en el último ejemplo surge la necesidad de capturar el tipo de una
+sesión que diverge acorde una elección. Para esto introducimos un
+\emph{combinador de tipo probabilístico} que permite combinar tipos ponderando
+las distintas formas en las cuales se consume una sesión bajo una probabilidad
+determinada.
+
+\todo{Cambiar idioma de definición}
+\begin{definition}[combinador de tipo probabilístico]
+  \label{def:ccomb}
+  Escribimos $\csum{t}{s}$ para la combinación de $t$ y $s$ ponderada por $p$,
+	que se encuentra definida por casos sobre la forma de $t$ y $s$:
+  \[
+    \csum{t}{s}
+    \eqdef
+    \begin{cases}
+      t & \text{si $t = s$}
+      \\
+      \BinaryPChoice[pq+(1-p)r]{\SessionTypeT}{\SessionTypeS} & \text{si $t = \BinaryPChoice[q]{\SessionTypeT}{\SessionTypeS}$} \\ & \text{y $s = \BinaryPChoice[r]{\SessionTypeT}{\SessionTypeS}$}
+      \\
+      \ClosedSessionType[pq+(1-p)r] & \text{si $t = \ClosedSessionType[q]$ y $s = \ClosedSessionType[r]$}
+      \\
+      \text{indefinido} & \text{caso contrario}
+    \end{cases}
+  \]
+\end{definition}
+
+Intuitivamente, $\csum{t}{s}$ describe un recurso que es utilizado acorde a $t$
+con probabilidad $p$ y como $s$ con probabilidad $1 - p$. La combinación de $t$
+y $s$ se encuentra definida únicamente cuando $t$ y $s$ tienen formas
+``compatibles'', el caso trivial siendo cuando poseen mismo tipo. Los casos
+interesantes se dan cuando $t$ y $s$ describen una elección o una sesión
+completa. Para el primero, la combinación resulta en una nueva elección que
+lleva como probabilidad la suma convexa de sus partes. Al combinar sesiones
+completas se toma la suma convexa sobre la probabilidad de éxito de las
+sesiones involucradas.
+
+\section{Reglas de tipado para elecciones}
+
+A continuación presentamos las reglas de tipado para elecciones del cálculo de
+tipos sesión probabilísticos \todo{Agregar bibliografía} y cómo se emplea el
+combinador.
+
+Utilizaremos contextos de tipado para el seguimiento de variables presentes en
+procesos. Un \emph{contexto de tipado} es un mapa de variables a tipos escrito
+como $x_1 : t_1, \dots, x_n : t_n$. Vamos a definir $\ContextA$ y $\ContextB$ para
+representar estos contextos, escribiendo $\EmptyContext$ para un contexto vacío,
+$\dom\Context$ para el dominio de $\Context$ y $\ContextA, \ContextB$ como la unión de
+los contextos $\ContextA$ y $\ContextB$ cuando $\dom\ContextA \cap \dom\ContextB =
+\EmptyContext$. Además, extendemos $\csum{}{}$ punto a punto sobre contextos.
+
+\begin{table}[htb]
+\begin{gather*}
+\inferrule[\rulename{t-branch}]{
+  \wtp{\ContextA, x : T}P : \sigma
+  \\
+  \wtp{\ContextB, x : S}Q : \sigma
+}{
+  \wtp{\csum[p]\ContextA\ContextB, x : \BinaryPBranch{T}{S}}{
+	  \OI{match} \ (\OI{branch} \ x) \ \OI{with} \
+	  \Tag[True] \rightarrow Q \ | \ \Tag[False] \rightarrow P : \sigma}
+}
+\\\\
+\inferrule[\rulename{t-choice}]{
+  \wtp \EmptyContext prob : p
+  \\
+  \wtp\ContextA P : \sigma
+  \\
+  \wtp\ContextB Q : \sigma
+}{
+  \wtp{\csum\ContextA\ContextB}{\OI{pick}\ prob\ P\ Q} : \sigma
+}
+\end{gather*}
+\caption{\label{tab:rules} Reglas de tipado.}
+\end{table}
+
+En Tabla \ref{tab:rules} adaptamos ligeramente las reglas \rulename{t-choice} y
+\rulename{t-branch} con el equivalente a la sintaxis de nuestra extensión; las
+primitivas \OI{branch} y \OI{pick}. La regla \rulename{t-branch} tipa un
+proceso que recibe una elección mediante la sesión $x$ y continua como
+$\SessionTypeT$ con probabilidad $p$, caso contrario $\SessionTypeS$. El tipo
+de $x$ debe ser de la forma $\BinaryPBranch{T}{S}$, el resto de los recursos
+son lo que nos compete en esta sección, ya que el proceso deberá comportarse
+según $\ContextA$ en caso de ir por $\Tag[True]$ o $\ContextB$ si es
+$\Tag[False]$.  De esta forma el comportamiento del proceso queda descrito por
+$\csum[p]\ContextA\ContextB$, bajo la definición del combinador esto implica
+que futuras elecciones en $\ContextA$ y $\ContextB$ serán ajustadas como
+efecto de la elección recibida en $x$. La regla \rulename{t-choice} permite
+tipar elecciones probabilísticas combinando la evolución de ambos contextos
+mediante $\csum[p]{}{}$.
+
+Retomando nuestro ejemplo anterior, podemos observar que el tipo de
+\OI{epY} en cada rama de la elección no era compatible bajo la definición del
+combinador. Veamos qué sucede al utilizar figuras compatibles:
+
+\TwoSessionsInvalidPickBothBranchesWithSelect
+
+Ahora \OI{epY} tiene tipo $\BinaryPChoice[0]{\SessionTypeT}{\Out\tbool\Done}$
+en la rama $\Tag[False]$ y $\BinaryPChoice[1]{\Out\tint\Done}{\SessionTypeS}$
+cuando se escoge $\Tag[True]$. Estos tipos son compatibles para la combinación,
+sin embargo el programa no tipa ya que el motor de inferencia no dispone de la
+información necesaria para unirlos. En la Tabla \ref{tab:rules} el combinador
+probabilístico se aplica punto a punto sobre todas los recursos presentes en
+ambos contextos. Nuestra primitiva \OI{pick} está limitada a combinar los tipos
+de \OI{epX}.
+
+\section{Extensión para elecciones multi-sesión}
+
+Habiendo presentado las limitaciones del \OI{pick} actual y cómo estas son
+resueltas en el cálculo probabilístico contamos con el contexto suficiente para
+introducir nuestra solución. Luego de las últimas modificaciones a nuestro
+programa, nos falta brindar al motor de inferencia la información necesaria
+para poder combinar elecciones de más de un tipo sesión.
+
+Idealmente, nos gustaría que la primitiva \OI{pick} permitiera la combinación
+de cualquier número de elecciones; un desafío que presenta tal objetivo es el
+de preservar las restricciones de tipo necesarias para evitar combinaciones
+inválidas y poder calcular la probabilidad de éxito de las sesiones
+involucradas. Considerando además la potencial complejidad de esta hipotética
+interfaz, decidimos en cambio agregar primitivas específicas al número de
+sesiones a combinar.
+
+Para ello extendemos nuestro conjunto de primitivas comenzando con la
+introducción de la primitiva \OI{pick_2ch} y su tipo en Tabla
+\ref{tab:prob_api_pick_2ch}. Esta primitiva permite combinar las elecciones de
+exactamente dos sesiones. Dada una probabilidad $p$, escoge $\Tag[True]$ con
+probabilidad $p$ y $\Tag[False]$ con $p - 1$ sobre el endpoint con tipo
+$\BinaryPChoice[p]{\etvarA}{\etvarB}$. Además, cada rama presenta una segunda
+elección cuya combinación se ve reflejada en el endpoint con tipo
+$\BinaryPChoice[pq + (1- p)r]{\etvarC}{\etvarD}$. Al igual que con \OI{pick} el
+comportamiento sobre la rama seleccionada queda definido por las funciones que de
+argumento reciben los tipos sesión correspondientes a la elección. Por ejemplo,
+al escoger $\Tag[True]$ se llama a la función que toma la elección con $p = 1$
+($\BinaryPChoice[1]{\etvarA}{\etvarB}$) y la sesión secundaria con probabilidad
+$q$ ($\BinaryPChoice[q]{\etvarC}{\etvarD}$).
+
+\begin{table}[htb]
+\begin{OCamlD}[frame=single]
+	val pick_2ch:
+	    $p$ -> $(\BinaryPChoice[0]{\etvarA}{\etvarB}$ -> $\BinaryPChoice[r]{\etvarC}{\etvarD}$ -> $\alpha)$
+	      -> $(\BinaryPChoice[1]{\etvarA}{\etvarB}$ -> $\BinaryPChoice[q]{\etvarC}{\etvarD}$ -> $\alpha)$
+	      -> $\BinaryPChoice[p]{\etvarA}{\etvarB}$ -> $\BinaryPChoice[pq + (1 - p)r]{\etvarC}{\etvarD}$
+	      -> $\alpha$
+\end{OCamlD}
+\caption{Interfaz de primitiva \OI{pick_2ch}}
+\label{tab:prob_api_pick_2ch}
+\end{table}
+\todo{Arreglar línea blanca en definición e pick 2}
+
+Veamos cómo queda nuestro ejemplo original utilizando esta nueva primitiva:
+
+\TwoSessionsPickTwo
+
+Ya no tenemos más problemas con el tipado de \OI{epY}, en las funciones que
+definen el comportamiento de cada rama la sesión lleva su tipo como argumento
+($\BinaryPChoice[0]{\Out\tint\Done}{\Out\tbool\Done}$ y
+$\BinaryPChoice[1]{\Out\tint\Done}{\Out\tbool\Done}$). A su vez, la combinación
+de ambos tipos queda reflejada en el tipo
+$\BinaryPChoice[\frac{1}{2}]{\Out\tint\Done}{\Out\tbool\Done}$ simulando así la
+aplicación del combinador probabilístico.
+
+Esta solución puede extenderse a más de dos sesiones siguiendo la misma idea de
+materializar la combinación probabilística en el tipo de la primitiva.
