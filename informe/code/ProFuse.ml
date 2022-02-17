@@ -122,4 +122,19 @@ module ProbEcho = struct
         close epY)
       epX epY
   (*END*TwoSessionsPickTwo*)
+
+  (*BEGIN*EchoClientClosedSession*)
+  let run_echo_client_example ?(st = cst_placeholder) () =
+    let ep1, ep2 = create ~st () in
+    let _ = Thread.create echo_service ep1 in
+    echo_client ep2 42
+  (*END*EchoClientClosedSession*)
+
+  (*BEGIN*CoinFlipEchoClientClosedSession*)
+  let run_coin_flip_echo_client_example
+                              ?(st = cst_placeholder) () =
+    let ep1, ep2 = create ~st () in
+    let _ = Thread.create echo_server ep1 in
+    coin_flip_echo_client ep2 42
+  (*END*CoinFlipEchoClientClosedSession*)
 end

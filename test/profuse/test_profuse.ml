@@ -420,6 +420,8 @@ let () =
   run_test_tt_main examples_suite;
   run_test_tt_main multi_channel_suite
 
+(* Code examples *)
+
 let two_sessions_pick_single_branch epX epY =
   pick one_half
     (fun epX ->
@@ -489,3 +491,14 @@ let two_ep_pick_example_2 epX epY =
       let epY = select_true epY in
       send 42 epY)
     epX epY
+
+let run_echo_client_example ?(st = cst_placeholder) () =
+  let ep1, ep2 = create ~st () in
+  let _ = Thread.create echo_server ep1 in
+  echo_client ep2 42
+
+
+let run_coin_flip_echo_client_example ?(st = cst_placeholder) () =
+  let ep1, ep2 = create ~st () in
+  let _ = Thread.create echo_server ep1 in
+  coin_flip_echo_client ep2 42

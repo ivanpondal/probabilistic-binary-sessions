@@ -96,7 +96,7 @@ los contextos $\ContextA$ y $\ContextB$ cuando $\dom\ContextA \cap \dom\ContextB
   \wtp{\ContextB, x : S}Q : \sigma
 }{
   \wtp{\csum[p]\ContextA\ContextB, x : \BinaryPBranch{T}{S}}{
-	  \OI{match} \ (\OI{branch} \ x) \ \OI{with} \
+	  \text{\OI{match} (\OI{branch} x) \OI{with} }
 	  \Tag[True] \rightarrow Q \ | \ \Tag[False] \rightarrow P : \sigma}
 }
 \\\\
@@ -107,7 +107,7 @@ los contextos $\ContextA$ y $\ContextB$ cuando $\dom\ContextA \cap \dom\ContextB
   \\
   \wtp\ContextB Q : \sigma
 }{
-  \wtp{\csum\ContextA\ContextB}{\OI{pick}\ prob\ P\ Q} : \sigma
+	\wtp{\csum\ContextA\ContextB}{\text{\OI{pick}} \ prob \ P \ Q} : \sigma
 }
 \end{gather*}
 \caption{\label{tab:rules} Reglas de tipado.}
