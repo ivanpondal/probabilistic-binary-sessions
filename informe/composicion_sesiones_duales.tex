@@ -1,5 +1,4 @@
-Nos resta introducir un tipo más a nuestra extensión, la composición de tipos
-sesión duales representada como $\ClosedSessionType$. La misma encapsula la
+Nos resta introducir un tipo más a nuestra extensión, la composición de tipos sesión duales representada como $\ClosedSessionType$. La misma encapsula la
 unión de los endpoints de tipo $\T$ y $\dual\T$ con probabilidad de éxito $p =
 \encfun\T = \encfun{\dual\T}$. \todo{Agregar breve descripción con regla de tipado T-Par}
 
@@ -67,7 +66,7 @@ elección probabilística:
 
 El único cambio con respecto al ejemplo anterior es el uso de
 \OI{coin_flip_echo_client} que envía con probabilidad $\frac{1}{2}$, caso
-contrario finaliza con \IO{idle}.
+contrario finaliza con \OI{idle}.
 
 \begin{table}[htb]
 	\begin{OCamlD}
@@ -79,3 +78,73 @@ En este caso, la probabilidad de éxito es de $\frac{1}{2}$ lo cual coincide con
 el comportamiento de su sesión.
 
 \section{Interacción con sesiones multi-sesión}
+
+Si recordamos la definición del combinador probabilístico, esta incluía la
+combinación de sesiones cerradas. En particular tenemos que
+$\csum{\ClosedSessionType[q]}{\ClosedSessionType[r]} =
+\ClosedSessionType[pq+(1-p)r]$. A diferencia de la combinación de endpoint
+donde el tipo combinado lleva información del comportamiento de la sesión, acá
+se trata nuevamente de un dato informativo; la probabilidad de éxito de una
+sesión que puede tomar distinta forma según una elección externa. 
+
+Veamos un ejemplo de tal combinación:
+
+\PickIdleCloseRunEchoClient
+
+En este caso, \OI{ep} tiene tipo $\BinaryPChoice[p]{\Done}{\Idle}$; esta
+elección afecta el tipo de \OI{st} ya que vemos está presente en ambas ramas.
+La sesión cerrada \OI{st} tiene tipo $\ClosedSessionType[1]$ en cada rama (se
+trata de una sesión sin elecciones probabilísticas), la combinación no afecta
+su tipo final.
+
+Para el siguiente ejemplo, \OI{st} captura la probabilidad de éxito de dos
+sesiones distintas en cada rama:
+
+\InvalidPickIdleCloseRunEchoClientOrCoinFlip
+
+En este caso podemos observar se obtiene un error de tipado ya que al escoger
+$\Tag[True]$, \OI{st} toma el tipo $\ClosedSessionType[0,5]$ mientras que en
+la rama $\Tag[False]$ este es de tipo $\ClosedSessionType[1]$.
+
+Dado que se trata de un tipo informativo, cabe resaltar este ejemplo tipa si
+quitamos el argumento opcional:
+
+\NoOptionalValidPickIdleCloseRunEchoClientOrCoinFlip
+
+El error surge al buscar la aplicación del combinador probabilístico sobre los
+tipos de las sesiones finalizadas en la firma de nuestro programa.
+
+Nos encontramos con la misma limitación del \OI{pick} solo que aplicado al tipo
+de sesiones concluidas. Siguiendo la misma motivación que con \OI{pick_2ch},
+decidimos agregar una primitiva que capture en su tipo esta nueva combinación.
+Presentamos a continuación la primitiva \OI{pick_2st} y su tipo en Tabla
+\ref{tab:prob_api_pick_2st}. Así como \OI{pick_2ch} permite combinar las
+elecciones de exactamente dos sesiones, aquí podemos combinar exactamente un
+endpoint y una sesión cerrada.
+
+\begin{table}[htb]
+\begin{OCamlD}[frame=single]
+	val pick_2st:
+	    $p$ -> $(\BinaryPChoice[0]{\etvarA}{\etvarB}$ -> $\ClosedSessionType[r]$ -> $\alpha)$
+	      -> $(\BinaryPChoice[1]{\etvarA}{\etvarB}$ -> $\ClosedSessionType[q]$ -> $\alpha)$
+	      -> $\BinaryPChoice[p]{\etvarA}{\etvarB}$ -> $\ClosedSessionType[pq + (1 - p)r]$ -> $\alpha$
+\end{OCamlD}
+\caption{Interfaz de primitiva \OI{pick_2st}}
+\label{tab:prob_api_pick_2st}
+\end{table}
+
+El uso de la primitiva es análogo al de \OI{pick_2ch} con la diferencia de que
+el segundo argumento de la función de cada rama así como el tipo combinado
+final es sobre sesiones combinadas, no elecciones.
+
+\ValidPickIdleCloseRunEchoClientOrCoinFlip
+
+De esta manera, \OI{st} tipa correctamente en cada rama y su información de
+tipo permite el cálculo de su combinación ponderada:
+
+\begin{table}[htb]
+	\begin{OCamlD}
+  val pick_idle_close_and_run_echo_client_or_coin_flip :
+              ?st:$\ClosedSessionType[0.75]$ -> unit -> $\BinaryPChoice[\frac{1}{2}]{\Done}{\Idle}$ -> int
+	\end{OCamlD}
+\end{table}
