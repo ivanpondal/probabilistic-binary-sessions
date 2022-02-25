@@ -420,6 +420,8 @@ let () =
   run_test_tt_main examples_suite;
   run_test_tt_main multi_channel_suite
 
+(* Code examples *)
+
 let two_sessions_pick_single_branch epX epY =
   pick one_half
     (fun epX ->
@@ -489,3 +491,67 @@ let two_ep_pick_example_2 epX epY =
       let epY = select_true epY in
       send 42 epY)
     epX epY
+
+let run_echo_client_example ?(st = cst_placeholder) () =
+  let ep1, ep2 = create ~st () in
+  let _ = Thread.create echo_server ep1 in
+  echo_client ep2 42
+
+let run_coin_flip_echo_client_example ?(st = cst_placeholder) () =
+  let ep1, ep2 = create ~st () in
+  let _ = Thread.create echo_server ep1 in
+  coin_flip_echo_client ep2 42
+
+let pick_idle_close_and_run_echo_client ?(st = cst_placeholder) () ep =
+  pick one_half
+    (fun ep ->
+      let ep = select_false ep in
+      idle ep;
+      run_echo_client_example ~st ())
+    (fun ep ->
+      let ep = select_true ep in
+      close ep;
+      run_echo_client_example ~st ())
+    ep
+
+(* let pick_idle_close_and_mix_run_echo_client ?(st = cst_placeholder) () ep =
+   pick one_half
+     (fun ep ->
+       let ep = select_false ep in
+       idle ep;
+       run_echo_client_example ~st ())
+     (fun ep ->
+       let ep = select_true ep in
+       close ep;
+       match run_coin_flip_echo_client_example ~st () with
+       | Some result -> result
+       | None -> 0)
+     ep *)
+
+let pick_idle_close_and_mix_run_echo_client ?(st = cst_placeholder) () ep =
+  pick_2st one_half
+    (fun ep st ->
+      let ep = select_false ep in
+      idle ep;
+      run_echo_client_example ~st ())
+    (fun ep st ->
+      let ep = select_true ep in
+      close ep;
+      match run_coin_flip_echo_client_example ~st () with
+      | Some result -> result
+      | None -> 0)
+    ep st
+
+let pick_idle_close_and_mix_run_echo_client ep =
+  pick one_half
+    (fun ep ->
+      let ep = select_false ep in
+      idle ep;
+      run_echo_client_example ())
+    (fun ep ->
+      let ep = select_true ep in
+      close ep;
+      match run_coin_flip_echo_client_example () with
+      | Some result -> result
+      | None -> 0)
+    ep

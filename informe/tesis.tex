@@ -46,11 +46,12 @@
   moreemph=[2]{branch,branch_2st,branch_2ch},
   moreemph=[2]{sync,use,fresh},
   moreemph=[2]{InvalidEndpoint},
-  moreemph=[2]{one_half,zero,one,two},
+  moreemph=[2]{one_half,zero,one,two,cst_placeholder},
   showstringspaces=false,
   emphstyle=[2]\color{mymagenta},
-  emph=[3]{Service,Session,Rational,List,Thread,Event,Obj,UnsafeChannel,Flag,Mutex,None,Some},
-  emph=[3]{S,Z,Fraction},
+  emph=[3]{Service,Session,Rational,List},
+  moreemph=[3]{Thread,Event,Obj,UnsafeChannel,Flag,Mutex,None,Some},
+  moreemph=[3]{S,Z,Fraction},
   emphstyle=[3]\color{lightblue},
   moredelim=[is][\color{myred}]{\#}{\#},
   mathescape=true,
@@ -130,6 +131,10 @@
 \chapter{Elecciones multi-sesión}
 
 \input{elecciones_multi_sesion.tex}
+
+\chapter{Composición de tipos sesión duales}
+
+\input{composicion_sesiones_duales.tex}
 
 %%%% BIBLIOGRAFIA
 

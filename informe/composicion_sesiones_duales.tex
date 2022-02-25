@@ -1,0 +1,150 @@
+Nos resta introducir un tipo más a nuestra extensión, la composición de tipos sesión duales representada como $\ClosedSessionType$. La misma encapsula la
+unión de los endpoints de tipo $\T$ y $\dual\T$ con probabilidad de éxito $p =
+\encfun\T = \encfun{\dual\T}$. \todo{Agregar breve descripción con regla de tipado T-Par}
+
+Este tipo se presenta al momento de crear una sesión y su función es puramente
+informativa, guarda la probabilidad de éxito de la sesión. En nuestra extensión
+queremos capturar esta información ya que representa uno de los objetivos del
+cálculo probabilístico, obtener la probabilidad de éxito de una sesión mediante
+la información de tipo de sus primitivas.
+
+Elegir una representación adecuada para este tipo presenta algunos desafíos.
+La misma debe capturar la información de tipo de sus endpoints ($\T$ o su
+dual $\dual\T$) para permitir el cálculo de éxito y a su vez está sujeta a la
+combinación probabilística vista en Definición \ref{def:ccomb}.
+
+\begin{table}[htb]
+	\begin{OCamlD}[frame=single]
+  type ('r,'s) cpst (* sintáxis en OCaml para sesión cerrada
+                     con endpoint de tipo $\tsession\tvarR\tvarS$ *)
+  val create  : ?st:('r, 's) cpst -> unit -> ('r,'s) pst * ('s,'r) pst
+  val cst_placeholder : ('a, 'b) cpst
+	\end{OCamlD}
+	\caption{Interfaz \OCaml para tipos sesión probabilísticos.}
+	\label{tab:create_cpst_sig}
+\end{table}
+
+Nuestra representación toma la forma de un argumento opcional en la primitiva
+\OI{create}. Dado que la función de este tipo es informativa, el uso de un
+argumento opcional permite ignorarlo y aún así disponer de las garantías de
+tipo que provee nuestra extensión. Podemos observar que el tipo unifica con uno
+de los endpoints de la sesión, $\encfun\T = \tsession\tvarR\tvarS$. También
+podría haber tomado su dual, $\encfun{\dual\T} = \tsession\tvarS\tvarR$, ya que
+el propósito es disponer del tipo de la sesión completa para calcular su
+probabilidad de éxito.
+
+Dado que sólo nos interesa el tipo final de nuestro argumento opcional, el
+valor a utilizar es indistinto; para ello tenemos la constante
+\OI{cst_placeholder} que tipa como una sesión cerrada pero su implementación es
+un valor de tipo \OI{unit}.
+
+\section{Ejemplos de uso}
+
+Veamos qué ocurre al obtener la composición de tipos para los ejemplos vistos en la introducción:
+
+\EchoClientClosedSession
+
+En este programa, primero creamos los endpoints utilizando \OI{st} como
+argumento para obtener así la información de tipo de la sesión. Luego cada
+endpdoint es consumido acorde al comportamiento de la sesión, permitiendo así
+inferir su tipo. Habiendo unificado nuestro argumento opcional \OI{st} con el
+tipo de la sesión, nuestra herramienta traductora \texttt{rosetta} es capaz de
+calcular la probabilidad de éxito de la misma. Para este ejemplo, nuestro programa
+\OI{run_echo_client_example} llevaría el siguiente tipo:
+
+\begin{table}[htb]
+	\begin{OCamlD}
+    val run_echo_client_example : ?st:$\ClosedSessionType[1]$ -> unit -> int
+	\end{OCamlD}
+\end{table}
+
+La probabilidad de éxito es $1$ lo cual no sorprende ya que este ejemplo es
+completamente determinístico. Contemplemos ahora un escenario con algún tipo de
+elección probabilística:
+
+\CoinFlipEchoClientClosedSession
+
+El único cambio con respecto al ejemplo anterior es el uso de
+\OI{coin_flip_echo_client} que envía con probabilidad $\frac{1}{2}$, caso
+contrario finaliza con \OI{idle}.
+
+\begin{table}[htb]
+	\begin{OCamlD}
+ val run_coin_flip_echo_client_example : ?st:$\ClosedSessionType[0.5]$ -> unit -> int
+	\end{OCamlD}
+\end{table}
+
+En este caso, la probabilidad de éxito es de $\frac{1}{2}$ lo cual coincide con
+el comportamiento de su sesión.
+
+\section{Interacción con sesiones multi-sesión}
+
+Si recordamos la definición del combinador probabilístico, esta incluía la
+combinación de sesiones cerradas. En particular tenemos que
+$\csum{\ClosedSessionType[q]}{\ClosedSessionType[r]} =
+\ClosedSessionType[pq+(1-p)r]$. A diferencia de la combinación de endpoint
+donde el tipo combinado lleva información del comportamiento de la sesión, acá
+se trata nuevamente de un dato informativo; la probabilidad de éxito de una
+sesión que puede tomar distinta forma según una elección externa. 
+
+Veamos un ejemplo de tal combinación:
+
+\PickIdleCloseRunEchoClient
+
+En este caso, \OI{ep} tiene tipo $\BinaryPChoice[p]{\Done}{\Idle}$; esta
+elección afecta el tipo de \OI{st} ya que vemos está presente en ambas ramas.
+La sesión cerrada \OI{st} tiene tipo $\ClosedSessionType[1]$ en cada rama (se
+trata de una sesión sin elecciones probabilísticas), la combinación no afecta
+su tipo final.
+
+Para el siguiente ejemplo, \OI{st} captura la probabilidad de éxito de dos
+sesiones distintas en cada rama:
+
+\InvalidPickIdleCloseRunEchoClientOrCoinFlip
+
+En este caso podemos observar se obtiene un error de tipado ya que al escoger
+$\Tag[True]$, \OI{st} toma el tipo $\ClosedSessionType[0,5]$ mientras que en
+la rama $\Tag[False]$ este es de tipo $\ClosedSessionType[1]$.
+
+Dado que se trata de un tipo informativo, cabe resaltar este ejemplo tipa si
+quitamos el argumento opcional:
+
+\NoOptionalValidPickIdleCloseRunEchoClientOrCoinFlip
+
+El error surge al buscar la aplicación del combinador probabilístico sobre los
+tipos de las sesiones finalizadas en la firma de nuestro programa.
+
+Nos encontramos con la misma limitación del \OI{pick} solo que aplicado al tipo
+de sesiones concluidas. Siguiendo la misma motivación que con \OI{pick_2ch},
+decidimos agregar una primitiva que capture en su tipo esta nueva combinación.
+Presentamos a continuación la primitiva \OI{pick_2st} y su tipo en Tabla
+\ref{tab:prob_api_pick_2st}. Así como \OI{pick_2ch} permite combinar las
+elecciones de exactamente dos sesiones, aquí podemos combinar exactamente un
+endpoint y una sesión cerrada.
+
+\begin{table}[htb]
+\begin{OCamlD}[frame=single]
+	val pick_2st:
+	    $p$ -> $(\BinaryPChoice[0]{\etvarA}{\etvarB}$ -> $\ClosedSessionType[r]$ -> $\alpha)$
+	      -> $(\BinaryPChoice[1]{\etvarA}{\etvarB}$ -> $\ClosedSessionType[q]$ -> $\alpha)$
+	      -> $\BinaryPChoice[p]{\etvarA}{\etvarB}$ -> $\ClosedSessionType[pq + (1 - p)r]$ -> $\alpha$
+\end{OCamlD}
+\caption{Interfaz de primitiva \OI{pick_2st}}
+\label{tab:prob_api_pick_2st}
+\end{table}
+
+El uso de la primitiva es análogo al de \OI{pick_2ch} con la diferencia de que
+el segundo argumento de la función de cada rama así como el tipo combinado
+final es sobre sesiones combinadas, no elecciones.
+
+\ValidPickIdleCloseRunEchoClientOrCoinFlip
+
+De esta manera, \OI{st} tipa correctamente en cada rama y su información de
+tipo permite el cálculo de su combinación ponderada:
+
+\begin{table}[htb]
+	\begin{OCamlD}
+  val pick_idle_close_and_run_echo_client_or_coin_flip :
+              ?st:$\ClosedSessionType[0.75]$ -> unit -> $\BinaryPChoice[\frac{1}{2}]{\Done}{\Idle}$ -> int
+	\end{OCamlD}
+\end{table}

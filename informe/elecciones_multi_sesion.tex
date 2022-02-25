@@ -96,7 +96,7 @@ los contextos $\ContextA$ y $\ContextB$ cuando $\dom\ContextA \cap \dom\ContextB
   \wtp{\ContextB, x : S}Q : \sigma
 }{
   \wtp{\csum[p]\ContextA\ContextB, x : \BinaryPBranch{T}{S}}{
-	  \OI{match} \ (\OI{branch} \ x) \ \OI{with} \
+	  \text{\OI{match} (\OI{branch} x) \OI{with} }
 	  \Tag[True] \rightarrow Q \ | \ \Tag[False] \rightarrow P : \sigma}
 }
 \\\\
@@ -107,7 +107,7 @@ los contextos $\ContextA$ y $\ContextB$ cuando $\dom\ContextA \cap \dom\ContextB
   \\
   \wtp\ContextB Q : \sigma
 }{
-  \wtp{\csum\ContextA\ContextB}{\OI{pick}\ prob\ P\ Q} : \sigma
+	\wtp{\csum\ContextA\ContextB}{\text{\OI{pick}} \ prob \ P \ Q} : \sigma
 }
 \end{gather*}
 \caption{\label{tab:rules} Reglas de tipado.}
@@ -167,11 +167,11 @@ probabilidad $p$ y $\Tag[False]$ con $p - 1$ sobre el endpoint con tipo
 $\BinaryPChoice[p]{\etvarA}{\etvarB}$. Además, cada rama presenta una segunda
 elección cuya combinación se ve reflejada en el endpoint con tipo
 $\BinaryPChoice[pq + (1- p)r]{\etvarC}{\etvarD}$. Al igual que con \OI{pick} el
-comportamiento sobre la rama seleccionada queda definido por las funciones que de
-argumento reciben los tipos sesión correspondientes a la elección. Por ejemplo,
-al escoger $\Tag[True]$ se llama a la función que toma la elección con $p = 1$
-($\BinaryPChoice[1]{\etvarA}{\etvarB}$) y la sesión secundaria con probabilidad
-$q$ ($\BinaryPChoice[q]{\etvarC}{\etvarD}$).
+comportamiento de la rama seleccionada queda definido por las funciones sobre
+los tipos sesión correspondientes a cada elección. Por ejemplo, al escoger
+$\Tag[True]$ se llama a la función que toma la sesión con tipo
+$\BinaryPChoice[1]{\etvarA}{\etvarB}$ y la sesión secundaria a combinar con
+probabilidad $\BinaryPChoice[q]{\etvarC}{\etvarD}$.
 
 \begin{table}[htb]
 \begin{OCamlD}[frame=single]
