@@ -1,0 +1,22 @@
+\begin{definition}[Probabilidad de éxito]
+  \label{def:pr}
+	La \emph{probabilidad de éxito} de un tipo sesión $\SessionType$,
+	denotada como $\psfun\SessionType$, se encuentra definida por
+	las siguientes ecuaciones:
+  \[
+    \begin{array}{r@{~}c@{~}l}
+      \psfun\Idle & = & 0 \\
+      \psfun\Done & = & 1 \\
+    \end{array}
+    \quad
+    \begin{array}{r@{~}c@{~}l}
+      \psfun{\In\Type\SessionType} & = & \psfun\SessionType \\
+      \psfun{\Out\Type\SessionType} & = & \psfun\SessionType \\
+    \end{array}
+    \quad
+    \begin{array}{r@{~}c@{~}l}
+      \psfun{\BinaryPBranch\SessionTypeT\SessionTypeS} & = & p\psfun\SessionTypeT + (1-p)\psfun\SessionTypeS \\
+      \psfun{\BinaryPChoice\SessionTypeT\SessionTypeS} & = & p\psfun\SessionTypeT + (1-p)\psfun\SessionTypeS \\
+    \end{array}
+  \]
+\end{definition}

@@ -21,7 +21,67 @@ Por ejemplo, podemos refinar \eqref{eq:bare.auction} como
 \end{equation}
 
 donde el tipo sesión $\Done$ indica una terminación exitosa y las
-ramas  se anotan con probabilidades $p$ y $q$. En particular, el subastador
-declara que el artículo se vende con probabilidad $p$ y  responde con una
+ramas se anotan con probabilidades $p$ y $q$. En particular, el subastador
+declara que el artículo se vende con probabilidad $p$ y responde con una
 contraoferta con probabilidad $1-p$, mientras que el comprador decide abandonar
 la subasta con probabilidad $q$ o volver a ofertar con probabilidad $1-q$.
+
+\section{Gramática}
+
+Para esta interpretación probabilística consideramos la siguiente gramática
+
+\[
+\begin{array}{@{}r@{~~}c@{~~}l@{}}
+\TypeT, \TypeS & ::= &
+\tbool
+\rulemid \tint
+\rulemid \tvar
+\rulemid \SessionType
+\rulemid \ClosedSessionType
+\rulemid \BinaryLabels{\SessionTypeT}{\SessionTypeS}
+\rulemid \cdots
+\\
+\SessionTypeT, \SessionTypeS & ::= &
+\Done
+\rulemid \Idle
+\rulemid \Out\Type\SessionType
+\rulemid \In\Type\SessionType
+\rulemid
+\\
+	& &
+\BinaryPBranch[p]\SessionTypeT\SessionTypeS
+\rulemid \BinaryPChoice[p]\SessionTypeT\SessionTypeS
+\rulemid \etvarA
+\rulemid \dual\etvarA
+\end{array}
+\]
+
+donde $\TypeT$ y $\TypeS$ son utilizados para representar los  básicos,
+variables libres, sesión para endpoints, sesiones con probabilidad de
+éxito $p$ y otros. Las sesiones representadas por $\ClosedSessionType$ resultan
+de la composición o ``unión'' de un par de endpoints con sesión duales
+$\SessionTypeT$ y $\dual\SessionTypeT$ ambos con probabilidad de éxito $p$. La
+\emph{probabilidad de éxito} de un tipo sesión es la probabilidad con la que
+el protocolo descrito termina exitosamente.
+
+Para los tipos sesión descritos por $\SessionTypeT$ y $\SessionTypeS$, $\Idle$
+y $\Done$ marcan el fin de una comunicación. Utilizamos $\Done$ para denotar
+los puntos de terminación exitosa de un protocolo, la semántica para tal
+terminación siendo dependiente del dominio del problema. Los tipos sesión
+$\Out\Type\SessionType$ y $\In\Type\SessionType$ describen endpoints para
+enviar y recibir mensajes de tipo $t$ y continuar de acuerdo con $T$. Luego,
+$\PChoice$ y
+$\PBranch$ describen endpoints utilizador para
+enviar y recibir una elección binaria que es ``izquierda'' con probabilidad $p$
+y ``derecha'' con probabiliadad $1 - p$. El endpoint es luego consumido acorde
+$\SessionTypeT$ o $\SessionTypeS$ según corresponda. Notamos que $\PChoice{}{}$
+es una elección interna, el proceso comportándose acorde este tipo selecciona
+``izquierda'' o ``derecha'', mientras que $\PBranch$ es una elección
+externa, el proceso ofrece al exterior ambas ramas. Como consecuencia, la
+probabilidad de $\PBranch$ queda determinada por su correspondiente
+elección interna. Por último, $\etvar$ y $\dual\etvar$ representan variables
+libres y su dual.
+
+El \emph{dual} de un tipo sesión probabilístico $\SessionType$, escrito como
+$\dual\SessionType$, se obtiene utilizando la misma definición que para los
+tipos sesión intercambiando las operaciones de lectura y escritura.
