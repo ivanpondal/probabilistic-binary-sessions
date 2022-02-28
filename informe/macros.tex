@@ -59,6 +59,7 @@
 \newcommand{\etal}{\emph{et al.}\xspace}
 
 \newcommand{\set}[2][]{\ttbracks{#2}\ifblank{#1}{}{_{#1}}}
+\newcommand{\mathset}[2][]{\{#2\}\ifblank{#1}{}{_{#1}}}
 \newcommand{\subst}[2]{\{#1/#2\}}
 \newcommand{\hypo}[1]{\textrm{\upshape\color{myred}(#1)}}
 \newcommand{\eoe}{\hfill{$\blacksquare$}}
@@ -559,6 +560,8 @@
 
 \newcommand{\subt}{\leqslant}
 
+\newcommand{\tred}[1][]{\leadsto\ifblank{#1}{}{_{#1}}}
+
 %%%%%%%%%%%%%%%%%%%%
 %%% ENVIRONMENTS %%%
 %%%%%%%%%%%%%%%%%%%%
@@ -644,3 +647,4 @@
 }
 
 \newcommand{\csum}[3][p]{#2 \mathrel{\prescript{}{#1}{\boxplus}} #3}
+\newcommand{\trees}[1]{\mathcal{T}\parens{#1}}

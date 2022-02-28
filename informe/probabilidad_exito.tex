@@ -1,3 +1,8 @@
+En secciones anteriores hablamos de la probabilidad de éxito pero aún no dimos
+una definición formal para la misma. Intuitivamente, la probablidad se computa
+considerando todos los caminos en la estructura de $\SessionType$ que llevan a
+un estado $\Done$. Formalmente:
+
 \begin{definition}[Probabilidad de éxito]
   \label{def:pr}
 	La \emph{probabilidad de éxito} de un tipo sesión $\SessionType$,
@@ -20,3 +25,40 @@
     \end{array}
   \]
 \end{definition}
+
+Para un tipo sesión $\SessionType$ \emph{finito}, la Definición \ref{def:pr}
+describe un algoritmo recursivo para el cómputo de $\psfun\SessionType$. Cuando
+$\SessionType$ es infinito (un protocolo recursivo) deja de ser tan obvio. Para
+obtener un algoritmo que funcione en el caso general, interpretamos
+$\psfun\SessionType$ como una \emph{variable aleatoria}. La Definición
+\ref{def:pr} nos permite derivar un \emph{sistema finito de ecuaciones}
+relacionando tales variables. El lado derecho de cada ecuación para
+$\psfun\SessionType$ está expresada en términos de variables aleatorias que
+corresponden a los nodos hijos en el árbol descrito por $\SessionType$. Como
+$\SessionType$ tiene una cantidad finita de sub-árboles, obtenemos un número
+finito de ecuaciones.
+
+Luego, observamos que cada tipo sesión $\SessionType$ corresponde a una Cadena
+de Markov en Tiempo Discreto (Discrete-Time Markov Chain, DTMC)~\todo{cita a
+paper DTMC} cuyo espacio de estados es $\trees\SessionType = \mathset{S_1,
+\dots, S_n}$ y tal que la probabilidad $p_{ij}$ de transicionar de un estado
+$S_i$ al estado $S_j$ está dada por
+\[
+  p_{ij} \eqdef
+  \begin{cases}
+    p & \text{si $S_i \tred[p] S_j$}
+    \\
+    0 & \text{caso contrario}
+  \end{cases}
+\]
+\label{pg:regreach}
+
+\todo{Definición de regularidad y alcanzabilidad} La regularidad y alcanzabilidad
+implican que la DTMC obtenida por el tipo sesión $\SessionType$ tiene un número
+de estados finito y es absorbente. Esto significa siempre es posible alcanzar
+un \emph{estado absorbente} ($\Done$ ó $\Idle$) desde cualquier \emph{estado
+transiente} (cualquier otro tipo sesión). En cualquier DTMC absorbente con un
+número de estados finito, la probabilidad de alcanzar un estado absorbente
+desde uno transiente puede ser copmutado mediante la resolución de un sistema
+de ecuaciones para el cual se garantiza una solución única
+\todo{~cite{KemenySnell76}}.
