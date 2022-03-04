@@ -58,6 +58,64 @@ sesión $\SessionType$ tiene un número de estados finito y es absorbente. Esto
 significa siempre es posible alcanzar un \emph{estado absorbente} ($\Done$ ó
 $\Idle$) desde cualquier \emph{estado transiente} (cualquier otro tipo sesión).
 En cualquier DTMC absorbente con un número de estados finito, la probabilidad
-de alcanzar un estado absorbente desde uno transiente puede ser copmutado
+de alcanzar un estado absorbente desde uno transiente puede ser computado
 mediante la resolución de un sistema de ecuaciones para el cual se garantiza
-una solución única \todo{~cite{KemenySnell76}}.
+una solución única \todo{~cite{KemenySnell76}}. La solución que se obtiene para
+$\psfun\SessionType$ utilizando la Definición \ref{def:pr} es la que determina
+la probabilidad de llegar a un estado $\Done$ desde $\SessionType$.
+
+\section{Extendiendo decodificación para tipos sesión probabilísticos}
+
+Cuando hablamos sobre la codificación de los tipos sesión, mencionamos
+brevemente el uso de \texttt{rosetta} para decodificar los tipos generados por
+\OCaml. Esta herramienta utiliza la gramática de tipos de \OCaml para parsear
+las interfaces y aplicar la función inversa $\decfun\cdot$ a los tipos sesión
+codificados. El resultado es un árbol de sintaxis abstracta que puede ser
+utilizado para procesamientos o simplemente ser impreso bajo la sintaxis que
+uno desee.
+
+La extensión al cálculo de tipos sesión probabilísticos consistió de dos
+partes: modificar la función inversa para considerar tipos probabilísticos y
+constructores de terminación exitosa, y el cálculo de probabilidad de éxito
+para tipos sesión cerrados $\ClosedSessionType$.
+
+Lo primero consistió en modificar la decodificación de forma tal que se
+contemplen las anotaciones de probabilidad en el árbol sintáctico final. Esto
+requirió cambios únicamente en el modelado de tipos para recibir o enviar
+elecciones. Las probabilidades en sí, que como vimos en la sección de
+codificación representan su valor en el tipo, también debieron ser consideradas
+al momento de representarlas en el árbol sintáctico. Ya que se asume las
+expresiones a decodificar tipan en \OCaml, se transforman para conservar
+únicamente su valor en un tipo \OI{int} o \OI{float} según el caso. Por último,
+se creó la distinción entre los nodos $\Done$ y $\Idle$, indispensable para el
+cálculo de probabilidad de éxito.
+
+Lo segundo fue agregar el procesamiento necesario para computar la probabilidad
+de éxito en los tipos sesión cerrados. Para ello, primero tomamos el árbol
+sintáctico correspondiente al endpoint de tipo $\SessionType$ (el cual describe
+la sesión cerrada) y lo transformamos a una matriz de adyacencia con las
+probabilidades de transición $p_{ij}$ descritas anteriormente.
+
+Esta matriz es dividida en submatrices que corresponden a las transiciones
+entre estados transitorios y las que van de estados transitorios a absorbentes.
+Con esta información es posible computar la matriz de absorción que contiene la
+probabilidad con la que cada estado es absorbido a $\Done$ o $\Idle$.
+
+\section{Ejemplos}
+
+Vamos a seguir el ejemplo de subasta presentado en (prob analysis) \todo{citar
+prob analysis} para ver cómo se decodifica su tipo y cómo se computa su
+probabilidad de éxito al combinarlo con su dual.
+
+
+\AuctionBuyer
+
+$rec\ X.\Out\tint\BinaryPBranch[p]{\Done}{\In\tint\BinaryPChoice[\frac{2}{3}]{\Idle}{X}}$
+
+\AuctionSeller
+
+$rec\ X.\In\tint\BinaryPChoice[\frac{1}{4}]{\Done}{\Out\tint\BinaryPBranch[q]{\Idle}{X}}$
+
+\TestAuction
+
+$rec\ X.\Out\tint\BinaryPBranch[\frac{1}{4}]{\Done}{\In\tint\BinaryPChoice[\frac{2}{3}]{\Idle}{X}}$

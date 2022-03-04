@@ -203,4 +203,47 @@ module ProbEcho = struct
         | None -> 0)
       ep
   (*END*NoOptionalValidPickIdleCloseRunEchoClientOrCoinFlip*)
+
+  (*BEGIN*AuctionBuyer*)
+  let rec buyer ep offer =
+    let ep = Session.send offer ep in
+    match Session.branch ep with
+    | `True ep ->
+        Session.close ep;
+        offer
+    | `False ep ->
+        let counteroffer, ep = Session.receive ep in
+        Session.pick Rational.two_thirds
+          (fun ep ->
+            let ep = Session.select_false ep in
+            buyer ep counteroffer)
+          (fun ep ->
+            let ep = Session.select_true ep in
+            Session.idle ep;
+            -1)
+          ep
+  (*END*AuctionBuyer*)
+
+  (*BEGIN*AuctionSeller*)
+  let rec seller ep =
+    let bid, ep = Session.receive ep in
+    Session.pick Rational.one_quarter
+      (fun ep ->
+        let ep = Session.select_false ep in
+        let ep = Session.send (bid + 10) ep in
+        match Session.branch ep with
+        | `True ep -> Session.idle ep
+        | `False ep -> seller ep)
+      (fun ep ->
+        let ep = Session.select_true ep in
+        Session.close ep)
+      ep
+  (*END*AuctionSeller*)
+
+  (*BEGIN*TestAuction*)
+  let test_buyer_seller ?(st = cst_placeholder) () =
+    let ep1, ep2 = Session.create ~st () in
+    let _ = Thread.create seller ep1 in
+    buyer ep2 42
+  (*END*TestAuction*)
 end
