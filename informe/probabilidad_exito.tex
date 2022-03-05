@@ -107,15 +107,35 @@ Vamos a seguir el ejemplo de subasta presentado en (prob analysis) \todo{citar
 prob analysis} para ver cómo se decodifica su tipo y cómo se computa su
 probabilidad de éxito al combinarlo con su dual.
 
+Presentamos un programa que actúa como comprador y su dual, vendedor.
 
 \AuctionBuyer
 
-$rec\ X.\Out\tint\BinaryPBranch[p]{\Done}{\In\tint\BinaryPChoice[\frac{2}{3}]{\Idle}{X}}$
+El comprador envía una oferta y espera la decisión del vendedor. En caso de
+aceptarse la oferta, la sesión termina exitosamente. Si esta es rechazada; el
+comprador recibe una contra-oferta y debe decidir si aceptarla o no. Si la
+rechaza, el protocolo termina sin éxito; caso contrario se llama recursivamente
+para repetir la secuencia.
+
+Mediante \texttt{rosetta} obtenemos el siguiente tipo para \OI{ep}: $rec\
+X.\Out\tint\BinaryPBranch[p]{\Done}{\In\tint\BinaryPChoice[\frac{2}{3}]{\Idle}{X}}$.
+Una diferencia con respecto a los ejemplos anteriores es que al presentar una
+recursión, la sesión hace referencia así misma mediante la variable de tipo $X$.
+
+A continuación presentamos el programa vendedor:
 
 \AuctionSeller
 
-$rec\ X.\In\tint\BinaryPChoice[\frac{1}{4}]{\Done}{\Out\tint\BinaryPBranch[q]{\Idle}{X}}$
+El tipo decodificado de \OI{ep} es $rec\
+X.\In\tint\BinaryPChoice[\frac{1}{4}]{\Done}{\Out\tint\BinaryPBranch[q]{\Idle}{X}}$.
+Además de ser el dual del endpoint utilizado por el comprador, podemos observar
+tiene instanciada la probabilidad de elección que requiere su contraparte.
+
+Finalmente, unimos ambos endpoints en un programa que ejecuta la subasta:
 
 \TestAuction
 
-$rec\ X.\Out\tint\BinaryPBranch[\frac{1}{4}]{\Done}{\In\tint\BinaryPChoice[\frac{2}{3}]{\Idle}{X}}$
+Al unificar, el tipo de cada endpoint posee las probabilidades concretas para
+cada elección; como ejemplo tomamos el tipo unificado para \OI{ep2} (el
+endpoint comprador): $rec\
+X.\Out\tint\BinaryPBranch[\frac{1}{4}]{\Done}{\In\tint\BinaryPChoice[\frac{2}{3}]{\Idle}{X}}$.
