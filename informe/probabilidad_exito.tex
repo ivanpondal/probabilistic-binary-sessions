@@ -101,7 +101,7 @@ entre estados transitorios y las que van de estados transitorios a absorbentes.
 Con esta información es posible computar la matriz de absorción que contiene la
 probabilidad con la que cada estado es absorbido a $\Done$ o $\Idle$.
 
-\section{Ejemplos}
+\section{Calculando probabilidad de absorción}
 
 Vamos a seguir el ejemplo de subasta presentado en (prob analysis) \todo{citar
 prob analysis} para ver cómo se decodifica su tipo y cómo se computa su
@@ -140,6 +140,10 @@ cada elección; como ejemplo tomamos el tipo unificado para \OI{ep2} (el
 endpoint comprador): $rec\
 X.\Out\tint\BinaryPBranch[\frac{1}{4}]{\Done}{\In\tint\BinaryPChoice[\frac{2}{3}]{\Idle}{X}}$.
 
+Lo primero que hace \texttt{rosetta} es construir el árbol sintáctico para la expresión
+de nuestro tipo sesión. A partir de este se generan los siguientes estados
+correspondientes a cada término alcanzable:
+
 \begin{align*}
 	s_0 &= \Out\tint\BinaryPBranch[\frac{1}{4}]{\Done}{\In\tint\BinaryPChoice[\frac{2}{3}]{\Idle}{X}} \\
 	s_1 &= \BinaryPBranch[\frac{1}{4}]{\Done}{\In\tint\BinaryPChoice[\frac{2}{3}]{\Idle}{X}} \\
@@ -149,7 +153,13 @@ X.\Out\tint\BinaryPBranch[\frac{1}{4}]{\Done}{\In\tint\BinaryPChoice[\frac{2}{3}
 	s_5 &= \Idle \\
 \end{align*}
 
+Agregando las transiciones entre estados, determinadas por la probabilidad de
+transición entre los mismos, podemos construir la DTMC presente en la Figura
+\ref{fig:dtmc-p}. Para proceder con nuestro algoritmo, obtenemos su
+representación como matriz de adyacencia, $P$.
+
 \begin{figure}[htb]
+	\label{fig:dtmc-p}
 	\begin{minipage}[c]{0.4\textwidth}
 		\begin{tikzpicture}[scale=1.5]
 			%\tikzstyle{every node}=[circle, fill=blue!20]
@@ -185,18 +195,28 @@ X.\Out\tint\BinaryPBranch[\frac{1}{4}]{\Done}{\In\tint\BinaryPChoice[\frac{2}{3}
 		\end{blockarray}
 		\]
 	\end{minipage}
+	\caption{DTMC para $T$ y su matriz de adyacencia $P$}
 \end{figure}
 
+Vamos a definir las siguientes sub-matrices de $P$ para nuestro cálculo de absorción:
 \begin{itemize}
 	\item $Q$ es la matriz de $4 \times 4$ con las probabilidades de transición entre estados transitorios.
 	\item $R$ es la matriz de $4 \times 2$ con las probabilidades de transición de estados transitorios a estados absorbentes.
 \end{itemize}
 
-Comenzando de un estado $s_i$, podría llegarse a un estado absorbente $s_j$ en uno o más
-pasos. La probabilidad de llegar en un paso está dada por $p_{ij}$. Si esto no
-ocurre, el proceso puede caer en otro estado absorbente o un estado transitorio
-$s_k$. En el último caso, existe una probabilidad $b_{kj}$ de ser capturado por
-el estado absorbente. Por lo tanto tenemos:
+Nos resta calcular la matriz absorbente $B$, para lo cual aplicaremos el
+teorema 3.3.7 de Kemney y Snell\todo{agregar a biblio cadenas markov}. El mismo
+dice que si $b_{ij}$ es la probabilidad de que un proceso que comienza en un
+estado transitorio $s_i$ termine en uno abosrbente $s_j$, entonces:
+\begin{align*}
+	\{b_{ij}\} & = B = (I - Q)^{-1}R
+\end{align*}
+
+Comenzando de un estado $s_i$, podría llegarse a un estado absorbente $s_j$ en
+uno o más pasos. La probabilidad de llegar en un paso está dada por $p_{ij}$.
+Si esto no ocurre, el proceso puede caer en otro estado absorbente o un estado
+transitorio $s_k$. En el último caso, existe una probabilidad $b_{kj}$ de ser
+capturado por el estado absorbente. Por lo tanto tenemos:
 
 \begin{equation*}
 	b_{ij} = p_{ij} + \sum_{s_k \in S} p_{ik} b_{kj}
@@ -214,8 +234,8 @@ Que en forma matricial puede ser escrito como:
 \end{array}
 \]
 
-Finalmente, la probabilidad de que nuestro estado $s_0$ sea absorbido por $s_2$
-(formalmente, $\psfun{T}$) se obtiene calculando el valor de $b_{02}$:
+De esta manera, la probabilidad de que nuestro estado $s_0 = T$ sea absorbido por
+$s_2 = \Done$ (equivalente a $\psfun{T}$) se obtiene calculando:
 
 \[
 \begin{array}{r@{\ }l}
@@ -265,3 +285,14 @@ Finalmente, la probabilidad de que nuestro estado $s_0$ sea absorbido por $s_2$
       \right]
 \end{array}
 \]
+
+La probabilidad de absorción para $s_0$ es $b_{00}$. Por lo tanto $\psfun{T} =
+\frac{1}{3}$. Con este resultado, \texttt{rosetta} carga la probabilidad de
+éxito en el árbol sintáctico y este es impreso como:
+
+
+\begin{table}[htb]
+	\begin{OCamlD}
+        val test_buyer_seller : ?st:$\ClosedSessionType[0.33]$ -> unit -> int
+	\end{OCamlD}
+\end{table}
