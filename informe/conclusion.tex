@@ -1,0 +1,28 @@
+Consideramos que con el ague en el desarrollo de técnicas de descripción de
+interfaces y soporte a nivel de lenguajes de programación para validación por
+construcción, esta clase de trabajos enfocados en el desarrollo de interfaces
+extensibles e implementaciones sencillas pueden contribuir a la popularización
+y uso de tipos comportamentales como los tipos sesión.
+
+Inspirados por el trabajo de \FuSe y su codificación de tipos sesión, hemos
+presentado una extensión que implementa el cálculo de tipos sesión
+probabilísticos sin perder las garantías del sistema original. Nuestra
+implementación permite la representación e inferencia de tipos sesión
+probabilísticos con una interfaz programática enfocada en la usabilidad del
+sistema. La misma no requiere de funcionalidades avanzadas del lenguaje de
+implementación como lo pueden ser el uso de mónadas o sistemas de tipo
+sub-estructurales. El uso de mónadas \todo{link a paper de mónadas} como
+garantía de linealidad es más fuerte que nuestra validación mediante tipos y
+tiempo de ejecución heredada de \Fuse, sin embargo, consideramos la primera
+sacrifica expresividad y/o usabilidad del sistema.
+
+Existen varias áreas donde podría continuar esta rama de trabajo. Una de ellas
+es la implementación de distribuciones de probabilidad para tratar elecciones
+con más de una rama. La representación de naturales y fracciones como tipos no
+restringe al uso de valores mayores a 1, esto puede validarse en tiempo de
+ejecución, al momento de utilizar la herramienta de decodificación o con alguna
+mejora a la representación actual que sea habilitada por el sistema de tipos.
+Al momento de calcular la probabilidad de éxito de una sesión, si esta no tiene
+instanciadas todas las probabilidades involucradas, el decodificador de tipos
+podría utilizar alguna representación simbólica para variables libres y
+retornar un resultado en función de las mismas.
