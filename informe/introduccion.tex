@@ -1,0 +1,89 @@
+El desarrollo de software distribuido, ya sea en sus variantes tradicionales
+como así también en sus nuevas encarnaciones, tales como el \emph{Cloud/Fog
+Computing} o la Internet de las cosas (IoT por su sigla en inglés), se
+centran fundamentalmente en la integración, cooperación y comunicación de
+componentes, generalmente existentes y desarrolladas de manera independiente.
+
+Mas allá del desafío tecnológico que tal integración presupone, el
+problema principal, desde el punto de vista del desarrollo, es  razonar sobre
+las propiedades de tales sistemas en términos de las propiedades de sus
+componentes y de los mecanismos utilizados para su composición.
+
+Es por ello que los últimos años testimonian un auge en el desarrollo de
+{\em técnicas de descripción} de interfaces y de {\em soporte a nivel de
+lenguajes de programación para el desarrollo de aplicaciones correctas por
+construcción}.  Los tipos comportamentales, tales como los tipos de
+sesión o {\em type-states} constituyen un ejemplo paradigmático de esta
+línea de trabajo. La idea central consiste en la utilización de sistemas de
+tipo (como extensión de los utilizados en los lenguajes existentes) para
+garantizar estáticamente propiedades relacionadas con la interacción de
+componentes.
+
+Los últimos años testimonian un aumento sustancial en el desarrollo de tipos
+comportamentales y, en especial, los {\em tipos de sesión} se han consolidado
+como un formalismo central para el análisis modular de aplicaciones
+distribuidas basadas en procesos que comunican a través de canales (para una
+introducción ver~\cite{HuttelEtAl16}). Solo a modo ilustrativo de la
+actividad en este tema, se listan a continuación artículos publicados en el
+último año en las mayores conferencias del
+área~\cite{DBLP:journals/pacmpl/GhilezanPPSY21,
+DBLP:journals/pacmpl/HinrichsenBK20, DBLP:journals/pacmpl/Castro-PerezY20,
+DBLP:conf/ecoop/ImaiNYY19, DBLP:conf/ecoop/000119, DBLP:conf/esop/JongmansY20,
+DBLP:conf/esop/VasconcelosCAM20, DBLP:conf/concur/Horne20,
+DBLP:conf/concur/DasP20, DBHPS21,DBLP:conf/cc/Miu0Y021,
+DBLP:journals/pacmpl/GriesemerHKLTTW20, DBLP:journals/pacmpl/MajumdarYZ20,
+DBLP:conf/concur/InversoMPTT20}.
+
+Los tipos de sesión fueron originalmente propuestos en~\cite {Honda93}, y
+promulgan la idea de estructurar la comunicación entre componentes alrededor
+del concepto de {\em sesión}. Una {sesión} es un canal privado que permite
+conectar a dos (a veces máas) procesos, donde cada uno posee un
+\emph{endpoint} de la sesión y lo debe usar siguiendo un protocolo bien
+especificado, llamado \emph{tipo de sesión}, que restringe el secuencia de
+mensajes que se pueden enviar y recibir a través de ese endpoint. Dependiendo
+de si el mecanismo de tipado es estático o dinámico, el tipo sesión se utiliza
+durante la compilación o la ejecución para asegurar que un programa utiliza el
+canal de sesión de acuerdo a su tipo. Como en cualquier sistema de tipos, un
+programa bien tipado goza de las propiedades que garantiza el sistema
+propuesto. En general, se asegura la propiedad de  {\em type-safety} (es decir
+los procesos intercambian información que tiene el tipo esperado), la
+adherencia al protocolo (las secuencias de acciones sobre un canal siguen el
+orden descripto por el protocolo), pero también pueden garantizar propiedades
+como la ausencia de {\em deadlocks} y {\em livelocks}~\cite{HuttelEtAl16}.
+
+En~\cite{DBLP:conf/concur/InversoMPTT20} se propuso el uso de tipos de sesión
+para razonar probabilísticamente sobre propiedades de alcanzabilidad, donde
+se dio una interpretación \emph{probabilística} a los operadores de
+selección. Más específicamente, se pasa de una interpretación no
+determinística a una probabilística y se estudia un sistema de tipos que
+permita determinar la probabilidad con la que una sesión en particular
+termina \emph{exitosamente}. Dado que no existe una interpretación universal
+de ``terminación exitosa'', se diferencia la terminación exitosa de la
+infructuosa por medio de un {constructor dedicado}.
+
+Si bien la línea trabajo sobre tipos sesión tiene raíces en resultados
+teóricos sobre modelos fundacionales de la computación concurrente, como
+los son CCS y el cálculo $\pi$, en la actualidad existen extensiones
+concretas de sistemas de tipos de lenguajes de programación de escala
+industrial, tales como Scala~\cite{DBLP:conf/pldi/ScalasYB19},
+Dotty~\cite{DBLP:conf/pldi/ScalasYB19},
+Go~\cite{DBLP:conf/icse/LangeNTY18,DBLP:conf/icse/LangeNTY18},
+Rust~\cite{DBLP:journals/corr/abs-1909-05970,DBLP:conf/coordination/LagaillardieNY20},
+Haskell~\cite{orchard2017session,DBLP:conf/haskell/LindleyM16},
+OCaml~\cite{DBLP:journals/jfp/Padovani17,DBLP:conf/coordination/LagaillardieNY20,DBLP:conf/ecoop/ImaiNYY19},
+Erlang~\cite{fowler2016erlang} y han sido aplicados, entre otros, al estudio de
+{\em smart contracts} y tecnologías {\em
+blockchain}~\cite{10.1145/3417516,DBLP:journals/corr/abs-1902-06056}. 
+
+Este no es el caso para los tipos sesión probabilísticos, dado que la
+propuesta en~\cite{DBLP:conf/concur/InversoMPTT20} presenta un sistema de
+chequeo de tipos, pero deja abierta la definición de un algoritmo de inferencia
+y su implementación en un lenguaje de programación.
+
+A partir de una implementacion existente de tipos sesión escrita en \OCaml,
+este trabajo presenta una implementación del sistema de tipos probabilísticos
+presentado en~\cite{DBLP:conf/concur/InversoMPTT20}. En el mismo elaboramos una
+estrategia para codificar a nivel de tipos las distintas elecciones
+probabilísticas y su combinación. A su vez, utilizamos los tipos inferidos por
+el compilador, anotados con elecciones probabilísticas, para calcular la
+probabilidad de terminación exitosa de una sesión.
