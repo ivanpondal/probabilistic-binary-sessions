@@ -2,8 +2,8 @@
 
 Los tipos sesión se han consolidado como un formalismo para el
 análisis modular de comunicación entre procesos. Una \emph{sesión} es un canal
-privado que conecta dos procesos, cada uno con su conector u \emph{endpoint} que
-establece qué estructura tiene la comunicación mediante una especificación; el
+privado que conecta dos procesos, cada uno con su conector o \emph{endpoint}
+que habilita la comunicación estructurada mediante una especificación; el
 \emph{tipo sesión}. A modo de ejemplo, el tipo sesión
 
 \begin{equation}
@@ -17,15 +17,19 @@ establece qué estructura tiene la comunicación mediante una especificación; e
     }
 \end{equation}
 
-podría describir (parte de) un protocolo que debe seguir un proceso comprador
-para participar en una subasta: el proceso debe enviar un valor entero que es su
+\noindent podría describir (parte de) un protocolo que debe seguir un proceso comprador
+para participar en una subasta: el proceso debe enviar un valor entero que representa su
 oferta ($ \Out [] \tint $) y espera una decisión del subastador. El protocolo
 puede proceder en este punto en dos formas distintas correspondientes a las dos
-ramas del operador $\Branch$. El subastador puede declarar que el
-artículo se vende, en cuyo caso la sesión termina inmediatamente ($ \End $), o
-puede contraofertar un nuevo valor ($ \In [] \tint $). En ese momento, el
-comprador puede elegir ($\Choice$) terminar la subasta o reiniciar
-el protocolo con otra oferta, aquí denotado por $\T$.
+ramas del operador $\Branch$. El subastador puede declarar que el artículo se
+vende (elección que representamos con $\Tag[True]$), en cuyo caso la sesión
+termina inmediatamente ($ \End $), o no aceptar la oferta (rama $\Tag[False]$)
+y enviar un contraoferta, recibida como un entero por el comprador ($ \In []
+\tint $). En ese momento, el comprador puede elegir ($\Choice$) terminar la
+subasta o reiniciar el protocolo con otra oferta, aquí denotado por $\T$. Las
+elecciones posibles son representadas mediante etiquetas (en este caso
+$\Tag[True]$ y $\Tag[False])$, $\Branch$ describe las elecciones que puede
+recibir y $\Choice$ las que puede enviar.
 
 \section{Gramática}
 
