@@ -279,11 +279,11 @@ para los naturales que se basa en la construcción mediante la función sucesor.
 Primero definimos los tipos \OI{_z} y \OI{_s} que serán utilizados como
 etiquetas para distinguir a nivel tipo entre cero y la función sucesor.
 Luego definimos \OI{nat} como una estructura de datos algebraica particular
-denominada GADT (Generalized Algebraic Data Type) presente en \OCaml que
-permite la implementación de restricciones en los parámetros de sus
-constructores. Aquí definimos un constructor \OI{Z} que actua como cero y otro
-\OI{S} que hace de función sucesor incrementando en uno el natural que toma
-como argumento.
+denominada GADT (Generalized Algebraic Data Type) presente en
+\OCaml~\cite{YallopM} que permite la implementación de restricciones en los
+parámetros de sus constructores. Aquí definimos un constructor \OI{Z} que actua
+como cero y otro \OI{S} que hace de función sucesor incrementando en uno el
+natural que toma como argumento.
 
 \begin{table}[htb]
 \begin{OCamlD}[frame=single]
