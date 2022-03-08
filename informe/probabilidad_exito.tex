@@ -39,10 +39,10 @@ $\SessionType$ tiene una cantidad finita de sub-árboles, obtenemos un número
 finito de ecuaciones.
 
 Luego, observamos que cada tipo sesión $\SessionType$ corresponde a una Cadena
-de Markov en Tiempo Discreto (Discrete-Time Markov Chain, DTMC)~\todo{cita a
-paper DTMC} cuyo espacio de estados es $\trees\SessionType = \mathset{S_1,
-\dots, S_n}$ y tal que la probabilidad $p_{ij}$ de transicionar de un estado
-$S_i$ al estado $S_j$ está dada por
+de Markov en Tiempo Discreto (Discrete-Time Markov Chain,
+DTMC)~\cite{KemenySnell} cuyo espacio de estados es $\trees\SessionType =
+\mathset{S_1, \dots, S_n}$ y tal que la probabilidad $p_{ij}$ de transicionar
+de un estado $S_i$ al estado $S_j$ está dada por
 \[
   p_{ij} \eqdef
   \begin{cases}
@@ -103,9 +103,9 @@ probabilidad con la que cada estado es absorbido a $\Done$ o $\Idle$.
 
 \section{Calculando probabilidad de absorción}
 
-Vamos a seguir el ejemplo de subasta presentado en (prob analysis) \todo{citar
-prob analysis} para ver cómo se decodifica su tipo y cómo se computa su
-probabilidad de éxito al combinarlo con su dual.
+Vamos a seguir el ejemplo de subasta presentado
+en~\cite{DBLP:conf/concur/InversoMPTT20} para ver cómo se decodifica su tipo y
+cómo se computa su probabilidad de éxito al combinarlo con su dual.
 
 Presentamos un programa que actúa como comprador y su dual, vendedor.
 
@@ -205,8 +205,8 @@ Vamos a definir las siguientes sub-matrices de $P$ para nuestro cálculo de abso
 \end{itemize}
 
 Nos resta calcular la matriz absorbente $B$, para lo cual aplicaremos el
-teorema 3.3.7 de Kemney y Snell\todo{agregar a biblio cadenas markov}. El mismo
-dice que si $b_{ij}$ es la probabilidad de que un proceso que comienza en un
+teorema 3.3.7 de~\cite{KemenySnell}. El mismo
+enuncia que si $b_{ij}$ es la probabilidad de que un proceso que comienza en un
 estado transitorio $s_i$ termine en uno abosrbente $s_j$, entonces:
 \begin{align*}
 	\{b_{ij}\} & = B = (I - Q)^{-1}R
