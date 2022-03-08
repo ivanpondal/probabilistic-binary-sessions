@@ -7,7 +7,7 @@ cómo tales interacciones afectan nuestras primitivas y su tipado.
 
 La primitiva de elección probabilística \OI{pick} opera sobre una única sesión,
 tomando como argumento la misma y el comportamiento sobre cada rama posible.
-Podría suceder que luego de una elección se interactue con otra sesión, a
+Podría suceder que luego de una elección se interactúe con otra sesión, a
 continuación estudiaremos en detalle qué ocurre en tal escenario.
 
 Comenzamos con un programa donde ambas ramas de la elección sobre \OI{epX}
@@ -39,14 +39,15 @@ elecciones.
 \section{Combinador de tipo probabilístico}
 
 Como vimos en el último ejemplo surge la necesidad de capturar el tipo de una
-sesión que diverge acorde una elección. Para esto introducimos un
-\emph{combinador de tipo probabilístico} que permite combinar tipos ponderando
-las distintas formas en las cuales se consume una sesión bajo una probabilidad
+sesión que diverge acorde una elección. Para esto nos basamos en el
+\emph{combinador de tipo probabilístico} presentado
+en~\cite{DBLP:conf/concur/InversoMPTT20}, que permite combinar tipos ponderando
+las distintas formas en las cuales progresa una sesión bajo una probabilidad
 determinada.
 
 \begin{definition}[combinador de tipo probabilístico]
   \label{def:ccomb}
-  Escribimos $\csum{t}{s}$ para la combinación de $t$ y $s$ ponderada por $p$,
+  Escribimos $\csum{t}{s}$ para la combinación convexa de los tipos $t$ y $s$,
 	que se encuentra definida por casos sobre la forma de $t$ y $s$:
   \[
     \csum{t}{s}
@@ -95,7 +96,7 @@ los contextos $\ContextA$ y $\ContextB$ cuando $\dom\ContextA \cap \dom\ContextB
   \wtp{\ContextB, x : S}Q : \sigma
 }{
   \wtp{\csum[p]\ContextA\ContextB, x : \BinaryPBranch{T}{S}}{
-	  \text{\OI{match} (\OI{branch} x) \OI{with} }
+	  \text{\OI{match} (\OI{branch} $x$) \OI{with} }
 	  \Tag[True] \rightarrow Q \ | \ \Tag[False] \rightarrow P : \sigma}
 }
 \\\\
@@ -113,19 +114,19 @@ los contextos $\ContextA$ y $\ContextB$ cuando $\dom\ContextA \cap \dom\ContextB
 \end{table}
 
 En Tabla \ref{tab:rules} adaptamos ligeramente las reglas \rulename{t-choice} y
-\rulename{t-branch} con el equivalente a la sintaxis de nuestra extensión; las
-primitivas \OI{branch} y \OI{pick}. La regla \rulename{t-branch} tipa un
-proceso que recibe una elección mediante la sesión $x$ y continua como
-$\SessionTypeT$ con probabilidad $p$, caso contrario $\SessionTypeS$. El tipo
-de $x$ debe ser de la forma $\BinaryPBranch{T}{S}$, el resto de los recursos
-son lo que nos compete en esta sección, ya que el proceso deberá comportarse
-según $\ContextA$ en caso de ir por $\Tag[True]$ o $\ContextB$ si es
-$\Tag[False]$.  De esta forma el comportamiento del proceso queda descrito por
-$\csum[p]\ContextA\ContextB$, bajo la definición del combinador esto implica
-que futuras elecciones en $\ContextA$ y $\ContextB$ serán ajustadas como
-efecto de la elección recibida en $x$. La regla \rulename{t-choice} permite
-tipar elecciones probabilísticas combinando la evolución de ambos contextos
-mediante $\csum[p]{}{}$.
+\rulename{t-branch} en~\cite{DBLP:conf/concur/InversoMPTT20} con el equivalente
+a la sintaxis de nuestra extensión; las primitivas \OI{branch} y \OI{pick}. La
+regla \rulename{t-branch} tipa un proceso que recibe una elección mediante la
+sesión $x$ y continua como $\SessionTypeT$ con probabilidad $p$, caso contrario
+$\SessionTypeS$. El tipo de $x$ debe ser de la forma $\BinaryPBranch{T}{S}$, el
+resto de los recursos son lo que nos compete en esta sección, ya que el proceso
+deberá comportarse según $\ContextA$ en caso de ir por $\Tag[True]$ o
+$\ContextB$ si es $\Tag[False]$.  De esta forma el comportamiento del proceso
+queda descrito por $\csum[p]\ContextA\ContextB$, bajo la definición del
+combinador esto implica que futuras elecciones en $\ContextA$ y $\ContextB$
+serán ajustadas como efecto de la elección recibida en $x$. La regla
+\rulename{t-choice} permite tipar elecciones probabilísticas combinando la
+evolución de ambos contextos mediante $\csum[p]{}{}$.
 
 Retomando nuestro ejemplo anterior, podemos observar que el tipo de
 \OI{epY} en cada rama de la elección no era compatible bajo la definición del

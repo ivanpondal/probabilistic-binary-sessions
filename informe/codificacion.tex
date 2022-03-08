@@ -160,6 +160,9 @@ para esta codificación:
   Si $\encfun\SessionType = \tsession\TypeT\TypeS$, entonces
   $\encfun{\dual\SessionType} = \tsession\TypeS\TypeT$.
 \end{theorem}
+\begin{proof}
+Sigue mutatis mutandis la prueba original en~\cite{Dardha}.
+\end{proof}
 
 De forma equivalente podemos decir que si
 $\encfun\SessionTypeT = \tsession{\Type_1}{\Type_2}$ y
@@ -173,9 +176,11 @@ $\encfun\SessionTypeS = \tsession{\TypeS_1}{\TypeS_2}$, entonces
 \wedge
 \TypeT_2 = \TypeS_1
 \]
-Esto permite reducir el cáculo del dual de un tipo sesión a la
-equivalencia entre tipos. También vale para tipos sesión desconocidos o parcialmente instanciados: $\encfun\etvar = \tsession{\renc\etvar}{\senc\etvar}$ y
-$\encfun{\sdual\etvar} = \tsession{\senc\etvar}{\renc\etvar}$.
+Al igual que \FuSe, esto permite reducir el cáculo del dual de un tipo sesión a
+la equivalencia entre tipos. También vale para tipos sesión desconocidos o
+parcialmente instanciados: $\encfun\etvar =
+\tsession{\renc\etvar}{\senc\etvar}$ y $\encfun{\sdual\etvar} =
+\tsession{\senc\etvar}{\renc\etvar}$.
 
 \begin{table}[htb]
 	\begin{OCamlD}[frame=single]
