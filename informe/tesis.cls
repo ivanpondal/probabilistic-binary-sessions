@@ -569,7 +569,7 @@
   \ifx\@chapapp\@empty
      \if@center\centering
        \ifnum \c@secnumdepth >\m@ne
-         {\c@font\thechapter.\ }
+         {\c@font\thechapter\ }
        \fi
        {\c@font
        \if@upper
