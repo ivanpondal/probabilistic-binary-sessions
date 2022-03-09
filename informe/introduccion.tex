@@ -1,32 +1,29 @@
-El desarrollo de software distribuido, ya sea en sus variantes tradicionales
-como así también en sus nuevas encarnaciones, tales como el \emph{Cloud/Fog
-Computing} o la Internet de las cosas (IoT por su sigla en inglés), se
-centran fundamentalmente en la integración, cooperación y comunicación de
-componentes, generalmente existentes y desarrolladas de manera independiente.
+El desarrollo de software distribuido, ya sea en sus versiones tradicionales
+como en sus variantes más recientes, tales como el \emph{Cloud/Fog Computing} o
+la Internet de las cosas (IoT por su sigla en inglés), se enfocan
+principalmente en la integración, cooperación y comunicación de componentes,
+generalmente existentes y desarrollados independientemente.
 
 Mas allá del desafío tecnológico que tal integración presupone, el
-problema principal, desde el punto de vista del desarrollo, es  razonar sobre
+problema principal, desde el punto de vista del desarrollo, es razonar sobre
 las propiedades de tales sistemas en términos de las propiedades de sus
 componentes y de los mecanismos utilizados para su composición.
 
-Es por ello que los últimos años testimonian un auge en el desarrollo de
-{\em técnicas de descripción} de interfaces y de {\em soporte a nivel de
-lenguajes de programación para el desarrollo de aplicaciones correctas por
-construcción}.  Los tipos comportamentales, tales como los tipos de
-sesión o {\em type-states} constituyen un ejemplo paradigmático de esta
-línea de trabajo. La idea central consiste en la utilización de sistemas de
-tipo (como extensión de los utilizados en los lenguajes existentes) para
-garantizar estáticamente propiedades relacionadas con la interacción de
-componentes.
+Esto último dio lugar al desarrollo de {\em técnicas de
+descripción} de interfaces y de {\em soporte a nivel de lenguajes de
+programación para el desarrollo de aplicaciones correctas por construcción}.
+Los tipos comportamentales, tales como los tipos de sesión o {\em type-states}
+constituyen un ejemplo paradigmático de esta línea de trabajo. La idea central
+consiste en la utilización de sistemas de tipo (como extensión de los
+utilizados en los lenguajes existentes) para garantizar estáticamente
+propiedades relacionadas con la interacción de componentes.
 
-Los últimos años testimonian un aumento sustancial en el desarrollo de tipos
-comportamentales y, en especial, los {\em tipos de sesión} se han consolidado
-como un formalismo central para el análisis modular de aplicaciones
-distribuidas basadas en procesos que comunican a través de canales (para una
-introducción ver~\cite{HuttelEtAl16}). Solo a modo ilustrativo de la
-actividad en este tema, se listan a continuación artículos publicados en el
-último año en las mayores conferencias del
-área~\cite{DBLP:journals/pacmpl/GhilezanPPSY21,
+Los últimos años vieron un auge en el desarrollo de tipos comportamentales
+dentro de los cuales los {\em tipos de sesión} se mostraron como un formalismo
+central para el estudio de aplicaciones distribuidas basadas en procesos que se
+comunican a través de canales (introducción en~\cite{HuttelEtAl16}). A
+continuación listamos artículos publicados en los úlitmos años en las mayores
+conferencias del área~\cite{DBLP:journals/pacmpl/GhilezanPPSY21,
 DBLP:journals/pacmpl/HinrichsenBK20, DBLP:journals/pacmpl/Castro-PerezY20,
 DBLP:conf/ecoop/ImaiNYY19, DBLP:conf/ecoop/000119, DBLP:conf/esop/JongmansY20,
 DBLP:conf/esop/VasconcelosCAM20, DBLP:conf/concur/Horne20,
@@ -35,9 +32,9 @@ DBLP:journals/pacmpl/GriesemerHKLTTW20, DBLP:journals/pacmpl/MajumdarYZ20,
 DBLP:conf/concur/InversoMPTT20}.
 
 Los tipos de sesión fueron originalmente propuestos en~\cite {Honda93}, y
-promulgan la idea de estructurar la comunicación entre componentes alrededor
+proponen estructurar la comunicación entre componentes alrededor
 del concepto de {\em sesión}. Una {sesión} es un canal privado que permite
-conectar a dos (a veces máas) procesos, donde cada uno posee un
+conectar a dos (a veces más) procesos, donde cada uno posee un
 \emph{endpoint} de la sesión y lo debe usar siguiendo un protocolo bien
 especificado, llamado \emph{tipo de sesión}, que restringe el secuencia de
 mensajes que se pueden enviar y recibir a través de ese endpoint. Dependiendo
@@ -59,11 +56,11 @@ determinística a una probabilística y se estudia un sistema de tipos que
 permita determinar la probabilidad con la que una sesión en particular
 termina \emph{exitosamente}. Dado que no existe una interpretación universal
 de ``terminación exitosa'', se diferencia la terminación exitosa de la
-infructuosa por medio de un {constructor dedicado}.
+infructuosa a través de un {constructor dedicado}.
 
 Si bien la línea trabajo sobre tipos sesión tiene raíces en resultados
 teóricos sobre modelos fundacionales de la computación concurrente, como
-los son CCS y el cálculo $\pi$, en la actualidad existen extensiones
+los son CCS y el cálculo $\pi$, actualmente existen extensiones
 concretas de sistemas de tipos de lenguajes de programación de escala
 industrial, tales como Scala~\cite{DBLP:conf/pldi/ScalasYB19},
 Dotty~\cite{DBLP:conf/pldi/ScalasYB19},
