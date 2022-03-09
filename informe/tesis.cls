@@ -531,19 +531,19 @@
     \ifnum \c@secnumdepth >\m@ne
        \if@mainmatter
           \refstepcounter{chapter}%
-          \typeout{\chaptername\space\thechapter.}
+          \typeout{\chaptername\space\thechapter}
           \if@thema
              \ifx\@shortauthor\@empty
                 \addcontentsline{toc}{chapter}{%
-                \protect\numberline{\thechapter.}#1}%
+                \protect\numberline{\thechapter}#1}%
              \else
                 \addcontentsline{toc}{chapter}{%
-                \protect\numberline{\thechapter.}%
+                \protect\numberline{\thechapter}%
                 \@shortauthor\hfill\mbox{}\vskip\normallineskip #1}%
              \fi
           \else
              \addcontentsline{toc}{chapter}{%
-             \protect\numberline{\thechapter.}#1}%
+             \protect\numberline{\thechapter}#1}%
           \fi
       \else
         \addcontentsline{toc}{chapter}{#1}
@@ -569,7 +569,7 @@
   \ifx\@chapapp\@empty
      \if@center\centering
        \ifnum \c@secnumdepth >\m@ne
-         {\c@font\thechapter\ }
+         {\c@font\thechapter.\ }
        \fi
        {\c@font
        \if@upper
