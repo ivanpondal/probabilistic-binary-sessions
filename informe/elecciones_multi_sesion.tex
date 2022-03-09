@@ -130,7 +130,7 @@ evolución de ambos contextos mediante $\csum[p]{}{}$.
 
 Retomando nuestro ejemplo anterior, podemos observar que el tipo de
 \OI{epY} en cada rama de la elección no era compatible bajo la definición del
-combinador. Veamos qué sucede al utilizar figuras compatibles:
+combinador. Veamos qué sucede al utilizar tipos compatibles:
 
 \TwoSessionsInvalidPickBothBranchesWithSelect
 
@@ -152,7 +152,7 @@ programa, nos falta brindar al motor de inferencia la información necesaria
 para poder combinar elecciones de más de un tipo sesión.
 
 Idealmente, nos gustaría que la primitiva \OI{pick} permitiera la combinación
-de cualquier número de elecciones; un desafío que presenta tal objetivo es el
+de cualquier número de sesiones; un desafío que presenta tal objetivo es el
 de preservar las restricciones de tipo necesarias para evitar combinaciones
 inválidas y poder calcular la probabilidad de éxito de las sesiones
 involucradas. Considerando además la potencial complejidad de esta hipotética

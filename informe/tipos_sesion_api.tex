@@ -13,8 +13,9 @@
     \label{tab:api}
 \end{table}
 
-En [CITA] se presentó el desarrollo de FuSe, una implementación en OCaml de la interfaz
-de tipos sesión definida en Tabla~\ref{tab:api}.
+En~\cite{DBLP:journals/jfp/Padovani17} se presentó el desarrollo de \FuSe, una
+implementación en \OCaml de la interfaz de tipos sesión definida en
+Tabla~\ref{tab:api}.
 
 \begin{itemize}
 	\item \OI{create}: crea una nueva sesión y devuelve un par de endpoints con
@@ -29,19 +30,20 @@ tipos sesión duales.
 \end{itemize}
 
 Las primitivas \OI{branch} y \OI{select} permiten tratar con sesiones que
-presentan caminos con distintas interacciones, cada camino siendo identificado
-por una \emph{etiqueta} $\TagVar_i$.
+presentan caminos con interacciones alternativas, cada camino siendo
+identificado por una \emph{etiqueta} $\TagVar_i$.
 		
 \begin{itemize}
 	\item \OI{select}: envía etiqueta $\TagVar_k$ con $k\in I$
 		sobre endpoint con tipo $\Choice \set[i\in I]{\Tag_i :
-		\etvar_i}$, retorna endpoint $\etvar_k$ con tipo
-		asociado a la etiqueta seleccionada. En \OCaml, el
-		etiquetado es representado mediante una función que
-		\emph{inyecta} un endpoint (ejemplo, el tipo
-		$\sdual{\etvar_k}$) a la unión disjunta $\set[i\in I]{\Tag_i :
-		\sdual{\etvar_i}}$ donde $k\in I$.
-	\item \OI{branch}: dualmente, espera recibir etiqueta del
-		endpoint con tipo $\Branch \set[i\in I]{\Tag_i : \etvar_i}$,
-		retorna endpoint inyectado a la unión disjunta.
+		\etvar_i}$, retorna un endpoint con el tipo $\etvar_k$ asociado
+		a la etiqueta seleccionada. En \OCaml, el etiquetado es
+		representado mediante una función que \emph{inyecta} un
+		endpoint (ejemplo, el tipo $\sdual{\etvar_k}$) en una unión
+		disjunta de tipo $\set[i\in I]{\Tag_i : \sdual{\etvar_i}}$ donde $k\in
+		I$.
+	\item \OI{branch}: dualmente, espera recibir la comunicación de una
+		elección en un endpoint de tipo $\Branch \set[i\in I]{\Tag_i :
+		\etvar_i}$, retorna la elección recibida como endpoint
+		inyectado a la unión disjunta descrita por su tipo.
 \end{itemize}
