@@ -4,10 +4,11 @@ para razonar probabilísticamente sobre propiedades de alcanzabilidad, donde se
 dio una interpretación \emph{probabilística} a los operadores de selección. Más
 específicamente, se pasa de una interpretación no determinística a una
 probabilística y se estudia un sistema de tipos que permita determinar la
-probabilidad con la que una sesión en particular termina \emph{exitosamente}.
-Dado que no existe una interpretación universal de ``terminación exitosa'', se
-diferencia la terminación exitosa de la infructuosa por medio de un constructor
-dedicado.
+probabilidad con la que una sesión en particular termina \emph{exitosamente}
+(más precisiones sobre esta noción se darán en el Capítulo
+\ref{cap:prob_exito}).  Dado que no existe una interpretación universal de
+``terminación exitosa'', se diferencia la terminación exitosa de la infructuosa
+por medio de un constructor dedicado.
 
 Por ejemplo, podemos refinar \eqref{eq:bare.auction} como
 \begin{equation}
@@ -28,6 +29,7 @@ contraoferta con probabilidad $1-p$, mientras que el comprador decide abandonar
 la subasta con probabilidad $q$ o volver a ofertar con probabilidad $1-q$.
 
 \section{Gramática}
+\label{sec:gramatica_prob}
 
 Para esta interpretación probabilística consideramos la siguiente gramática
 

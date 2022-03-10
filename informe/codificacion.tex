@@ -1,7 +1,7 @@
 \label{cap:implementacion}
 La implementación toma de base el trabajo realizado en \FuSe. En esta sección
 presentaremos los cambios necesarios en la codificación y tipado de las
-primitivas para modelar elecciones probabilísticas y cualquier información
+primitivas para modelar elecciones probabilísticas y la información
 adicional necesaria para el cálculo de terminación exitosa de un tipo sesión.
 
 \section{Codificación}
@@ -9,9 +9,9 @@ adicional necesaria para el cálculo de terminación exitosa de un tipo sesión.
 \FuSe toma la codificación propuesta en \cite{Dardha}
 posteriormente refinada~\cite{DBLP:journals/jfp/Padovani17}. La
 idea principal es que una secuencia de mensajes sobre una sesión puede
-modelarse como una serie de comunicaciones mediante canales de un uso. En este
-modelo cada mensaje lleva un valor acompañado de un canal fresco sobre el cual
-continuar la comunicación.
+modelarse como una serie de comunicaciones mediante canales de único uso. En
+este modelo cada mensaje lleva un valor acompañado de un canal fresco sobre el
+cual continuar la comunicación.
 
 Esta codificación depende de los siguientes tipos:
 
@@ -72,8 +72,8 @@ $\displaystyle
 $
 \end{center}
 
-extendida homomórficamente a todos los tipos. Asumimos que para cada variable
-de tipo sesión $\etvar$ existen dos variables de tipo $\senc\etvar$ y
+extendida homomórficamente a todos los tipos restantes. Asumimos que para cada
+variable de tipo sesión $\etvar$ existen dos variables de tipo $\senc\etvar$ y
 $\renc\etvar$ distintas entre sí y de cualquier tipo de variable $\tvar$.
 
 Como ejemplo, el tipo sessión $\In\tvar\etvar$ se codifica como
@@ -90,8 +90,9 @@ que el tipo asociado a la continuación del canal describe el comportamiento del
 dualidad entre tipos sesión aun cuando no se encuentran completamente
 instanciados.
 
-Como ejemplo, tomemos la codificación de
-$\SessionType = \BinaryPChoice[p]{\Tag[\Out\tvarA\In\tvarB\Done]}{\Tag[\Idle]}$
+Como ejemplo, tomemos la versión probabilística del tipo $\SessionType$ dado en
+la codificación de~\cite{DBLP:journals/jfp/Padovani17} $\SessionType =
+\BinaryPChoice[p]{\Tag[\Out\tvarA\In\tvarB\Done]}{\Tag[\Idle]}$
 \[
 \begin{array}{@{}rcl@{}}
   \encfun\SessionType
@@ -153,8 +154,8 @@ $\dual\SessionType = \BinaryPBranch{\In\tvarA\Out\tvarB\End}{\Idle}$
 
 Con este último ejemplo podemos notar que la codificación de
 $\dual\SessionType$ puede obtenerse de $\SessionType$ permutando las
-componentes de su par codificado. Esta es una propiedad que se cumple siempre
-para esta codificación:
+componentes de su par codificado. Al igual que para los tipos sesión, podemos
+probar también la siguiente propiedad sobre los tipos probabilísticos:
 
 \begin{theorem}
   \label{thm:duality}
@@ -223,10 +224,12 @@ funciones de la Tabla \ref{tab:signature} y las primitivas introducidas en
 Tabla \ref{tab:prob_api}. Queda en evidencia que esta codificación dificulta
 la lectura de los tipos sesión. Este problema se agudiza a medida que los
 protocolos implementados son más complejos. Por este motivo extendimos
-\texttt{rosetta}, una herramienta auxiliar que acompaña \FuSe, para imprimir
-los tipos utilizando la notación presente en la gramática inicial. Al momento
-de presentar tipos sesión inferidos por \OCaml utilizaremos el formato generado
-por \texttt{rosetta} para facilitar la lectura.
+\texttt{rosetta}, una herramienta auxiliar que acompaña \FuSe, que implementa
+la función inversa al encoding e imprime los tipos utilizando la notación
+original de tipos probabilísticos (Sección \ref{sec:gramatica_prob}). Al
+momento de presentar tipos sesión inferidos por \OCaml utilizaremos el formato
+generado por la herramienta para facilitar la lectura (Los detalles de
+\texttt{rosetta} se dan en el Capítulo \ref{cap:prob_exito}).
 
 \subsection{Codificación de probabilidad}
 
