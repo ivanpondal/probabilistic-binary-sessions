@@ -76,7 +76,7 @@ extendida homomórficamente a todos los tipos restantes. Asumimos que para cada
 variable de tipo sesión $\etvar$ existen dos variables de tipo $\senc\etvar$ y
 $\renc\etvar$ distintas entre sí y de cualquier tipo de variable $\tvar$.
 
-Como ejemplo, el tipo sessión $\In\tvar\etvar$ se codifica como
+Como ejemplo, el tipo sesión $\In\tvar\etvar$ se codifica como
 $\tsession{\tvar \tmul \tsession{\renc\etvar}{\senc\etvar}}\tbottom$,
 describiendo un canal para recibir un mensaje de tipo $\tvar \tmul
 \tsession{\renc\etvar}{\senc\etvar}$; una componente de tipo $\tvar$ (el valor a
@@ -178,7 +178,7 @@ $\encfun\SessionTypeS = \tsession{\TypeS_1}{\TypeS_2}$, entonces
 \wedge
 \TypeT_2 = \TypeS_1
 \]
-Al igual que \FuSe, esto permite reducir el cáculo del dual de un tipo sesión a
+Al igual que \FuSe, esto permite reducir el cálculo del dual de un tipo sesión a
 la equivalencia entre tipos. También vale para tipos sesión desconocidos o
 parcialmente instanciados: $\encfun\etvar =
 \tsession{\renc\etvar}{\senc\etvar}$ y $\encfun{\sdual\etvar} =
@@ -235,30 +235,16 @@ generado por la herramienta para facilitar la lectura (Los detalles de
 
 Podemos notar las elecciones llevan en su codificación una probabilidad
 asociada $p$ que también está presente como argumento en la primitiva
-\OI{pick}. Comenzamos definiendo $p$ como la probabilidad con la que se escoge
-la rama $\Tag[True]$.
-\begin{align*}
-	P(\Tag[True]) &= p \\
-	P(\Tag[False]) &= 1-p\\
-	0 \le p \le 1 &,\ p \in \mathbb{R}
-\end{align*}
+\OI{pick}. Comenzamos definiendo $p$ como la probabilidad con la que se envía
+$\BinaryPChoice{\etvar}{\etvarB}$ o recibe $\BinaryPBranch{\etvar}{\etvarB}$
+la elección de continuar por la rama $\Tag[True]$ en un tipo sesión.
 
 Normalmente podría utilizarse una representación de coma flotante como \tfloat,
 el problema con tal modelo es que no brinda información del valor de $p$ en
 tiempo de compilación. Disponer del valor a nivel tipo permite la definición de
-interfaces más fuertes como en \OI{pick}, donde la probabiliad $p$ que se
+interfaces más fuertes como en \OI{pick}, donde la probabilidad $p$ que se
 recibe como argumento debe coincidir con la utilizada en el tipo sesión sobre
-el cual se opera.
-
-\begin{table}[htb]
-\begin{OCamlD}[frame=single]
-	val pick: $\bm{p}$ -> $(\BinaryPChoice[0]{\etvarA}{\etvarB}$ -> $\alpha)$
-	            -> $(\BinaryPChoice[1]{\etvarA}{\etvarB}$ -> $\alpha)$
-		    -> $\BinaryPChoice[\bm{p}]{\etvarA}{\etvarB}$ -> $\alpha$
-\end{OCamlD}
-\caption{Interfaz de primitiva \OI{pick}}
-\label{tab:prob_api_pick}
-\end{table}
+el cual se opera (Tabla \ref{tab:prob_api}).
 
 Otra ventaja es la de poder utilizar dicho valor en cualquier tipo de análisis
 estático, requisito para el cálculo de la probabilidad con la que una sesión
@@ -285,9 +271,10 @@ etiquetas para distinguir a nivel tipo entre cero y la función sucesor.
 Luego definimos \OI{nat} como una estructura de datos algebraica particular
 denominada GADT (Generalized Algebraic Data Type) presente en
 \OCaml~\cite{YallopM} que permite la implementación de restricciones en los
-parámetros de sus constructores. Aquí definimos un constructor \OI{Z} que actua
+parámetros de sus constructores. Aquí definimos un constructor \OI{Z} que actúa
 como cero y otro \OI{S} que hace de función sucesor incrementando en uno el
-natural que toma como argumento.
+natural que toma como argumento. Luego, los naturales se definen de manera
+obvia como se muestra en Tabla \ref{tab:ex_nat}.
 
 \begin{table}[htb]
 \begin{OCamlD}[frame=single]
@@ -303,18 +290,26 @@ natural que toma como argumento.
 Teniendo una representación para naturales, definimos \OI{frac} como otro GADT
 que permite la construcción de números racionales. En este caso se utiliza una
 tupla donde la primer componente representa al numerador y la segunda el
-denominador, prohibiendo el cero mediante una restricción de tipo.
+denominador, prohibiendo el cero mediante una restricción de tipo. De esta
+forma, los racionales se definen como a continuación:
 
 \begin{table}[htb]
 \begin{OCamlD}[frame=single]
 	type _ frac = Fraction : 'a nat * (_s * 'b) nat ->
 	                        ('a nat * (_s * 'b) nat) frac
+\end{OCamlD}
+\caption{Representación de racionales}
+\label{tab:def_rational}
+\end{table}
 
+A modo de ejemplo damos la construcción para $\frac{1}{2}$.
+
+\begin{table}[H]
+\begin{OCamlD}[frame=single]
 	let one_half : ((_s * _z) nat *
 	                (_s * (_s * _z)) nat) frac
 	                = Fraction (S Z, S (S Z))
-
 \end{OCamlD}
-\caption{Representación y ejemplo de racionales}
-\label{tab:def_rational}
+\caption{Ejemplo de racionales}
+\label{tab:ex_rational}
 \end{table}
