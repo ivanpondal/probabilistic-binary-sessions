@@ -75,12 +75,47 @@ blockchain}~\cite{10.1145/3417516,DBLP:journals/corr/abs-1902-06056}.
 Este no es el caso para los tipos sesión probabilísticos, dado que la
 propuesta en~\cite{DBLP:conf/concur/InversoMPTT20} presenta un sistema de
 chequeo de tipos, pero deja abierta la definición de un algoritmo de inferencia
-y su implementación en un lenguaje de programación.
+y su implementación en un lenguaje de programación. En~\cite{DasDH20} se
+presentó una variante de tipos sesión probabilísticos
+\emph{resource-aware}~\cite{DasHP18}, el mismo cuenta con una implementación
+pero no como una extensión disponible para lenguajes existentes ya que consiste
+en un nuevo lenguaje desarrollado específicamente para demostrar las
+aplicaciones del sistema de tipos.
 
-A partir de una implementacion existente de tipos sesión escrita en \OCaml,
-este trabajo presenta una implementación del sistema de tipos probabilísticos
-presentado en~\cite{DBLP:conf/concur/InversoMPTT20}. En el mismo elaboramos una
-estrategia para codificar a nivel de tipos las distintas elecciones
-probabilísticas y su combinación. A su vez, utilizamos los tipos inferidos por
-el compilador, anotados con elecciones probabilísticas, para calcular la
-probabilidad de terminación exitosa de una sesión.
+En este trabajo presentamos una implementación de el sistema de tipos
+probabilísticos presentado en~\cite{DBLP:conf/concur/InversoMPTT20}. La misma
+es una extensión de \FuSe~\cite{DBLP:journals/jfp/Padovani17}, una biblioteca
+escrita en \OCaml que permite modelar tipos sesión mediante una codificación
+que no depende de funcionalidades avanzadas del lenguaje anfitrión. La elección
+fue motivada por la modularidad del proyecto y codificación que permitieron
+una extensión al cálculo probabilístico sin perder las garantías del sistema
+original.
+
+\subparagraph*{Contribuciones y estructura del trabajo.}
+\begin{itemize}
+
+	\item Extendimos la codificación de tipos sesión presente en \FuSe para
+		capturar la gramática de los tipos sesión probabilísticos y su
+		combinación (Capítulo \ref{cap:tipos_sesion_prob}). La misma
+		permite usufructuar el motor de inferencia estándar de \OCaml
+		sin necesidad de modificarlo.
+
+	\item Modificamos las primitivas de comunicación de \FuSe para
+		incorporar elecciones probabilísticas y poder diferenciar una
+		terminación exitosa de la fallida (Capítulo
+		\ref{cap:implementacion}, Capítulo
+		\ref{cap:elecciones_multi_sesion} y Capítulo
+		\ref{cap:comp_sesiones_duales}). Se considerarán principalmente
+		elecciones binarias (evitando el uso de elecciones
+		generalizadas en término de variantes polimórficas).
+
+	\item Utilizamos los tipos inferidos por el compilador anotados con
+		elecciones probabilísticas para calcular la probabilidad de
+		terminación exitosa de una sesión mediante el cómputo de la
+		probabilidad de absorción de la cadena de Markov asociada al
+		tipo de sesión inferido (Capítulo \ref{cap:prob_exito}).
+
+	\item Implementamos un conjunto de ejemplos básicos, algunos presentes
+		en~\cite{DBLP:conf/concur/InversoMPTT20}, para ilustrar la
+		aplicabilidad de la propuesta.
+\end{itemize}
