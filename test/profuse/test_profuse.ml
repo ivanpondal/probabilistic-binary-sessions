@@ -541,17 +541,3 @@ let pick_idle_close_and_mix_run_echo_client ?(st = cst_placeholder) () ep =
       | Some result -> result
       | None -> 0)
     ep st
-
-let pick_idle_close_and_mix_run_echo_client ep =
-  pick one_half
-    (fun ep ->
-      let ep = select_false ep in
-      idle ep;
-      run_echo_client_example ())
-    (fun ep ->
-      let ep = select_true ep in
-      close ep;
-      match run_coin_flip_echo_client_example () with
-      | Some result -> result
-      | None -> 0)
-    ep
