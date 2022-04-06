@@ -1,7 +1,14 @@
-\documentclass[10pt]{beamer}
-\setbeamercovered{transparent}
+\documentclass[10pt,showframe,hmargin=1cm,vmargin=0cm,head=0.5cm,headsep=0pt,foot=0.5cm,left=3cm,right=3cm,bottom=3.5cm,top=3.5cm]{beamer}
 
-\usetheme[progressbar=frametitle]{metropolis}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{mathtools}
+
+\setbeamercovered{transparent}
+\setbeameroption{show notes}
+
+
+\usetheme[sectionpage=none]{metropolis}
 
 \renewcommand{\figurename}{Figura}
 
@@ -10,10 +17,12 @@
 \author{Iván Pondal}
 \institute{
 	Director: Hernán Melgratti \\
-	Jurados: Diego David Garbervetsky y Carlos Lopez Pombo \\
+	Jurado: Diego David Garbervetsky y Carlos Lopez Pombo \\
 	\\
 	Facultad de Ciencias Exactas y Naturales, UBA
 }
+
+\input{macros.tex}
 
 \begin{document}
 

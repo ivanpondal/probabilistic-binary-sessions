@@ -1,6 +1,13 @@
 \section{Introducción a tipos sesión}
 
-\begin{frame}{Introducción a tipos sesión}
+\begin{frame}{Índice}
+	\tableofcontents[currentsection] \note{Primero introducción a qué son y
+	qué problema buscan resolver los tipos sesión. Después charlar sobre la
+	variante probabilística. Luego el objetivo de este trabajo y un paseo
+	por el mismo.}
+\end{frame}
+
+\begin{frame}{\insertsection}
 
 	El desarrollo de software distribuido se enfoca principalmente en la
 	integración, cooperación y comunicación de componentes en un sistema.
@@ -10,20 +17,26 @@
 	Dificultades:
 	\begin{itemize}
 		\item{Desafío tecnológico}
-		\item{\textbf<2>{Razonamiento sobre el sistema}}
+		\item{\alert<2>{Razonamiento sobre el sistema}}
 		\pause
 	\end{itemize}
+
+	\note{Desafío tecnológico: trabajo correspondiente a la
+	integración concreta de los componentes. Implementación.
+	\\
+	Razonamiento: comprender el estado de un sistema distribuido.}
 \end{frame}
 
-\begin{frame}{Introducción a tipos sesión}
+\begin{frame}{\insertsection}
 	\begin{figure}
 		\centering
 		\includegraphics[width=0.6\textwidth]{images/tcp-state-diagram.png}
 		\caption{Diagrama de estados para protocolo \textsc{TCP}}
 	\end{figure}
+	\note{Mostrar brevemente como ejemplo de la complejidad que puede tener un sistema distribuido en términos de estados posibles y propiedades a lo largo de los mismos}
 \end{frame}
 
-\begin{frame}{Introducción a tipos sesión}
+\begin{frame}{\insertsection}
 
 	Esto dio lugar a:
 
@@ -38,10 +51,59 @@
 	un ejemplo paradigmático de esta línea de trabajo.
 \end{frame}
 
-\begin{frame}{Introducción a tipos sesión}
+\begin{frame}{\insertsection}
+	Los tipos de sesión proponen estructurar la
+	comunicación entre componentes alrededor del concepto de \textbf{sesión}.
+
+	\begin{itemize}
+		\item Una sesión es un canal privado que permite
+			conectar a dos (a veces más) procesos.
+
+		\item Cada proceso posee un \textbf{endpoint} de la sesión y lo
+			debe usar siguiendo un protocolo bien especificado
+			(tipo sesión) que restringe la secuencia de mensajes
+			que se pueden enviar y recibir a través del mismo.
+	\end{itemize}
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\textwidth]{images/tipo_sesion.pdf}
+		\caption{Estructura de comunicación mediante tipos sesión}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{\insertsection}
+	\begin{equation}
+	    \Out\tint{
+		\BinaryPBranch[]\End{
+		    \In\tint{
+			\BinaryPChoice[]\End\T
+		    }
+		}
+	    }
+	\end{equation}
+\end{frame}
+
+\begin{frame}{\insertsection}
 	\begin{figure}
 		\centering
 		\includegraphics[width=0.9\textwidth]{images/sum-diagram.pdf}
-		\caption{Ejemplo de comunicación para un servicio sumador}
+		\caption{Ejemplo de comunicación para servicio sumador}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{\insertsection}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/sum-diagram-illegal.pdf}
+		\caption{Violación de linearidad}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{\insertsection}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/sum-diagram-type-violation.pdf}
+		\caption{Tipo de valor de retorno inválido}
 	\end{figure}
 \end{frame}
