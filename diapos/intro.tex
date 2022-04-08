@@ -67,24 +67,23 @@
 
 	\begin{figure}
 		\centering
-		\includegraphics[width=0.8\textwidth]{images/tipo_sesion.pdf}
+		\includegraphics[width=0.8\textwidth]{images/tipo-sesion.pdf}
 		\caption{Estructura de comunicación mediante tipos sesión}
 	\end{figure}
 \end{frame}
 
-\begin{frame}{\insertsection}
-	\begin{equation}
-	    \Out\tint{
-		\BinaryPBranch[]\End{
-		    \In\tint{
-			\BinaryPChoice[]\End\T
-		    }
-		}
-	    }
-	\end{equation}
+\subsection{Ejemplo: Describiendo suma con tipos sesión}
+
+\begin{frame}{\insertsubsection}
+	Consideremos un protocolo básico para la suma de dos números:
+	\begin{enumerate}
+		\item Cliente envía primer sumando
+		\item Cliente envía segundo sumando
+		\item Servidor retorna suma
+	\end{enumerate}
 \end{frame}
 
-\begin{frame}{\insertsection}
+\begin{frame}{\insertsubsection}
 	\begin{figure}
 		\centering
 		\includegraphics[width=0.9\textwidth]{images/sum-diagram.pdf}
@@ -92,7 +91,7 @@
 	\end{figure}
 \end{frame}
 
-\begin{frame}{\insertsection}
+\begin{frame}{\insertsubsection}
 	\begin{figure}
 		\centering
 		\includegraphics[width=0.9\textwidth]{images/sum-diagram-illegal.pdf}
@@ -100,10 +99,23 @@
 	\end{figure}
 \end{frame}
 
-\begin{frame}{\insertsection}
+\begin{frame}{\insertsubsection}
 	\begin{figure}
 		\centering
 		\includegraphics[width=0.9\textwidth]{images/sum-diagram-type-violation.pdf}
 		\caption{Tipo de valor de retorno inválido}
+	\end{figure}
+\end{frame}
+
+\begin{frame}{\insertsubsection}
+	Para este ejemplo, la comunicación podría estructurarse mediante los siguientes tipos sesión:
+	\begin{itemize}
+		\item \textbf{Cliente:} $\SessionType = \Out\tint{ \Out\tint{ \In\tint\End } }$
+		\item \textbf{Sumador:} $\dual\SessionType = \In\tint{ \In\tint{ \Out\tint\End } }$
+	\end{itemize}
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/sum-diagram-st.pdf}
 	\end{figure}
 \end{frame}
