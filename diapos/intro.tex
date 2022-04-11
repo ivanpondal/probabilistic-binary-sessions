@@ -120,10 +120,35 @@
 	\end{figure}
 \end{frame}
 
+\subsection{Implementación de tipos sesión: FuSe}
+
+\begin{frame}{\insertsubsection}
+	\FuSe es una biblioteca que habilita el uso de tipos sesión binarios en
+	\OCaml.
+	\begin{itemize}
+		\item Codificación basada en igualdad de tipos y tipos parametrizados.
+		\item Detección de violaciones de linearidad en tiempo de ejecución.
+		\item Garantiza comunicación segura, fidelidad y progreso (siempre y cuando no haya deadlocks y se respete la linearidad).
+		\item Inferencia de tipos y subtipado provisto por el sistema de tipos de \OCaml.
+	\end{itemize}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.3\textwidth]{images/ocaml-logo.png}
+	\end{figure}
+\end{frame}
+
 \begin{frame}{\insertsubsection}
 	\SumClient
-	\SumServer
+	Evolución del tipo sesión:
+	\begin{itemize}
+		\item \OI{ep0:} $\Out\tint{ \Out\tint{ \In\tint\End } }$
+		\item \OI{ep1:} $\Out\tint{ \In\tint\End }$
+		\item \OI{ep2:} $\In\tint\End$
+		\item \OI{ep3:} $\End$
+	\end{itemize}
 \end{frame}
 \begin{frame}{\insertsubsection}
+	\SumServer
+	Creamos un \emph{thread} con el sumador y realizamos una suma con el cliente:
 	\SumExample
 \end{frame}
