@@ -123,6 +123,7 @@
 \subsection{Implementación de tipos sesión: FuSe}
 
 \begin{frame}{\insertsubsection}
+	% TODO: ¿citar FuSe?
 	\FuSe es una biblioteca que habilita el uso de tipos sesión binarios en
 	\OCaml.
 	\begin{itemize}
@@ -147,8 +148,71 @@
 		\item \OI{ep3:} $\End$
 	\end{itemize}
 \end{frame}
+
 \begin{frame}{\insertsubsection}
 	\SumServer
 	Creamos un \emph{thread} con el sumador y realizamos una suma con el cliente:
 	\SumExample
+\end{frame}
+
+\subsection{Elecciones}
+
+\begin{frame}{\insertsubsection}
+	Además de enviar y recibir, un protocolo puede presentar bifurcaciones,
+	elecciones que impacten en cómo se desarrolla el mismo.
+
+	\SumServerRec
+
+	Donde \OI{ep0} es un endpoint de tipo sesión: $\SessionType = \In\tint{ \In\tint{
+		\Out\tint\BinaryPBranch[]\T\End } }$
+\end{frame}
+
+\begin{frame}{\insertsubsection}
+	\SumThreeNumClient
+	Donde \OI{ep0} es un endpoint de tipo sesión: $\SessionType = \Out\tint{ \Out\tint{
+		\In\tint{\Choice\set{\Tag[True]: \Out\tint{ \Out\tint{
+		\In\tint{\Choice\set{\Tag[False]: \End} }}}} }}}$
+\end{frame}
+
+\subsection{Tipos sesión probabilísticos}
+\begin{frame}{\insertsubsection}
+	% TODO: ¿citar cálculo prob?
+	En~\cite{DBLP:conf/concur/InversoMPTT20} se propuso el uso de tipos de sesión
+	para razonar probabilísticamente sobre propiedades de alcanzabilidad,
+	donde se dio una interpretación \emph{probabilística} a los operadores
+	de selección.
+
+	\begin{itemize}
+		\item Salto de interpretación no determinística a una
+		probabilística.
+		\item Sistema de tipos que permite determinar la probabilidad con la que una
+			sesión termina \emph{exitosamente}.
+	\end{itemize}
+
+	Existen protocolos donde la toma de elecciones con cierta probabilidad
+	es requisito para cumplir las garantías del mismo (Ejemplo: seguridad, anonimato).
+\end{frame}
+
+\begin{frame}{\insertsubsection: Motivación}
+
+	En el protocolo \textbf{Crowds}, el anonimato se logra \emph{escondiendo} al
+	usuario que inició la conversación mediante saltos aleatorios.
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.5\textwidth]{images/crowds-protocol.pdf}
+	\end{figure}
+
+	\begin{itemize}
+		\item Una \emph{crowd} (multitud) de $N$ usuarios participa en el protocolo.
+		\item El cliente selecciona un usuario al azar.
+		\item Cada usuario selecciona probabilísticamente:
+		\begin{itemize}
+			\item Con probabilidad $p$ redirigir el mensaje a otro usuario.
+			\item Con probabilidad $1 - p$ enviar el mensaje al destino final (servidor).
+		\end{itemize}
+	\end{itemize}
+\end{frame}
+
+\begin{frame}{\insertsubsection}
 \end{frame}
