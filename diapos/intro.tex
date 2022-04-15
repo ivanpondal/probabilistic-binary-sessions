@@ -165,7 +165,7 @@
 
 \begin{frame}{\insertsubsection}
 	\SumThreeNumClient
-	Donde \OI{ep0} es un endpoint de tipo sesión: $\SessionType = \Out\tint{ \Out\tint{
+	Donde \OI{ep0} es un endpoint de tipo sesión: $\dual\SessionType = \Out\tint{ \Out\tint{
 		\In\tint{\Choice\set{\Tag[True]: \Out\tint{ \Out\tint{
 		\In\tint{\Choice\set{\Tag[False]: \End} }}}} }}}$
 \end{frame}
@@ -243,13 +243,13 @@
 \end{frame}
 
 \begin{frame}{\insertsection: Subasta}
-	Presentamos el tipo sesión que describe la interacción del Comprador en una subasta:
+	El tipo sesión que describe la interacción del Comprador es:
 	\begin{equation*}
 	    \label{eq:refined.auction}
-	    \Out\tint{
-		\BinaryPBranch[p]\Done{
+	    \SessionType = \Out\tint{
+		\BinaryPBranch[\frac{1}{4}]\Done{
 		    \In\tint{
-			\BinaryPChoice[q]\Idle\T
+			\BinaryPChoice[\frac{2}{3}]\T\Idle
 		    }
 		}
 	    }
@@ -259,7 +259,8 @@
 	exitosa'', se diferencia la terminación exitosa ($\Done$) de la
 	infructuosa ($\Idle$) mediante constructores dedicados.
 
-	TODO: Mostrar probabilidad de éxito resultante
+	\pause
+	En este caso, la probabilidad de éxito (se concreta la venta) es de $\frac{1}{3}$.
 \end{frame}
 
 \section{Cambios a interfaz programática}
