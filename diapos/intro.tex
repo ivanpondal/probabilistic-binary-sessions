@@ -215,20 +215,23 @@
 		\item Comprador envía oferta.
 		\item Subastador:
 			\begin{itemize}
-				\item Declara que el
-			artículo se vende con probabilidad $p$
-				\item Responde con una contraoferta con probabilidad $1-p$.
+				\item Vende artículo con probabilidad $\frac{1}{4}$
+				\item Realiza contraoferta con probabilidad $\frac{3}{4}$.
 			\end{itemize}
-		\item Comprador decide:
+		\item Comprador:
 			\begin{itemize}
-				\item Abandonar la subasta con probabilidad $q$
-				\item Volver a ofertar con probabilidad $1-q$.
+				\item Vuelve a ofertar con probabilidad $\frac{2}{3}$.
+				\item Abandona subasta con probabilidad $\frac{1}{3}$
 			\end{itemize}
 	\end{enumerate}
 \end{frame}
 
 \begin{frame}{\insertsection: Subasta}
-	TODO: diagrama de secuencia con ejemplo de interacción
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.9\textwidth]{images/auction-diagram.pdf}
+		\caption{Ejemplo de subasta, $p \sim U(0, 1)$}
+	\end{figure}
 \end{frame}
 
 \begin{frame}{\insertsection: Subasta}
