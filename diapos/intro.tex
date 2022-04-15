@@ -1,12 +1,5 @@
 \section{Introducción a tipos sesión}
 
-\begin{frame}{Índice}
-	\tableofcontents[currentsection] \note{Primero introducción a qué son y
-	qué problema buscan resolver los tipos sesión. Después charlar sobre la
-	variante probabilística. Luego el objetivo de este trabajo y un paseo
-	por el mismo.}
-\end{frame}
-
 \begin{frame}{\insertsection}
 
 	El desarrollo de software distribuido se enfoca principalmente en la
@@ -21,6 +14,10 @@
 		\pause
 	\end{itemize}
 
+	\note{Primero introducción a qué son y
+	qué problema buscan resolver los tipos sesión. Después charlar sobre la
+	variante probabilística. Luego el objetivo de este trabajo y un paseo
+	por el mismo.}
 	\note{Desafío tecnológico: trabajo correspondiente a la
 	integración concreta de los componentes. Implementación.
 	\\
@@ -123,8 +120,7 @@
 \subsection{Implementación de tipos sesión: FuSe}
 
 \begin{frame}{\insertsubsection}
-	% TODO: ¿citar FuSe?
-	\FuSe es una biblioteca que habilita el uso de tipos sesión binarios en
+	\FuSe \footfullcite{DBLP:journals/jfp/Padovani17} es una biblioteca que habilita el uso de tipos sesión binarios en
 	\OCaml.
 	\begin{itemize}
 		\item Codificación basada en igualdad de tipos y tipos parametrizados.
@@ -174,10 +170,10 @@
 		\In\tint{\Choice\set{\Tag[False]: \End} }}}} }}}$
 \end{frame}
 
-\subsection{Tipos sesión probabilísticos}
-\begin{frame}{\insertsubsection}
-	% TODO: ¿citar cálculo prob?
-	En~\cite{DBLP:conf/concur/InversoMPTT20} se propuso el uso de tipos de sesión
+\section{Tipos sesión probabilísticos}
+
+\begin{frame}{\insertsection: Subasta}
+	En \emph{``Probabilistic Analysis of Binary Sessions''}\footfullcite{DBLP:conf/concur/InversoMPTT20} se propuso el uso de tipos de sesión
 	para razonar probabilísticamente sobre propiedades de alcanzabilidad,
 	donde se dio una interpretación \emph{probabilística} a los operadores
 	de selección.
@@ -193,26 +189,136 @@
 	es requisito para cumplir las garantías del mismo (Ejemplo: seguridad, anonimato).
 \end{frame}
 
-\begin{frame}{\insertsubsection: Motivación}
+%\begin{frame}{\insertsubsection: Motivación}
+%
+%	En el protocolo \textbf{Crowds}, el anonimato se logra \emph{escondiendo} al
+%	usuario que inició la conversación mediante saltos aleatorios.
+%
+%	\begin{figure}
+%		\centering
+%		\includegraphics[width=0.5\textwidth]{images/crowds-protocol.pdf}
+%	\end{figure}
+%
+%	\begin{itemize}
+%		\item Una \emph{crowd} (multitud) de $N$ usuarios participa en el protocolo.
+%		\item El cliente selecciona un usuario al azar.
+%		\item Cada usuario selecciona probabilísticamente:
+%		\begin{itemize}
+%			\item Con probabilidad $p$ redirigir el mensaje a otro usuario.
+%			\item Con probabilidad $1 - p$ enviar el mensaje al destino final (servidor).
+%		\end{itemize}
+%	\end{itemize}
+%\end{frame}
 
-	En el protocolo \textbf{Crowds}, el anonimato se logra \emph{escondiendo} al
-	usuario que inició la conversación mediante saltos aleatorios.
+\begin{frame}{\insertsection: Subasta}
+	\begin{enumerate}
+		\item Comprador envía oferta.
+		\item Subastador:
+			\begin{itemize}
+				\item Declara que el
+			artículo se vende con probabilidad $p$
+				\item Responde con una contraoferta con probabilidad $1-p$.
+			\end{itemize}
+		\item Comprador decide:
+			\begin{itemize}
+				\item Abandonar la subasta con probabilidad $q$
+				\item Volver a ofertar con probabilidad $1-q$.
+			\end{itemize}
+	\end{enumerate}
+\end{frame}
 
+\begin{frame}{\insertsection: Subasta}
+	TODO: diagrama de secuencia con ejemplo de interacción
+\end{frame}
+
+\begin{frame}{\insertsection: Subasta}
+	TODO: mostrar código con el pick
+\end{frame}
+
+\begin{frame}{\insertsection: Subasta}
+	Presentamos el tipo sesión que describe la interacción del Comprador en una subasta:
+	\begin{equation*}
+	    \label{eq:refined.auction}
+	    \Out\tint{
+		\BinaryPBranch[p]\Done{
+		    \In\tint{
+			\BinaryPChoice[q]\Idle\T
+		    }
+		}
+	    }
+	\end{equation*}
+
+	Dado que no existe una interpretación universal de ``terminación
+	exitosa'', se diferencia la terminación exitosa ($\Done$) de la
+	infructuosa ($\Idle$) mediante constructores dedicados.
+
+	TODO: Mostrar probabilidad de éxito resultante
+\end{frame}
+
+\section{Cambios a interfaz programática}
+
+\begin{frame}{\insertsection}
 	\begin{figure}
 		\centering
-		\includegraphics[width=0.5\textwidth]{images/crowds-protocol.pdf}
+		\includegraphics[width=\textwidth]{images/api-fuse.png}
 	\end{figure}
+	\begin{figure}
+		\centering
+		\includegraphics[width=\textwidth]{images/api-profuse.png}
+	\end{figure}
+\end{frame}
 
-	\begin{itemize}
-		\item Una \emph{crowd} (multitud) de $N$ usuarios participa en el protocolo.
-		\item El cliente selecciona un usuario al azar.
-		\item Cada usuario selecciona probabilísticamente:
-		\begin{itemize}
-			\item Con probabilidad $p$ redirigir el mensaje a otro usuario.
-			\item Con probabilidad $1 - p$ enviar el mensaje al destino final (servidor).
-		\end{itemize}
-	\end{itemize}
+\section{Elecciones probabilísticas}
+
+\begin{frame}{\insertsection}
+	TODO: contar qué se busca modelar con pick a nivel tipado
+\end{frame}
+
+\subsection{Elecciones multi-sesión}
+
+\begin{frame}{\insertsubsection}
+	TODO: Contar un poco qué son las elecciones multisesión y mostrar ejemplo que no tipa.
 \end{frame}
 
 \begin{frame}{\insertsubsection}
+	TODO: Mencionar caminos posibles y solución utilizada
+	\begin{figure}
+		\centering
+		\includegraphics[width=\textwidth]{images/pick-multi-sesión.png}
+	\end{figure}
+\end{frame}
+
+\section{Composición de tipos sesión duales}
+
+\begin{frame}{\insertsection}
+	TODO: Introducir necesidad de representar el tipo "cerrado" para obtener la probabilidad de éxito. 
+\end{frame}
+
+\begin{frame}{\insertsection}
+	TODO: Mostrar ejemplos de argumento opcional haciendo foco en que es puramente informativo.
+\end{frame}
+
+\subsection{Combinación multi-sesión}
+
+\begin{frame}{\insertsubsection}
+	TODO: Contar cómo se repite el mismo problema que con las elecciones multisesión
+\end{frame}
+
+\begin{frame}{\insertsubsection}
+	TODO: Mencionar caminos posibles y solución utilizada
+\end{frame}
+
+\section{Probabilidad de éxito de una sesión}
+\begin{frame}{\insertsection}
+	TODO: Arrancar contando un poco del algoritmo para cálculo de probabilidad
+\end{frame}
+
+\subsection{Codificación de probabilidades}
+\begin{frame}{\insertsubsection}
+	TODO: Explicar cómo decidimos codificar las probabilidades para poder hacer el cálculo en tiempo de compilación. (codificación de enteros y racionales en el tipo)
+\end{frame}
+
+\section{Conclusión y trabajo a futuro}
+\begin{frame}{\insertsection}
+	TODO: Contar hasta dónde se llegó y qué mejoras se podrían hacer al sistema actual.
 \end{frame}
