@@ -299,7 +299,19 @@
 \section{Elecciones probabilísticas}
 
 \begin{frame}{\insertsection}
-	TODO: contar qué se busca modelar con pick a nivel tipado
+	En el cálculo de tipos sesión probabilísticos se utiliza el operador
+	$\csum{}{}$ para definir la elección probabilística a nivel tipo:
+	\begin{gather*}
+		\csum{\BinaryPChoice[q]{\SessionTypeT}{\SessionTypeS}}{\BinaryPChoice[r]{\SessionTypeT}{\SessionTypeS}} \\ = \\
+		\BinaryPChoice[pq + (1 - p)r]{\SessionTypeT}{\SessionTypeS}
+	\end{gather*}
+	\pause
+	En base a esto, el tipo de \OI{pick} debía cumplir con los siguientes requisitos:
+	\begin{itemize}
+		\item Seleccionar rama $\SessionTypeT$ con probabilidad $pq + (1 - p)r$.
+		\item Seleccionar rama $\SessionTypeS$ con probabilidad $1 - (pq + (1 - p)r)$.
+		\item Reflejar probabilidad $pq + (1 - p)r$ en la elección del tipo sesión.
+	\end{itemize}
 \end{frame}
 
 \subsection{Elecciones multi-sesión}
