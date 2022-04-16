@@ -44,15 +44,30 @@
 
   (*BEGIN*CoinFlipSumServer*)
   let coin_flip_sum_server ep =
-    pick one_half
+    pick Rational.one_half
       (fun ep ->
-        let ep = select_false ep in
-        idle ep)
+        let ep = S.select_false ep in
+        S.idle ep)
       (fun ep ->
-        let ep = select_true ep in
-        let x, ep = receive ep in
-        let y, ep = receive ep in
-        let ep = send (x + y) ep in
-        close ep)
+        let ep = S.select_true ep in
+        let x, ep = S.receive ep in
+        let y, ep = S.receive ep in
+        let ep = S.send (x + y) ep in
+        S.close ep)
       ep
+  (*END*CoinFlipSumServer*)
+
+  (*END*InvalidCoinFlipSumServer*)
+  let coin_flip_sum_server epX epY =
+    pick Rational.one_half
+      (fun epX ->
+        (* interacción con epX... *)
+        let epY = S.select_false epY in
+        S.close epY)
+      (fun epX ->
+        (* interacción con epX... *)
+        let epY = S.select_true epY in (* error de tipado *)
+        let epY = S.send (x + y) epY in
+        S.close epY)
+      epX
   (*END*CoinFlipSumServer*)
