@@ -373,12 +373,16 @@
 	\end{itemize}
 \end{frame}
 
-\begin{frame}{\insertsubsection}
-	TODO: Mencionar caminos posibles y solución utilizada
-	\begin{figure}
-		\centering
-		\includegraphics[width=\textwidth]{images/pick-multi-sesión.png}
-	\end{figure}
+\begin{frame}[fragile]{\insertsubsection}
+	\begin{OCamlD}[basicstyle=\scriptsize,frame=single]
+	val pick_2ch:
+	    $p$ -> $(\BinaryPChoice[0]{\etvarA}{\etvarB}$ -> $\BinaryPChoice[r]{\etvarC}{\etvarD}$ -> $\alpha)$
+	      -> $(\BinaryPChoice[1]{\etvarA}{\etvarB}$ -> $\BinaryPChoice[q]{\etvarC}{\etvarD}$ -> $\alpha)$
+	      -> $\BinaryPChoice[p]{\etvarA}{\etvarB}$ -> $\BinaryPChoice[pq + (1 - p)r]{\etvarC}{\etvarD}$
+	      -> $\alpha$
+	\end{OCamlD}
+	\pause
+	\ValidCoinFlipSumServer[\footnotesize]
 \end{frame}
 
 \section{Composición de tipos sesión duales}

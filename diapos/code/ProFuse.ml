@@ -71,3 +71,18 @@
         S.close epY)
       epX
   (*END*CoinFlipSumServer*)
+
+  (*BEGIN*ValidCoinFlipSumServer*)
+  let coin_flip_sum_server epX epY =
+    pick_2ch Rational.one_half
+      (fun epX epY ->
+        (* interacción con epX... *)
+        let epY = S.select_false epY in
+        S.close epY)
+      (fun epX epY->
+        (* interacción con epX... *)
+        let epY = S.select_true epY in
+        let epY = S.send (x + y) epY in
+        S.close epY)
+      epX epY
+  (*END*ValidCoinFlipSumServer*)
