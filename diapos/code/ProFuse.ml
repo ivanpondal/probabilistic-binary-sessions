@@ -41,3 +41,18 @@
         S.close ep)
       ep
   (*END*Auctioneer*)
+
+  (*BEGIN*CoinFlipSumServer*)
+  let coin_flip_sum_server ep =
+    pick one_half
+      (fun ep ->
+        let ep = select_false ep in
+        idle ep)
+      (fun ep ->
+        let ep = select_true ep in
+        let x, ep = receive ep in
+        let y, ep = receive ep in
+        let ep = send (x + y) ep in
+        close ep)
+      ep
+  (*END*CoinFlipSumServer*)

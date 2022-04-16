@@ -311,7 +311,25 @@
 		\item Seleccionar rama $\SessionTypeT$ con probabilidad $pq + (1 - p)r$.
 		\item Seleccionar rama $\SessionTypeS$ con probabilidad $1 - (pq + (1 - p)r)$.
 		\item Reflejar probabilidad $pq + (1 - p)r$ en la elección del tipo sesión.
+		\item Permitir únicamente combinación de \emph{tipos compatibles}.
 	\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{\insertsection}
+	\begin{table}[htb]
+	    \begin{OCamlD}[basicstyle=\scriptsize,frame=single]
+              val pick : $p$ -> $(\BinaryPChoice[0]{\etvarA}{\etvarB}$ -> $\alpha)$
+                           -> $(\BinaryPChoice[1]{\etvarA}{\etvarB}$ -> $\alpha)$
+                           -> $\BinaryPChoice[p]{\etvarA}{\etvarB}$ -> $\alpha$
+	    \end{OCamlD}
+	\end{table}
+	\CoinFlipSumServer[\footnotesize]
+
+	\begin{equation*}
+		\SessionType = \BinaryPChoice[\frac{1}{2}]{
+			\In\tint{\In\tint{\Out\tint{\Done}}}
+			}{\Idle}
+	\end{equation*}
 \end{frame}
 
 \subsection{Elecciones multi-sesión}
