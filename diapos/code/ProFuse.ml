@@ -86,3 +86,10 @@
         S.close epY)
       epX epY
   (*END*ValidCoinFlipSumServer*)
+
+  (*BEGIN*TestBuyerAuctioneer*)
+  let test_buyer_auctioneer ?(st = cst_placeholder) () =
+    let ep1, ep2 = create ~st () in
+    let _ = Thread.create auctioneer ep1 in
+    buyer ep2 42
+  (*END*TestBuyerAuctioneer*)
