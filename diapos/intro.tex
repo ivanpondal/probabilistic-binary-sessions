@@ -568,6 +568,31 @@
 	\end{itemize}
 \end{frame}
 
+\subsection{Extendiendo decodificación de tipos sesión: rosetta}
+\begin{frame}[fragile]{\insertsubsection}
+
+	\texttt{rosetta} es la herramienta que acompaña \FuSe para decodificar
+	los tipos generados por \OCaml.
+
+	\begin{table}[htb]
+		\begin{OCamlD}[basicstyle=\footnotesize,frame=single]
+  val send    : 'a -> (_0,('a * ('s,'r) pst)) pst -> ('r,'s) pst
+  val receive : (('a * ('r,'s) pst),_0) pst -> 'a * ('r,'s) pst
+		\end{OCamlD}
+		\caption{Ejemplo de tipos sin decodificar.}
+	\end{table}
+
+	\pause
+	La extensión al cálculo de tipos sesión probabilísticos consistió de dos
+	partes:
+	\begin{itemize}
+		\item Modificar la función decodificadora para considerar tipos
+			probabilísticos y constructores de terminación exitosa.
+		\item Calcular la probabilidad de éxito para tipos sesión
+			cerrados $\ClosedSessionType$.
+	\end{itemize}
+\end{frame}
+
 \section{Conclusión y trabajo a futuro}
 \begin{frame}{\insertsection}
 	TODO: Contar hasta dónde se llegó y qué mejoras se podrían hacer al sistema actual.
