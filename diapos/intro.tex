@@ -474,11 +474,11 @@
 			sucesor.
 		\item Definimos \OI{nat} como una estructura de datos
 			algebraica particular denominada GADT (Generalized
-			Algebraic Data Type) que permite la
-			implementación de restricciones en los parámetros de
-			sus constructores.
+			Algebraic Data Type) que permite establecer
+			restricciones en los parámetros de sus constructores.
 	\end{itemize}
 
+	\pause
 	Construcción de primeros naturales y el cero:
 		\begin{OCamlD}[basicstyle=\footnotesize,frame=single]
   let zero : _z nat = Z
@@ -494,6 +494,17 @@
                             ('a nat * (_s * 'b) nat) frac
 	\end{OCamlD}
 
+
+	\begin{itemize}
+		\item Definimos \OI{frac} como otro GADT que permite la
+			construcción de números racionales.
+		\item El mismo toma tupla cuya primer componente representa al
+			numerador y la segunda el denominador, prohibiendo el
+			cero mediante una restricción de tipo.
+	\end{itemize}
+
+	\pause
+	A modo de ejemplo damos la construcción para $\frac{1}{2}$.
 	\begin{OCamlD}[basicstyle=\footnotesize,frame=single]
     let one_half : ((_s * _z) nat *
                     (_s * (_s * _z)) nat) frac
