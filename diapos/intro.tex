@@ -430,24 +430,81 @@
 	\end{OCamlD}
 \end{frame}
 
-\subsection{Combinación multi-sesión}
+%\subsection{Combinación multi-sesión}
+%
+%\begin{frame}{\insertsubsection}
+%	Contar cómo se repite el mismo problema que con las elecciones multisesión
+%\end{frame}
+%
+%\begin{frame}{\insertsubsection}
+%	Mencionar caminos posibles y solución utilizada
+%\end{frame}
 
-\begin{frame}{\insertsubsection}
-	TODO: Contar cómo se repite el mismo problema que con las elecciones multisesión
+\section{Codificación de probabilidades}
+\begin{frame}[fragile]{\insertsection}
+	La representación de las probabilidades es esencial para el posterior
+	cálculo de probabilidad de éxito.
+	
+	\pause Definimos $p$ como la probabilidad con la que se envía
+	($\BinaryPChoice{\etvarA}{\etvarB}$) o recibe
+	($\BinaryPBranch{\etvarA}{\etvarB}$) la elección de seguir por
+	$\Tag[True]$.
+
+	Normalmente podrı́a utilizarse una representación de coma flotante como
+	\OI{float}, el problema con tal modelo es que no brinda información del
+	valor de $p$ en tiempo de compilación:
+
+	\begin{OCamlD}[basicstyle=\footnotesize,frame=single]
+  let p = 0.75;; (* definimos constante con valor 0.75 *)
+  val p : float  (* tipo de dato obtenido *)
+	\end{OCamlD}
 \end{frame}
 
-\begin{frame}{\insertsubsection}
-	TODO: Mencionar caminos posibles y solución utilizada
+\subsection{Representando naturales}
+\begin{frame}[fragile]{\insertsubsection}
+
+	\begin{OCamlD}[basicstyle=\footnotesize,frame=single]
+  type _z
+  type _s
+  type _ nat = Z : _z nat | S : 'a nat -> (_s * 'a) nat
+	\end{OCamlD}
+	\begin{itemize}
+		\item Definimos los tipos \OI{_z} y \OI{_s} como etiquetas
+			para distinguir a nivel tipo entre cero y la función
+			sucesor.
+		\item Definimos \OI{nat} como una estructura de datos
+			algebraica particular denominada GADT (Generalized
+			Algebraic Data Type) que permite la
+			implementación de restricciones en los parámetros de
+			sus constructores.
+	\end{itemize}
+
+	Construcción de primeros naturales y el cero:
+		\begin{OCamlD}[basicstyle=\footnotesize,frame=single]
+  let zero : _z nat = Z
+  let one : (_s * _z) nat = S Z
+  let two : (_s * (_s * _z)) nat = S (S Z)
+		\end{OCamlD}
+\end{frame}
+
+\subsection{Representando racionales}
+\begin{frame}[fragile]{\insertsubsection}
+	\begin{OCamlD}[basicstyle=\footnotesize,frame=single]
+    type _ frac = Fraction : 'a nat * (_s * 'b) nat ->
+                            ('a nat * (_s * 'b) nat) frac
+	\end{OCamlD}
+
+	\begin{OCamlD}[basicstyle=\footnotesize,frame=single]
+    let one_half : ((_s * _z) nat *
+                    (_s * (_s * _z)) nat) frac
+                    = Fraction (S Z, S (S Z))
+	\end{OCamlD}
 \end{frame}
 
 \section{Probabilidad de éxito de una sesión}
 \begin{frame}{\insertsection}
-	TODO: Arrancar contando un poco del algoritmo para cálculo de probabilidad
-\end{frame}
 
-\subsection{Codificación de probabilidades}
-\begin{frame}{\insertsubsection}
-	TODO: Explicar cómo decidimos codificar las probabilidades para poder hacer el cálculo en tiempo de compilación. (codificación de enteros y racionales en el tipo)
+	TODO: Arrancar contando un poco del algoritmo para cálculo de probabilidad
 \end{frame}
 
 \section{Conclusión y trabajo a futuro}
