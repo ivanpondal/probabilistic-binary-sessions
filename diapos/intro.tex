@@ -504,7 +504,7 @@
 	\end{itemize}
 
 	\pause
-	A modo de ejemplo damos la construcción para $\frac{1}{2}$.
+	A modo de ejemplo damos la construcción para $\frac{1}{2}$:
 	\begin{OCamlD}[basicstyle=\footnotesize,frame=single]
     let one_half : ((_s * _z) nat *
                     (_s * (_s * _z)) nat) frac
@@ -515,7 +515,57 @@
 \section{Probabilidad de éxito de una sesión}
 \begin{frame}{\insertsection}
 
-	TODO: Arrancar contando un poco del algoritmo para cálculo de probabilidad
+		La \emph{probabilidad de éxito} de un tipo sesión $\SessionType$,
+		denotada como $\psfun\SessionType$, se encuentra definida por
+		las siguientes ecuaciones:
+	  \[
+	    \begin{array}{r@{~}c@{~}l}
+	      \psfun\Idle & = & 0 \\
+	      \psfun\Done & = & 1 \\ 
+	    \end{array}
+	    \quad
+	    \begin{array}{r@{~}c@{~}l}
+	      \psfun{\In\Type\SessionType} & = & \psfun\SessionType \\
+	      \psfun{\Out\Type\SessionType} & = & \psfun\SessionType \\
+	    \end{array}
+	  \]
+	\[
+	    \begin{array}{r@{~}c@{~}l}
+	      \psfun{\BinaryPBranch\SessionTypeT\SessionTypeS} & = & p\psfun\SessionTypeT + (1-p)\psfun\SessionTypeS \\
+	      \psfun{\BinaryPChoice\SessionTypeT\SessionTypeS} & = & p\psfun\SessionTypeT + (1-p)\psfun\SessionTypeS \\
+	    \end{array}
+	\]
+
+	Para un tipo sesión $\SessionType$ \emph{finito}, la definición describe un
+	algoritmo recursivo para el cómputo de $\psfun\SessionType$.
+\end{frame}
+
+\begin{frame}{\insertsection}
+	Cuando $\SessionType$ es infinito (un protocolo recursivo), puede
+	interpretarse como una Cadena de Markov en Tiempo
+	Discreto\footnote{Discrete-Time Markov Chain, DTMC)} cuyo espacio de
+	estados es $\trees\SessionType = \mathset{S_1, \dots, S_n}$ y tal que
+	la probabilidad $p_{ij}$ de transicionar de un estado $S_i$ al estado
+	$S_j$ está dada por
+	\[
+  p_{ij} \eqdef
+  \begin{cases}
+    p & \text{si $S_i \tred[p] S_j$}
+    \\
+    0 & \text{caso contrario}
+  \end{cases}
+	\]
+
+	\begin{itemize}
+		\item Siempre es posible alcanzar un \emph{estado absorbente}
+			($\Done$ ó $\Idle$) desde cualquier \emph{estado
+			transitorio} (cualquier otro tipo sesión).
+		\item La probabilidad de alcanzar un estado absorbente desde
+			uno transitorio puede ser computado mediante la
+			resolución de un sistema de ecuaciones para el cual se
+			garantiza
+			una solución única~\footfullcite{KemenySnell}.
+	\end{itemize}
 \end{frame}
 
 \section{Conclusión y trabajo a futuro}
