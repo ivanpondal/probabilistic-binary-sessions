@@ -330,7 +330,7 @@
                            -> $\BinaryPChoice[p]{\etvarA}{\etvarB}$ -> $\alpha$
 	    \end{OCamlD}
 	\end{table}
-	\CoinFlipSumServer[\footnotesize]
+	\CoinFlipSumServer[basicstyle=\footnotesize]
 
 	\begin{equation*}
 		\SessionType = \BinaryPChoice[\frac{1}{2}]{
@@ -344,7 +344,7 @@
 \begin{frame}{\insertsubsection}
 	Hasta ahora trabajamos con protocolos que interactúan solamente con una sesión.
 	\pause
-	\InvalidCoinFlipSumServer[\footnotesize]
+	\InvalidCoinFlipSumServer[basicstyle=\footnotesize]
 \end{frame}
 
 \begin{frame}{\insertsubsection}
@@ -382,7 +382,7 @@
 	      -> $\alpha$
 	\end{OCamlD}
 	\pause
-	\ValidCoinFlipSumServer[\footnotesize]
+	\ValidCoinFlipSumServer[basicstyle=\footnotesize]
 \end{frame}
 
 \section{Composición de tipos sesión duales}
@@ -423,7 +423,7 @@
 \end{frame}
 
 \begin{frame}[fragile]{\insertsection}
-	\TestBuyerAuctioneer[\footnotesize]
+	\TestBuyerAuctioneer[basicstyle=\footnotesize]
 	Posterior al cálculo de probabilidad de éxito, el tipo de la función es:
 	\begin{OCamlD}[basicstyle=\footnotesize,frame=single]
     val test_buyer_auctioneer  : ?st:$\ClosedSessionType[\frac{1}{3}]$ -> unit -> unit
