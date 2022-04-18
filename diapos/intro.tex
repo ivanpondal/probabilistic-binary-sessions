@@ -342,7 +342,7 @@
 \subsection{Elecciones multi-sesión}
 
 \begin{frame}{\insertsubsection}
-	Hasta ahora trabajamos con protocolos que interactuan solamente con una sesión.
+	Hasta ahora trabajamos con protocolos que interactúan solamente con una sesión.
 	\pause
 	\InvalidCoinFlipSumServer[\footnotesize]
 \end{frame}
@@ -369,7 +369,7 @@
 	Se suman así las siguientes restricciones:
 	\begin{itemize}
 		\item Capturar a nivel de tipo sesiones adicionales.
-		\item Enforzar el uso de formas compatibles.
+		\item Forzar el uso de formas compatibles.
 	\end{itemize}
 \end{frame}
 
@@ -396,12 +396,12 @@
 	\alert{$\ClosedSessionType$}.
 
 	\pause
-	Elegir una representación adecuada para este tipo presenta algunos desafı́os.
+	Elegir una representación adecuada para este tipo presenta algunos desafíos.
 	\begin{itemize}
 		\item Para el cálculo de éxito, debe capturar la información de
 			tipo de sus endpoints ($\SessionType$ o su dual
 			$\dual\SessionType$).
-		\item Se encuentra sujeta a la combinación probabilı́stica vista anteriormente.
+		\item Se encuentra sujeta a la combinación probabilística vista anteriormente.
 	\end{itemize}
 \end{frame}
 
@@ -410,7 +410,7 @@
 	\OI{create}.
 
 	Al ser un tipo informativo, el uso de un argumento opcional permite
-	ignorarlo y aún ası́ disponer de las garantı́as de tipo que provee
+	ignorarlo y aún así disponer de las garantías de tipo que provee
 	nuestra extensión.
 	\begin{OCamlD}[basicstyle=\scriptsize,frame=single]
               type $\etvar$ cpst
@@ -450,7 +450,7 @@
 	($\BinaryPBranch{\etvarA}{\etvarB}$) la elección de seguir por
 	$\Tag[True]$.
 
-	Normalmente podrı́a utilizarse una representación de coma flotante como
+	Normalmente podría utilizarse una representación de coma flotante como
 	\OI{float}, el problema con tal modelo es que no brinda información del
 	valor de $p$ en tiempo de compilación:
 
@@ -616,7 +616,7 @@
 	\begin{itemize}
 		\item Implementación de distribuciones de probabilidad para
 			tratar elecciones con más de una rama.
-		\item Extención al decodificador de tipos para que utilice
+		\item Extensión al decodificador de tipos para que utilice
 			alguna representación simbólica para variables libres y
 			retorne un resultado en función de las mismas.
 	\end{itemize}
