@@ -8,7 +8,7 @@
     | `False ep ->
         (* `Subastador rechazó oferta *)
         let counteroffer, ep = receive ep in
-        pick Rational.two_thirds
+        S.pick Rational.two_thirds
           (fun ep ->
             (* Comprador rechaza contraoferta *)
             let ep = S.select_false ep in
@@ -23,7 +23,7 @@
   (*BEGIN*Auctioneer*)
   let rec auctioneer ep =
     let bid, ep = S.receive ep in
-    pick Rational.one_quarter
+    S.pick Rational.one_quarter
       (fun ep ->
         (* Subastador rechaza oferta *)
         let ep = S.select_false ep in
@@ -44,7 +44,7 @@
 
   (*BEGIN*CoinFlipSumServer*)
   let coin_flip_sum_server ep =
-    pick Rational.one_half
+    S.pick Rational.one_half
       (fun ep ->
         let ep = S.select_false ep in
         S.idle ep)
@@ -59,7 +59,7 @@
 
   (*END*InvalidCoinFlipSumServer*)
   let coin_flip_sum_server epX epY =
-    pick Rational.one_half
+    S.pick Rational.one_half
       (fun epX ->
         (* interacción con epX... *)
         let epY = S.select_false epY in
@@ -74,7 +74,7 @@
 
   (*BEGIN*ValidCoinFlipSumServer*)
   let coin_flip_sum_server epX epY =
-    pick_2ch Rational.one_half
+    S.pick_2ch Rational.one_half
       (fun epX epY ->
         (* interacción con epX... *)
         let epY = S.select_false epY in
@@ -89,7 +89,7 @@
 
   (*BEGIN*TestBuyerAuctioneer*)
   let test_buyer_auctioneer ?(st = cst_placeholder) () =
-    let ep1, ep2 = create ~st () in
+    let ep1, ep2 = S.create ~st () in
     let _ = Thread.create auctioneer ep1 in
     buyer ep2 42
   (*END*TestBuyerAuctioneer*)
