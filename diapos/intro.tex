@@ -10,8 +10,7 @@
 	Dificultades:
 	\begin{itemize}
 		\item{Desafío tecnológico}
-		\item{\alert<2>{Razonamiento sobre el sistema}}
-		\pause
+		\item{Razonamiento sobre el sistema}
 	\end{itemize}
 
 	\note{Primero introducción a qué son y
@@ -24,14 +23,14 @@
 	Razonamiento: comprender el estado de un sistema distribuido.}
 \end{frame}
 
-\begin{frame}{\insertsection}
-	\begin{figure}
-		\centering
-		\includegraphics[width=0.6\textwidth]{images/tcp-state-diagram.png}
-		\caption{Diagrama de estados para protocolo \textsc{TCP}}
-	\end{figure}
-	\note{Mostrar brevemente como ejemplo de la complejidad que puede tener un sistema distribuido en términos de estados posibles y propiedades a lo largo de los mismos}
-\end{frame}
+%\begin{frame}{\insertsection}
+%	\begin{figure}
+%		\centering
+%		\includegraphics[width=0.6\textwidth]{images/tcp-state-diagram.png}
+%		\caption{Diagrama de estados para protocolo \textsc{TCP}}
+%	\end{figure}
+%	\note{Mostrar brevemente como ejemplo de la complejidad que puede tener un sistema distribuido en términos de estados posibles y propiedades a lo largo de los mismos}
+%\end{frame}
 
 \begin{frame}{\insertsection}
 
@@ -74,9 +73,9 @@
 \begin{frame}{\insertsubsection}
 	Consideremos un protocolo básico para la suma de dos números:
 	\begin{enumerate}
-		\item Cliente envía primer sumando
-		\item Cliente envía segundo sumando
-		\item Servidor retorna suma
+		\item Cliente envía primer sumando.
+		\item Cliente envía segundo sumando.
+		\item Servidor retorna suma.
 	\end{enumerate}
 \end{frame}
 
@@ -215,13 +214,13 @@
 		\item Comprador envía oferta.
 		\item Subastador:
 			\begin{itemize}
-				\item Vende artículo con probabilidad $\frac{1}{4}$
+				\item Vende artículo con probabilidad $\frac{1}{4}$.
 				\item Realiza contraoferta con probabilidad $\frac{3}{4}$.
 			\end{itemize}
 		\item Comprador (Si el artículo no se vendió):
 			\begin{itemize}
 				\item Vuelve a ofertar con probabilidad $\frac{1}{3}$.
-				\item Abandona subasta con probabilidad $\frac{2}{3}$
+				\item Abandona subasta con probabilidad $\frac{2}{3}$.
 			\end{itemize}
 	\end{enumerate}
 \end{frame}
@@ -315,10 +314,10 @@
 	\pause
 	En base a esto, el tipo de \OI{pick} debía cumplir con los siguientes requisitos:
 	\begin{itemize}
+		\item Permitir únicamente combinación de \emph{tipos compatibles}.
 		\item Seleccionar rama $\SessionTypeT$ con probabilidad $pq + (1 - p)r$.
 		\item Seleccionar rama $\SessionTypeS$ con probabilidad $1 - (pq + (1 - p)r)$.
 		\item Reflejar probabilidad $pq + (1 - p)r$ en la elección del tipo sesión.
-		\item Permitir únicamente combinación de \emph{tipos compatibles}.
 	\end{itemize}
 \end{frame}
 
@@ -345,6 +344,11 @@
 	Hasta ahora trabajamos con protocolos que interactúan solamente con una sesión.
 	\pause
 	\InvalidCoinFlipSumServer[basicstyle=\footnotesize]
+	\OI{epY} presenta un tipo distinto en cada rama:
+	\begin{itemize}
+		\item $\BinaryPChoice[0]{\etvarA}{\Done}$
+		\item $\BinaryPChoice[1]{\Out\tint{\Done}}{\etvarB}$
+	\end{itemize}
 \end{frame}
 
 \begin{frame}{\insertsubsection}
@@ -426,7 +430,7 @@
 	\TestBuyerAuctioneer[basicstyle=\footnotesize]
 	Posterior al cálculo de probabilidad de éxito, el tipo de la función es:
 	\begin{OCamlD}[basicstyle=\footnotesize,frame=single]
-    val test_buyer_auctioneer  : ?st:$\ClosedSessionType[\frac{1}{3}]$ -> unit -> unit
+    val test_buyer_auctioneer  : ?st:$\ClosedSessionType[\frac{1}{3}]$ -> unit
 	\end{OCamlD}
 \end{frame}
 

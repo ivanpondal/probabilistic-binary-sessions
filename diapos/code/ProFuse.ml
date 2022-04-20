@@ -79,7 +79,7 @@
         (* interacción con epX... *)
         let epY = S.select_false epY in
         S.close epY)
-      (fun epX epY->
+      (fun epX epY ->
         (* interacción con epX... *)
         let epY = S.select_true epY in
         let epY = S.send (x + y) epY in
@@ -88,7 +88,7 @@
   (*END*ValidCoinFlipSumServer*)
 
   (*BEGIN*TestBuyerAuctioneer*)
-  let test_buyer_auctioneer ?(st = cst_placeholder) () =
+  let test_buyer_auctioneer ?(st = cst_placeholder) =
     let ep1, ep2 = S.create ~st () in
     let _ = Thread.create auctioneer ep1 in
     buyer ep2 42
