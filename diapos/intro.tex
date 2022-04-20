@@ -297,29 +297,29 @@
 
 \section{Elecciones probabilísticas}
 
-\begin{frame}{\insertsection}
-	En el cálculo de tipos sesión probabilísticos se utiliza el operador
-	$\csum{}{}$ para definir la combinación de tipos en una elección probabilística:
-	\begin{equation*}
-	    \csum{t}{s}
-	    \eqdef
-	    \begin{cases}
-	      t & \text{si $t = s$}
-	      \\
-	      \BinaryPChoice[pq+(1-p)r]{\SessionTypeT}{\SessionTypeS} & \text{si $t = \BinaryPChoice[q]{\SessionTypeT}{\SessionTypeS}$} \\ & \text{y $s = \BinaryPChoice[r]{\SessionTypeT}{\SessionTypeS}$}
-	      \\
-	      \text{indefinido} & \text{caso contrario}
-	    \end{cases}
-	\end{equation*}
-	\pause
-	En base a esto, el tipo de \OI{pick} debía cumplir con los siguientes requisitos:
-	\begin{itemize}
-		\item Permitir únicamente combinación de \emph{tipos compatibles}.
-		\item Seleccionar rama $\SessionTypeT$ con probabilidad $pq + (1 - p)r$.
-		\item Seleccionar rama $\SessionTypeS$ con probabilidad $1 - (pq + (1 - p)r)$.
-		\item Reflejar probabilidad $pq + (1 - p)r$ en la elección del tipo sesión.
-	\end{itemize}
-\end{frame}
+%\begin{frame}{\insertsection}
+%	En el cálculo de tipos sesión probabilísticos se utiliza el operador
+%	$\csum{}{}$ para definir la combinación de tipos en una elección probabilística:
+%	\begin{equation*}
+%	    \csum{t}{s}
+%	    \eqdef
+%	    \begin{cases}
+%	      t & \text{si $t = s$}
+%	      \\
+%	      \BinaryPChoice[pq+(1-p)r]{\SessionTypeT}{\SessionTypeS} & \text{si $t = \BinaryPChoice[q]{\SessionTypeT}{\SessionTypeS}$} \\ & \text{y $s = \BinaryPChoice[r]{\SessionTypeT}{\SessionTypeS}$}
+%	      \\
+%	      \text{indefinido} & \text{caso contrario}
+%	    \end{cases}
+%	\end{equation*}
+%	\pause
+%	En base a esto, el tipo de \OI{pick} debía cumplir con los siguientes requisitos:
+%	\begin{itemize}
+%		\item Permitir únicamente combinación de \emph{tipos compatibles}.
+%		\item Seleccionar rama $\SessionTypeT$ con probabilidad $pq + (1 - p)r$.
+%		\item Seleccionar rama $\SessionTypeS$ con probabilidad $1 - (pq + (1 - p)r)$.
+%		\item Reflejar probabilidad $pq + (1 - p)r$ en la elección del tipo sesión.
+%	\end{itemize}
+%\end{frame}
 
 \begin{frame}[fragile]{\insertsection}
 	\begin{table}[htb]
@@ -367,14 +367,18 @@
 		\wtp{\csum\ContextA\ContextB}{\text{\OI{pick}} \ prob \ P \ Q} : \sigma
 	}
 	\end{gather*}
-	\pause
-	Nuestra primitiva \OI{pick} no recibe ninguna información de tipo de \OI{epY}.
-
-	Se suman así las siguientes restricciones:
-	\begin{itemize}
-		\item Capturar a nivel de tipo sesiones adicionales.
-		\item Forzar el uso de formas compatibles.
-	\end{itemize}
+	La combinación de tipos se encuentra definida como:
+	\begin{align*}
+		& \csum{t}{s}
+		\eqdef \\
+		& \begin{cases}
+	      t & \text{si $t = s$}
+	      \\
+	      \BinaryPChoice[pq+(1-p)r]{\SessionTypeT}{\SessionTypeS} & \text{si $t = \BinaryPChoice[q]{\SessionTypeT}{\SessionTypeS}$} \\ & \text{y $s = \BinaryPChoice[r]{\SessionTypeT}{\SessionTypeS}$}
+	      \\
+	      \text{indefinido} & \text{caso contrario}
+	    \end{cases}
+	\end{align*}
 \end{frame}
 
 \begin{frame}[fragile]{\insertsubsection}
