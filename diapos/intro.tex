@@ -23,15 +23,6 @@
 	Razonamiento: comprender el estado de un sistema distribuido.}
 \end{frame}
 
-%\begin{frame}{\insertsection}
-%	\begin{figure}
-%		\centering
-%		\includegraphics[width=0.6\textwidth]{images/tcp-state-diagram.png}
-%		\caption{Diagrama de estados para protocolo \textsc{TCP}}
-%	\end{figure}
-%	\note{Mostrar brevemente como ejemplo de la complejidad que puede tener un sistema distribuido en términos de estados posibles y propiedades a lo largo de los mismos}
-%\end{frame}
-
 \begin{frame}{\insertsection}
 
 	Esto dio lugar a:
@@ -188,27 +179,6 @@
 	es requisito para cumplir las garantías del mismo (Ejemplo: seguridad, anonimato).
 \end{frame}
 
-%\begin{frame}{\insertsubsection: Motivación}
-%
-%	En el protocolo \textbf{Crowds}, el anonimato se logra \emph{escondiendo} al
-%	usuario que inició la conversación mediante saltos aleatorios.
-%
-%	\begin{figure}
-%		\centering
-%		\includegraphics[width=0.5\textwidth]{images/crowds-protocol.pdf}
-%	\end{figure}
-%
-%	\begin{itemize}
-%		\item Una \emph{crowd} (multitud) de $N$ usuarios participa en el protocolo.
-%		\item El cliente selecciona un usuario al azar.
-%		\item Cada usuario selecciona probabilísticamente:
-%		\begin{itemize}
-%			\item Con probabilidad $p$ redirigir el mensaje a otro usuario.
-%			\item Con probabilidad $1 - p$ enviar el mensaje al destino final (servidor).
-%		\end{itemize}
-%	\end{itemize}
-%\end{frame}
-
 \begin{frame}{\insertsection: Subasta}
 	\begin{enumerate}
 		\item Comprador envía oferta.
@@ -296,30 +266,6 @@
 \end{frame}
 
 \section{Elecciones probabilísticas}
-
-%\begin{frame}{\insertsection}
-%	En el cálculo de tipos sesión probabilísticos se utiliza el operador
-%	$\csum{}{}$ para definir la combinación de tipos en una elección probabilística:
-%	\begin{equation*}
-%	    \csum{t}{s}
-%	    \eqdef
-%	    \begin{cases}
-%	      t & \text{si $t = s$}
-%	      \\
-%	      \BinaryPChoice[pq+(1-p)r]{\SessionTypeT}{\SessionTypeS} & \text{si $t = \BinaryPChoice[q]{\SessionTypeT}{\SessionTypeS}$} \\ & \text{y $s = \BinaryPChoice[r]{\SessionTypeT}{\SessionTypeS}$}
-%	      \\
-%	      \text{indefinido} & \text{caso contrario}
-%	    \end{cases}
-%	\end{equation*}
-%	\pause
-%	En base a esto, el tipo de \OI{pick} debía cumplir con los siguientes requisitos:
-%	\begin{itemize}
-%		\item Permitir únicamente combinación de \emph{tipos compatibles}.
-%		\item Seleccionar rama $\SessionTypeT$ con probabilidad $pq + (1 - p)r$.
-%		\item Seleccionar rama $\SessionTypeS$ con probabilidad $1 - (pq + (1 - p)r)$.
-%		\item Reflejar probabilidad $pq + (1 - p)r$ en la elección del tipo sesión.
-%	\end{itemize}
-%\end{frame}
 
 \begin{frame}[fragile]{\insertsection}
 	\begin{table}[htb]
@@ -451,16 +397,6 @@
 	\end{OCamlD}
 \end{frame}
 
-%\subsection{Combinación multi-sesión}
-%
-%\begin{frame}{\insertsubsection}
-%	Contar cómo se repite el mismo problema que con las elecciones multisesión
-%\end{frame}
-%
-%\begin{frame}{\insertsubsection}
-%	Mencionar caminos posibles y solución utilizada
-%\end{frame}
-
 \section{Codificación de probabilidades}
 \begin{frame}[fragile]{\insertsection}
 	La representación de las probabilidades es esencial para el posterior
@@ -534,32 +470,6 @@
 \end{frame}
 
 \section{Probabilidad de éxito de una sesión}
-%\begin{frame}{\insertsection}
-%
-%		La \emph{probabilidad de éxito} de un tipo sesión $\SessionType$,
-%		denotada como $\psfun\SessionType$, se encuentra definida por
-%		las siguientes ecuaciones:
-%	  \[
-%	    \begin{array}{r@{~}c@{~}l}
-%	      \psfun\Idle & = & 0 \\
-%	      \psfun\Done & = & 1 \\
-%	    \end{array}
-%	    \quad
-%	    \begin{array}{r@{~}c@{~}l}
-%	      \psfun{\In\Type\SessionType} & = & \psfun\SessionType \\
-%	      \psfun{\Out\Type\SessionType} & = & \psfun\SessionType \\
-%	    \end{array}
-%	  \]
-%	\[
-%	    \begin{array}{r@{~}c@{~}l}
-%	      \psfun{\BinaryPBranch\SessionTypeT\SessionTypeS} & = & p\psfun\SessionTypeT + (1-p)\psfun\SessionTypeS \\
-%	      \psfun{\BinaryPChoice\SessionTypeT\SessionTypeS} & = & p\psfun\SessionTypeT + (1-p)\psfun\SessionTypeS \\
-%	    \end{array}
-%	\]
-%
-%	Para un tipo sesión $\SessionType$ \emph{finito}, la definición describe un
-%	algoritmo recursivo para el cómputo de $\psfun\SessionType$.
-%\end{frame}
 
 \begin{frame}{\insertsection}
 	$\SessionType$ puede interpretarse como una Cadena de Markov en Tiempo
