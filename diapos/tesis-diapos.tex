@@ -1,7 +1,108 @@
-\documentclass[10pt]{beamer}
+\documentclass[10pt,showframe,hmargin=1cm,vmargin=0cm,head=0.5cm,headsep=0pt,foot=0.5cm,left=3cm,right=3cm,bottom=3.5cm,top=3.5cm]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{mathtools}
+
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{mathtools}
+\usepackage{listings}
+\usepackage{upgreek}
+\usepackage{etoolbox}
+\usepackage{xspace}
+\usepackage{stmaryrd}
+\usepackage{mathbbol}
+\usepackage{bm}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{mathpartir}
+
+\usepackage[backend=bibtex,sorting=none]{biblatex}
+\addbibresource{tesis-diapos.bib}
+\setbeamerfont{footnote}{size=\tiny}
+
+\setbeamercovered{transparent}
+
+%\setbeameroption{show notes}
+
+\usetheme[sectionpage=none]{metropolis}
+
+\renewcommand{\figurename}{Figura}
+
+\title{Inferencia de tipos sesión probabilísticos}
+\date{21 de Abril de 2022}
+\author{Iván Pondal}
+\institute{
+	Director: Hernán Melgratti \\
+	Jurado: Diego David Garbervetsky y Carlos Lopez Pombo \\
+	\\
+	Facultad de Ciencias Exactas y Naturales, UBA
+}
+
+\lstdefinestyle{INLINE}{
+}
+\lstdefinestyle{DISPLAY}{
+  numberstyle=\tiny\tt\color{mygray},
+  numbersep=1em,
+  backgroundcolor=\color{lightgray},
+}
+\lstdefinestyle{FLOAT}{
+  float,
+  captionpos=b,
+}
+\lstloadlanguages{Caml}
+\lstdefinelanguage{OCaml}{
+  upquote=true,
+  language=[Objective]Caml,
+  basicstyle=\ttfamily,
+  keywordstyle=\color{myblue},
+  commentstyle=\color{mygreen},
+  morekeywords={raise,unit,int,bool,option,list,float},
+  emph=[2]{create,close,idle},
+  moreemph=[2]{accept,request,spawn},
+  moreemph=[2]{send,receive},
+  moreemph=[2]{select,select_true,select_false},
+  moreemph=[2]{pick,pick_2st,pick_2ch},
+  moreemph=[2]{branch,branch_2st,branch_2ch},
+  moreemph=[2]{sync,use,fresh},
+  moreemph=[2]{InvalidEndpoint},
+  moreemph=[2]{one_half,zero,one,two,cst_placeholder},
+  showstringspaces=false,
+  emphstyle=[2]\color{mymagenta},
+  emph=[3]{Service,Session,Rational,List},
+  moreemph=[3]{Thread,Event,Obj,UnsafeChannel,Flag,Mutex,None,Some},
+  moreemph=[3]{S,Z,Fraction},
+  emphstyle=[3]\color{lightblue},
+  moredelim=[is][\color{myred}]{\#}{\#},
+  mathescape=true,
+  literate={ó}{{\'o}}1
+           {á}{{\'a}}1
+           {\ ->}{\ $\to$}2
+           {\ ->\ }{$\to$}3
+           {\ <-\ }{$\leftarrow$}3
+           {\ *\ }{$\tmul$}3
+           {(+)}{$\Choice$}1
+           {_0}{$\tbottom$}1
+           {_1}{$\DoneBottomType$}1
+           {'a}{$\tvarA$}1
+           {'b}{$\tvarB$}1
+           {'c}{$\tvarC$}1
+           {'d}{$\tvarD$}1
+           {'e}{$\tvarE$}1
+           {'r}{$\uprho$}1
+           {'s}{$\upsigma$}1
+}
+
+\lstnewenvironment{OCamlD}[1][]{\lstset{language=OCaml,style=DISPLAY,#1}}{}
+
+\input{macros.tex}
+\input{code/fragments.tex}
 
 \begin{document}
 
 \maketitle
+
+\input{intro}
 
 \end{document}

@@ -31,6 +31,8 @@ module Rational : sig
 
   val one_quarter : (zero suc nat * zero suc suc suc suc nat) frac
 
+  val one_third : (zero suc nat * zero suc suc suc nat) frac
+
   val two_thirds : (zero suc suc nat * zero suc suc suc nat) frac
 end
 
