@@ -1,4 +1,4 @@
-FROM ivanpondal/alpine-latex:2.0.1
+FROM ivanpondal/alpine-latex:2.1.0
 
 RUN apk --no-cache add perl wget && \
 	tlmgr update --self && \
