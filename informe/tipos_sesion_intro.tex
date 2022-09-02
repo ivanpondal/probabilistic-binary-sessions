@@ -32,6 +32,7 @@ denotado por $\T$. Las elecciones posibles son representadas mediante etiquetas
 que puede recibir y $\Choice$ las que puede enviar.
 
 \section{Gramática}
+\label{sec:tipos_sesion_gram}
 
 Formalmente la sintaxis de los tipos sesión está dada por la siguiente
 gramática como fue presentada en~\cite{Melgratti2017AnOI}
@@ -58,14 +59,26 @@ gramática como fue presentada en~\cite{Melgratti2017AnOI}
 \]
 
 donde $\TypeT$ y $\TypeS$ son utilizados para representar los tipos básicos,
-variables libres, tipos sesión, unión disjunta y otros.
-Los tipos sesión quedan descritos por $\SessionTypeT$ y $\SessionTypeS$ con su
-constructor para marcar el cierre de un endpoint, operaciones de
-lectura/escritura, ramas y elecciones así como variables libres y su dual.
+variables libres, tipos sesión, unión disjunta y otros. Los tipos sesión quedan
+descritos por $\SessionTypeT$ y $\SessionTypeS$. Una comunicación finalizada
+queda descrita por el constructor de terminación ($\End$). Las operaciones de
+escritura y lectura ($\Out\Type\SessionType$ y $\In\Type\SessionType$) describen
+endpoints para enviar y recibir mensajes de tipo $\Type$ y continuar de acuerdo
+con $\SessionType$. Las ramas ($\Branch \set[i\in I]{\Tag_i : \SessionType_i}$)
+describen endpoints con varias continuaciones posibles ($\SessionType_i$)
+identificadas por etiquetas ($\Tag_i$), el progreso queda dado por la elección
+externa de una de ellas. Las elecciones ($\Choice \set[i\in I]{\Tag_i :
+\SessionType_i}$) describen endpoints que pueden seleccionar mediante una
+elección interna una etiqueta $\Tag_i$ y continuar como $\SessionType_i$. Como
+consecuencia, la elección externa de una rama ($\Branch$) queda determinada por
+su correspondiente elección interna ($\Choice$).
 
-El \emph{dual} de un tipo sesión $\SessionType$, escrito como
-$\dual\SessionType$, se obtiene intercambiando las operaciones de lectura y
-escritura. Lo definen las siguientes ecuaciones:
+Por último, $\etvar$ y $\dual\etvar$ representan variables libres y su dual. El
+\emph{dual} de un tipo sesión $\SessionType$, escrito como $\dual\SessionType$,
+se obtiene intercambiando las operaciones de lectura y escritura. Esta operación
+nos permite obtener para cualquier endpoint, el tipo sesión de su contraparte en
+la comunicación que describe. La misma queda definida por las siguientes
+ecuaciones:
 
 \[
 \begin{array}{c}
@@ -87,3 +100,19 @@ escritura. Lo definen las siguientes ecuaciones:
   \end{array}
 \end{array}
 \]
+
+Esta gramática permite describir también tipos sesión infinitos. Para ello
+pedimos se cumplan las siguientes condiciones:
+\begin{description}
+
+	\item[Regularidad] Requerimos que todo árbol consista de un número
+		finito de subárboles \emph{distinguibles}. Esta condición
+		asegura que los tipos sesión sean representables mediante la
+		notación $\mu$~\cite{Pierce02} o como soluciones a un
+		conjunto finito de ecuaciones~\cite{Courcelle83}.
+
+	\item[Alcanzabilidad] Requerimos que todo sub-árbol $\SessionType$ de
+		un tipo sesión contenga una \emph{hoja alcanzable} etiquetada por
+		$\End$. Esta condición asegura que siempre sea posible terminar una
+		sesión independientemente de hace cuánto esté corriendo.
+\end{description}

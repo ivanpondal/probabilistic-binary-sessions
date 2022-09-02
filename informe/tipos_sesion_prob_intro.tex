@@ -67,41 +67,33 @@ $\SessionTypeT$ y $\dual\SessionTypeT$ ambos con probabilidad de éxito $p$. La
 \emph{probabilidad de éxito} de un tipo sesión es la probabilidad con la que
 el protocolo descrito termina exitosamente.
 
-Para los tipos sesión descritos por $\SessionTypeT$ y $\SessionTypeS$, $\Idle$
-y $\Done$ marcan el fin de una comunicación. Utilizamos $\Done$ para denotar
-los puntos de terminación exitosa de un protocolo, la semántica para tal
-terminación siendo dependiente del dominio del problema. Los tipos sesión
-$\Out\Type\SessionType$ y $\In\Type\SessionType$ describen endpoints para
-enviar y recibir mensajes de tipo $t$ y continuar de acuerdo con $T$. Luego,
-$\PChoice$ y
-$\PBranch$ describen endpoints utilizador para
-enviar y recibir una elección binaria que es ``izquierda'' con probabilidad $p$
-y ``derecha'' con probabiliadad $1 - p$. El endpoint es luego consumido acorde
-$\SessionTypeT$ o $\SessionTypeS$ según corresponda. Notamos que $\PChoice{}{}$
-es una elección interna, el proceso comportándose acorde este tipo selecciona
-``izquierda'' o ``derecha'', mientras que $\PBranch$ es una elección
-externa, el proceso ofrece al exterior ambas ramas. Como consecuencia, la
-probabilidad de $\PBranch$ queda determinada por su correspondiente
-elección interna. Por último, $\etvar$ y $\dual\etvar$ representan variables
-libres y su dual.
+A diferencia de la gramática descrita en la Sección \ref{sec:tipos_sesion_gram},
+utilizamos dos constructores distintos para marcar el fin de una comunicación,
+$\Idle$ y $\Done$. Utilizamos $\Done$ para denotar los puntos de terminación
+exitosa de un protocolo y $\Idle$ para los de terminación infructuosa, la
+semántica de terminación exitosa e infructuosa siendo dependiente del dominio
+del problema.
+
+Los tipos sesión $\Out\Type\SessionType$ y $\In\Type\SessionType$ describen
+endpoints para enviar y recibir mensajes igual que en la Sección
+\ref{sec:tipos_sesion_gram}. Luego, $\PChoice$ y $\PBranch$ describen ramas y
+elecciones  ahora anotadas con una probabilidad y limitadas a una elección
+binaria que es ``izquierda'' con probabilidad $p$ y ``derecha'' con
+probabiliadad $1 - p$. El endpoint es luego consumido acorde $\SessionTypeT$ o
+$\SessionTypeS$ según corresponda. La probabilidad de $\PBranch$ queda
+determinada por su correspondiente elección interna. Por último, $\etvar$ y
+$\dual\etvar$ representan variables libres y su dual.
 
 El \emph{dual} de un tipo sesión probabilístico $\SessionType$, escrito como
 $\dual\SessionType$, se obtiene utilizando la misma definición que para los
-tipos sesión intercambiando las operaciones de lectura y escritura.
+tipos sesión; para los constructores de terminación es la identidad y las
+operaciones de lectura y escritura son intercambiadas al igual que las
+elecciones internas y externas (sin afectar las probabilidades anotadas).
 
-Esta gramática permite describir también tipos sesión infinitos. Para ello
-pedimos se cumplan las siguientes condiciones:
+Por último, es necesario modificar la condición de alcanzabilidad para
+considerar los nuevos constructores de terminación:
 \begin{description}
-
-	\item[Regularidad] Requerimos que todo árbol consista de un número
-		finito de subárboles \emph{distinguibles}. Esta condición
-		asegura que los tipos sesión sean representables mediante la
-		notación $\mu$ ~\cite{Pierce02} o como soluciones a un
-		conjunto finito de ecuaciones~\cite{Courcelle83}.
-
-	\item[Alcanzabilidad] Requerimos que todo sub-árbol $\SessionType$ de
-		un tipo sesión contenga una \emph{hoja alcanzable} etiquetada
-		por $\Done$ o $\Idle$. Esta condición asegura que siempre sea
-		posible terminar una sesión independientemente de hace cuánto
-		esté corriendo.
+	\item[Alcanzabilidad] Requerimos que todo sub-árbol $\SessionType$ de un
+		tipo sesión contenga una \emph{hoja alcanzable} etiquetada por $\Done$ o
+		$\Idle$.
 \end{description}
