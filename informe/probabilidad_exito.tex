@@ -119,8 +119,11 @@ comprador recibe una contra-oferta y debe decidir si aceptarla o no. Si la
 rechaza, el protocolo termina sin éxito; caso contrario se llama recursivamente
 para repetir la secuencia.
 
-Mediante \texttt{rosetta} obtenemos el siguiente tipo para \OI{ep}: $rec\
-X.\Out\tint\BinaryPBranch[p]{\Done}{\In\tint\BinaryPChoice[\frac{2}{3}]{\Idle}{X}}$.
+Mediante \texttt{rosetta} obtenemos el siguiente tipo para \OI{ep}:
+\begin{equation*}
+	rec\X.\Out\tint\BinaryPBranch[p]{\Done}{\In\tint\BinaryPChoice[\frac{2}{3}]{\Idle}{X}}
+\end{equation*}
+
 Una diferencia con respecto a los ejemplos anteriores es que al presentar una
 recursión, la sesión hace referencia así misma mediante la variable de tipo $X$.
 
@@ -128,8 +131,11 @@ A continuación presentamos el programa vendedor:
 
 \AuctionSeller
 
-El tipo decodificado de \OI{ep} es $rec\
-X.\In\tint\BinaryPChoice[\frac{1}{4}]{\Done}{\Out\tint\BinaryPBranch[q]{\Idle}{X}}$.
+El tipo decodificado de \OI{ep}:
+\begin{equation*}
+	rec\X.\In\tint\BinaryPChoice[\frac{1}{4}]{\Done}{\Out\tint\BinaryPBranch[q]{\Idle}{X}}
+\end{equation*}
+
 Además de ser el dual del endpoint utilizado por el comprador, podemos observar
 tiene instanciada la probabilidad de elección que requiere su contraparte.
 
