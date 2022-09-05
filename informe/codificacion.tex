@@ -16,14 +16,23 @@ cual continuar la comunicación.
 Esta codificación depende de los siguientes tipos:
 
 \begin{itemize}
-	\item $\tbottom$ representa la ausencia de valor e identifica la
-		terminación no exitosa.
-	\item $\DoneBottomType$ identifica la terminación exitosa.
+	\item $\tbottom$ representa la ausencia de valor.
 	\item $\tsession{\renc{}}{\senc{}}$ describe canales que
 		reciben mensajes del tipo $\renc{}$ y envían de tipo $\senc{}$.
 		Tanto $\renc{}$ como $\senc{}$ pueden ser instanciados con
 		$\tbottom$ para indicar que no se recibe y/o envía ningún
 		mensaje.
+\end{itemize}
+
+De esta última representación, las siguientes instancias son utilizadas para
+describir las terminaciones posibles (a diferencia de \FuSe, sumamos el símbolo
+$\DoneBottomType$ para distinguir una de otra):
+
+\begin{itemize}
+	\item $\tsession{\DoneBottomType}{\DoneBottomType}$ representa la
+		terminación exitosa.
+	\item $\tsession{\tbottom}{\tbottom}$ representa la terminación no
+		exitosa.
 \end{itemize}
 
 La relación entre los tipos sesión $\SessionType$ y los tipos de la forma

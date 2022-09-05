@@ -28,10 +28,9 @@ según la elección:
 \TwoSessionsInvalidPickBothBranches
 
 En este último caso, el sistema de tipo nos indicará que \OI{epY} presenta dos
-tipos incompatibles entre sí: $\Out\tbool\Done$ y $\Out\tint\Done$. Lo que está
-sucediendo es que el comportamiento de \OI{epY} difiere según la elección
-realizada por \OI{epX} pero tal dependencia no es capturada por el sistema de
-tipos.
+tipos incompatibles entre sí: $\Out\tbool\Done$ y $\Out\tint\Done$, por lo tanto
+no tipa. El comportamiento de \OI{epY} difiere según la elección realizada por
+\OI{epX} y esta dependencia no es capturada por el sistema de tipos.
 
 Para poder describir estas relaciones es necesario introducir algunos aspectos
 del sistema de tipos que se enfocan en el resultado de combinar sesiones en
@@ -40,7 +39,7 @@ elecciones.
 \section{Combinador de tipo probabilístico}
 
 Como vimos en el último ejemplo surge la necesidad de capturar el tipo de una
-sesión que diverge acorde una elección. Para esto nos basamos en el
+sesión que cambia de acuerdo con una elección. Para esto nos basamos en el
 \emph{combinador de tipo probabilístico} presentado
 en~\cite{DBLP:conf/concur/InversoMPTT20}, que permite combinar tipos ponderando
 las distintas formas en las cuales progresa una sesión bajo una probabilidad
