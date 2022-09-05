@@ -71,11 +71,10 @@ A diferencia de la gramática descrita en la Sección \ref{sec:tipos_sesion_gram
 utilizamos dos constructores distintos para marcar el fin de una comunicación,
 $\Idle$ y $\Done$. Utilizamos $\Done$ para denotar los puntos de terminación
 exitosa de un protocolo y $\Idle$ para los de terminación infructuosa, la
-semántica de terminación exitosa e infructuosa siendo dependiente del dominio
-del problema.
+semántica de terminación para ambos siendo dependiente del dominio del problema.
 
 Los tipos sesión $\Out\Type\SessionType$ y $\In\Type\SessionType$ describen
-endpoints para enviar y recibir mensajes igual que en la Sección
+endpoints para enviar y recibir mensajes al igual que en la Sección
 \ref{sec:tipos_sesion_gram}. Luego, $\PChoice$ y $\PBranch$ describen ramas y
 elecciones  ahora anotadas con una probabilidad y limitadas a una elección
 binaria que es ``izquierda'' con probabilidad $p$ y ``derecha'' con
@@ -85,10 +84,11 @@ determinada por su correspondiente elección interna. Por último, $\etvar$ y
 $\dual\etvar$ representan variables libres y su dual.
 
 El \emph{dual} de un tipo sesión probabilístico $\SessionType$, escrito como
-$\dual\SessionType$, se obtiene utilizando la misma definición que para los
-tipos sesión; para los constructores de terminación es la identidad y las
-operaciones de lectura y escritura son intercambiadas al igual que las
-elecciones internas y externas (sin afectar las probabilidades anotadas).
+$\dual\SessionType$, extiende la definición presentada en la Sección
+\ref{sec:tipos_sesion_gram}; para los constructores de terminación es la
+identidad y las operaciones de lectura y escritura son intercambiadas. Este
+intercambio también se realiza para las elecciones internas y externas sin
+afectar las probabilidades anotadas.
 
 Por último, es necesario modificar la condición de alcanzabilidad para
 considerar los nuevos constructores de terminación:
