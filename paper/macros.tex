@@ -1,0 +1,655 @@
+\newcommand{\EvalContext}{\mathcal{\Expr}}
+\newcommand{\EmptyEvalContext}{[~]}
+\newcommand{\Hole}{[~]}
+
+% Expressions
+\newcommand{\Expr}{E}
+\newcommand{\EvalExpr}{\ensuremath{\mathcal{E}}}
+\newcommand{\sep}[2]{[#1;#2]}
+
+%%% RELATIONS %%%
+
+%\newcommand{\red}[1]{\rightarrow_{#1}}
+%\newcommand{\nred}[1]{\arrowF\red{#1}}
+%\newcommand{\eqdef}{\stackrel{\mathrm{def}}{=}}
+\newcommand{\subo}{\preceq}
+%\newcommand{\subt}{\leqslant}
+\newcommand{\CheckReach}{\Vdash}
+
+%%%%%%%%%%%%%%%%%%%%
+%%% CONDITIONALS %%%
+%%%%%%%%%%%%%%%%%%%%
+
+\newif\ifproofs
+\proofstrue
+
+\newif\ifcomments
+\commentstrue
+%\commentsfalse
+
+\newif\iflong
+\longtrue
+%\longfalse
+
+%%%%%%%%%%%%%%%%%%%%%%%
+%%% INFERENCE RULES %%%
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\rulename}[1]{\textsc{\footnotesize#1}}
+
+\newcommand{\defrule}[1]{%
+    \hypertarget{rule:#1}{%
+        \text{\upshape\scriptsize[\textsc{#1}]}%
+    }%
+}
+
+\newcommand{\refrule}[1]{%
+    \hyperlink{rule:#1}{%
+        \text{\upshape\scriptsize[\textsc{#1}]}%
+    }%
+}
+
+%%%%%%%%%%%%%%%%%%%
+%%% TYPESETTING %%%
+%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\ie}{\emph{i.e.}\xspace}
+\newcommand{\eg}{\emph{e.g.}\xspace}
+\newcommand{\cf}{\emph{cf.}\xspace}
+\newcommand{\etal}{\emph{et al.}\xspace}
+
+\newcommand{\set}[2][]{\ttbracks{#2}\ifblank{#1}{}{_{#1}}}
+\newcommand{\mathset}[2][]{\{#2\}\ifblank{#1}{}{_{#1}}}
+\newcommand{\subst}[2]{\{#1/#2\}}
+\newcommand{\hypo}[1]{\textrm{\upshape\color{myred}(#1)}}
+\newcommand{\eoe}{\hfill{$\blacksquare$}}
+
+%\newcommand{\tentex}{\fontfamily{cmtex}\selectfont}
+\font\tentex=cmtex10 at 10pt
+
+\newcommand{\ttvee}{\text{\tentex\symbol{31}}}
+\newcommand{\ttwedge}{\text{\tentex\symbol{4}}}
+\newcommand{\ttforall}{\text{\tentex\symbol{20}}}
+\newcommand{\ttoplus}{\text{\tentex\symbol{13}}}
+\newcommand{\ttotimes}{\text{\tentex\symbol{22}}}
+\newcommand{\ttlambda}{\text{\tentex\symbol{8}}}
+\newcommand{\ttarrow}{\text{\tentex\symbol{25}}}
+\newcommand{\ttalpha}{\text{\tentex\symbol{2}}}
+\newcommand{\ttbeta}{\text{\tentex\symbol{3}}}
+\newcommand{\ttgamma}{\text{\tentex\symbol{9}}}
+\newcommand{\ttdelta}{\text{\tentex\symbol{10}}}
+\newcommand{\ttdownarrow}{\texttt{\symbol{12}}}
+\newcommand{\ttuparrow}{\texttt{\symbol{11}}}
+\newcommand{\ttemptyset}{\texttt{\symbol{31}}}
+\newcommand{\ttparens}[1]{\ttlparen#1\ttrparen}
+\newcommand{\ttbracks}[1]{\ttlbrack#1\ttrbrack}
+\newcommand{\ttbraces}[1]{\ttlbrace#1\ttrbrace}
+\newcommand{\ttangles}[1]{\ttlt#1\ttgt}
+\newcommand{\ttchar}[1]{\texttt{#1}}
+\newcommand{\ttbar}{\texttt{\upshape|}}
+\newcommand{\ttunderscore}{\texttt{\upshape\symbol{95}}}
+\newcommand{\ttlparen}{\texttt{\upshape(}}
+\newcommand{\ttrparen}{\texttt{\upshape)}}
+\newcommand{\ttlbrace}{\texttt{\upshape\symbol{123}}}
+\newcommand{\ttrbrace}{\texttt{\upshape\symbol{125}}}
+\newcommand{\ttdot}{\texttt{\upshape.}}
+\newcommand{\ttcomma}{\texttt{\upshape,}}
+\newcommand{\ttcolon}{\texttt{\upshape:}}
+\newcommand{\ttsemicolon}{\texttt{\upshape;}}
+\newcommand{\tteq}{\texttt{\upshape=}}
+\newcommand{\ttlbrack}{\texttt{\upshape[}}
+\newcommand{\ttrbrack}{\texttt{\upshape]}}
+\newcommand{\ttplus}{\texttt{\upshape+}}
+\newcommand{\ttminus}{\texttt{\upshape-}}
+\newcommand{\ttlt}{\texttt{\upshape<}}
+\newcommand{\ttgt}{\texttt{\upshape>}}
+\newcommand{\ttqmark}{\texttt{\upshape?}}
+\newcommand{\ttemark}{\texttt{\upshape!}}
+\newcommand{\ttampersand}{\texttt{\upshape\&}}
+\newcommand{\ttdash}{\texttt{\upshape\#}}
+\newcommand{\ttat}{\texttt{\symbol{64}}}
+\newcommand{\ttpercent}{\texttt{\upshape\%}}
+\newcommand{\ttasterisk}{\texttt{\upshape*}}
+\newcommand{\ttbacktick}{\texttt{\upshape`}}
+\newcommand{\ttslash}{\texttt{\upshape/}}
+\newcommand{\ttvarleftarrow}{%
+    {%
+            \setbox0\hbox{\ttminus}%
+            \rlap{\hbox to \wd0{\hss\rotatebox[origin=c]{90}{\texttt{\symbol{12}}}\hss}}\box0%
+        }%
+}
+
+\newcommand{\proofcase}[1]{\medskip\noindent\fbox{#1}}
+\newcommand{\proofrule}[1]{\proofcase{\refrule{#1}}}
+\newcommand{\rulemid}{~\mid~}
+
+\newcommand{\llangle}{\langle\!\!\langle}
+\newcommand{\rrangle}{\rangle\!\!\rangle}
+
+\newenvironment{lines}[1][]{
+    \begin{array}[#1]{@{}l@{}}
+        }{
+    \end{array}
+}
+
+%%%%%%%%%%%%%
+%%% LOGOS %%%
+%%%%%%%%%%%%%
+
+\newcommand{\C}{\texttt{C}\xspace}
+\newcommand{\ML}{\texttt{ML}\xspace}
+\newcommand{\CML}{Concurrent~\ML}
+\newcommand{\SingSharp}{$\mathtt{Sing}^{\#}$}
+\newcommand{\OCaml}{\texttt{OCaml}\xspace}
+\newcommand{\CamlS}{\texttt{\upshape FuSe}\xspace}
+\newcommand{\Hypha}{\texttt{Hypha}\xspace}
+\newcommand{\Haskell}{\texttt{Haskell}\xspace}
+\newcommand{\Scala}{\texttt{Scala}\xspace}
+\newcommand{\Alms}{\texttt{Alms}\xspace}
+\newcommand{\Java}{\texttt{Java}\xspace}
+\newcommand{\CPP}{\texttt{C++}\xspace}
+\newcommand{\FuSe}{\texttt{\upshape FuSe}\xspace}
+
+%%%%%%%%%%%%%%
+%%% COLORS %%%
+%%%%%%%%%%%%%%
+
+\definecolor{mymagenta}{rgb}{0.5,0,0.5}
+\definecolor{myred}{rgb}{0.5,0,0}
+\definecolor{mygreen}{rgb}{0,0.4,0}
+\definecolor{myblue}{rgb}{0,0,0.6}
+\definecolor{lightblue}{rgb}{0,0.5,1}
+\definecolor{mygray}{gray}{0.5}
+\definecolor{lightgray}{gray}{0.95}
+
+%%%%%%%%%%%%%
+%%% NAMES %%%
+%%%%%%%%%%%%%
+
+\newcommand{\substitution}{\varrho}
+
+\newcommand{\EndpointType}{\EndpointTypeT}
+\newcommand{\EndpointTypeT}{T}
+\newcommand{\EndpointTypeS}{S}
+
+\newcommand{\MonoType}{\MonoTypeT}
+\newcommand{\MonoTypeT}{t}
+\newcommand{\MonoTypeS}{s}
+
+\newcommand{\PolyType}{\PolyTypeS}
+\newcommand{\PolyTypeS}{\sigma}
+
+\newcommand{\etvar}{\etvarA}
+\newcommand{\etvarA}{A}
+\newcommand{\etvarB}{B}
+\newcommand{\etvarC}{C}
+\newcommand{\etvarD}{D}
+
+\newcommand{\mtvar}{\mtvarA}
+\newcommand{\mtvarA}{a}
+\newcommand{\mtvarB}{b}
+\newcommand{\mtvarC}{c}
+\newcommand{\mtvarD}{d}
+\newcommand{\mtvarE}{e}
+
+\newcommand{\tvar}{\tvarA}
+\newcommand{\tvarA}{\upalpha}
+\newcommand{\tvarB}{\upbeta}
+\newcommand{\tvarC}{\upgamma}
+\newcommand{\tvarD}{\updelta}
+\newcommand{\tvarE}{\upepsilon}
+\newcommand{\tvarM}{\varphi}
+\newcommand{\tvarN}{\psi}
+\newcommand{\tvarR}{\uprho}
+\newcommand{\tvarS}{\upsigma}
+
+\newcommand{\tvars}{\tvarsX}
+\newcommand{\tvarsX}{X}
+\newcommand{\tvarsY}{Y}
+
+\newcommand{\Weight}{w}
+
+\newcommand{\PseudoExpression}{\PseudoExpressionE}
+\newcommand{\PseudoExpressionE}{e}
+
+\newcommand{\PointersSet}{\mathsf{Pointers}}
+\newcommand{\Pointer}{\PointerP}
+\newcommand{\PointerP}{\mathtt{p}}
+\newcommand{\PointerQ}{\mathtt{q}}
+\newcommand{\PointerR}{\mathtt{r}}
+
+\newcommand{\Pointers}{\PointersA}
+\newcommand{\PointersA}{A}
+
+\newcommand{\Process}{\ProcessP}
+\newcommand{\ProcessP}{P}
+\newcommand{\ProcessQ}{Q}
+\newcommand{\ProcessR}{R}
+
+\newcommand{\Memory}{\mu}
+
+\newcommand{\Queue}{\mathcal{Q}}
+
+\newcommand{\Value}{\ValueV}
+\newcommand{\ValueV}{v}
+\newcommand{\ValueW}{w}
+
+\newcommand{\BasicType}{\mkbasictype{B}}
+
+\newcommand{\EmptyContext}{\emptyset}
+
+\newcommand{\Context}{\ContextA}
+\newcommand{\ContextA}{\Gamma}
+\newcommand{\ContextB}{\Delta}
+
+\newcommand{\Qualifier}{\rho}
+
+\newcommand{\QEnv}{\Upsigma}
+\newcommand{\Env}{\Upgamma}
+\newcommand{\EmptyEnv}{\emptyset}
+
+\newcommand{\Name}{\NameU}
+\newcommand{\NameU}{u}
+
+\newcommand{\Names}{\NamesU}
+\newcommand{\NamesU}{U}
+\newcommand{\NamesV}{V}
+
+%%%%%%%%%%%%%%%%%
+%%% CONSTANTS %%%
+%%%%%%%%%%%%%%%%%
+
+\newcommand{\mkconstant}[1]{\mathtt{\color{mymagenta}#1}}
+
+\newcommand{\unit}{\ttparens{}}
+\newcommand{\true}{\mkconstant{true}}
+\newcommand{\false}{\mkconstant{false}}
+\newcommand{\pair}{\mkconstant{pair}}
+\newcommand{\first}{\mkconstant{fst}}
+\newcommand{\second}{\mkconstant{snd}}
+\newcommand{\inl}{\mkconstant{inl}}
+\newcommand{\inr}{\mkconstant{inr}}
+\newcommand{\case}{\mkconstant{cases}}
+\newcommand{\send}{\mkconstant{send}}
+\newcommand{\select}{\mkconstant{select}}
+\newcommand{\sleft}{\mkconstant{left}}
+\newcommand{\sright}{\mkconstant{right}}
+\newcommand{\receive}{\mkconstant{receive}}
+\newcommand{\branch}{\mkconstant{branch}}
+\newcommand{\fix}{\mkconstant{fix}}
+\newcommand{\fork}{\mkconstant{fork}}
+\newcommand{\create}{\mkconstant{create}}
+\newcommand{\close}{\mkconstant{close}}
+
+\newcommand{\sendc}{\mkconstant{sendc}}
+\newcommand{\curry}{\mathit{curry}}
+\newcommand{\lcurry}{\mathit{lcurry}}
+
+
+%%%%%%%%%%%%%%%%%%%
+%%% BASIC TYPES %%%
+%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\mkbasictype}[1]{\mathtt{\color{mygreen}#1}}
+
+\newcommand{\Unit}{\mkbasictype{Unit}}
+\newcommand{\Bool}{\mkbasictype{Bool}}
+\newcommand{\Int}{\mkbasictype{Int}}
+
+%%%%%%%%%%%%%%%%%%
+%%% MONO TYPES %%%
+%%%%%%%%%%%%%%%%%%
+
+\newcommand{\Type}{\TypeT}
+\newcommand{\TypeT}{t}
+\newcommand{\TypeS}{s}
+\newcommand{\TypeR}{r}
+
+\newcommand{\Capability}{\kappa}
+
+\newcommand{\incap}{\ttqmark}
+\newcommand{\outcap}{\ttemark}
+\newcommand{\nocap}{\ttemptyset}
+
+\newcommand{\tunit}{\mkkeyword{unit}}
+\newcommand{\tint}{\mkkeyword{int}}
+\newcommand{\tfloat}{\mkkeyword{float}}
+\newcommand{\tbool}{\mkkeyword{bool}}
+\newcommand{\tstring}{\mkkeyword{string}}
+\newcommand{\tnone}{{\bullet}}
+\newcommand{\tchan}[2]{\ttangles{{#1}\ttcomma{#2}}}
+\newcommand{\tin}[1]{\incap\ttbracks{#1}}
+\newcommand{\tout}[1]{\outcap\ttbracks{#1}}
+% \newcommand{\tend}{\tchan\tnone\tnone}
+\newcommand{\tsum}{\mathrel\ttplus}
+\newcommand{\tmul}{\times}
+\newcommand{\tref}[1]{#1~\mkkeyword{ref}}
+\newcommand{\tas}{\mathrel{\mkkeyword{as}}}
+\newcommand{\trec}[1]{\mkkeyword{rec}~#1\ttdot}
+\newcommand{\tlist}[1]{#1~\mkkeyword{list}}
+\newcommand{\tof}{\mathrel{\mkkeyword{of}}}
+
+
+\newcommand{\tsession}[2]{\langle#1,#2\rangle}
+\newcommand{\DoneBottomType}{\mathbb{1}}
+\newcommand{\tbottom}{\mathbb{0}}
+
+\newcommand{\renc}[1]{\uprho_{#1}}
+\newcommand{\senc}[1]{\upsigma_{#1}}
+
+
+\newcommand{\uarrow}{\to}
+\newcommand{\tservice}{\mkkeyword{Service}.t}
+
+%%%%%%%%%%%%%%%%%%%%%%
+%%% SESSION TYPES %%%
+%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\MessageType}{M}
+
+\newcommand{\SessionType}{\SessionTypeT}
+\newcommand{\SessionTypeT}{T}
+\newcommand{\SessionTypeS}{S}
+
+\newcommand{\End}{\mkkeyword{end}}
+\newcommand{\Done}{\mkkeyword{done}}
+\newcommand{\Idle}{\mkkeyword{idle}}
+\newcommand{\Op}[3][\ttdot]{{#2}{#3}#1}
+\newcommand{\In}[2][\ttdot]{\Op[#1]\incap{#2}}
+\newcommand{\Out}[2][\ttdot]{\Op[#1]\outcap{#2}}
+\newcommand{\Seq}[1]{\ttbraces{#1}\ttdot}
+\newcommand{\SeqO}[2]{\ttoplus\ttbraces{#1}\ttdot#2}
+\newcommand{\SeqI}[2]{\ttampersand\ttbraces{#1}\ttdot#2}
+\newcommand{\IterO}[1]{\ttoplus\ttbraces{#1}^{\ttasterisk}}
+\newcommand{\IterI}[1]{\ttampersand\ttbraces{#1}^{\ttasterisk}}
+\newcommand{\Choice}{\ttoplus}
+\newcommand{\Branch}{\ttampersand}
+
+\newcommand{\Rec}[1]{\mkkeyword{rec}~#1\ttdot}
+
+\newcommand{\dual}[1]{\overline{#1}}
+\newcommand{\sdual}[1]{\smash{\overline{#1}}}
+
+\newcommand{\DUAL}[1]{\dual{#1}}
+\newcommand{\co}[1]{\overline{#1}}
+\newcommand{\CO}[1]{\overline{\textstyle#1}}
+
+\newcommand{\SessionTypeSet}{\mathbb{S}}
+\newcommand{\ChannelTypeSet}{\mathbb{P}}
+\newcommand{\MessageTypeSet}{\mathbb{M}}
+\newcommand{\DataTypeSet}{\mathbb{D}}
+
+%%%%%%%%%%%%
+%%% USES %%%
+%%%%%%%%%%%%
+
+\newcommand{\Use}{\kappa}
+\newcommand{\uzero}{\circ}
+\newcommand{\uone}{\bullet}
+
+%%%%%%%%%%%%%%%%%%
+%%% POLY TYPES %%%
+%%%%%%%%%%%%%%%%%%
+
+\newcommand{\fforall}[2][\ttdot]{\ttforall#2#1}
+
+%%%%%%%%%%%%%%%
+%%% WEIGHTS %%%
+%%%%%%%%%%%%%%%
+
+\newcommand{\w}[2]{#1+#2}
+
+%%%%%%%%%%%%%%%%
+%%% KEYWORDS %%%
+%%%%%%%%%%%%%%%%
+
+\newcommand{\mkkeyword}[1]{\text{\ttfamily\upshape\color{myblue}#1}}
+%\newcommand{\mkkeyword}[1]{{\color{myblue}#1}}
+
+\newcommand{\letkw}{\mkkeyword{let}}
+\newcommand{\inkw}{\mkkeyword{in}}
+\newcommand{\ifkw}{\mkkeyword{if}}
+\newcommand{\thenkw}{\mkkeyword{then}}
+\newcommand{\elsekw}{\mkkeyword{else}}
+
+%%%%%%%%%%%%%%%%%%%
+%%% EXPRESSIONS %%%
+%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\Expression}{\ExpressionE}
+\newcommand{\ExpressionE}{e}
+\newcommand{\ExpressionF}{f}
+
+% \newcommand{\Configuration}{\ConfigurationC}
+% \newcommand{\ConfigurationC}{C}
+% \newcommand{\ConfigurationD}{D}
+
+\newcommand{\Constant}{\mkconstant{c}}
+\newcommand{\Konstant}{\mkconstant{k}}
+\newcommand{\MyConstants}{\mkconstant{K}}
+
+\newcommand{\Tag}[1][l]{\mathtt{#1}}
+\newcommand{\VariantTag}[1]{\ttbacktick\Tag{#1}}
+\newcommand{\Constructor}{\Tag{K}}
+\newcommand{\Left}{\Tag{L}}
+\newcommand{\Right}{\Tag{R}}
+
+\newcommand{\TagVar}{\Tag{}}
+
+\newcommand{\var}{\varX}
+\newcommand{\varX}{x}
+\newcommand{\varY}{y}
+\newcommand{\varZ}{z}
+
+\newcommand{\mkchannel}[2][]{#2\ifblank{#1}{}{^{#1}}}
+\newcommand{\Channel}[1][]{\mkchannel[#1]\ChannelA}
+\newcommand{\ChannelA}[1][]{\mkchannel[#1]a}
+\newcommand{\ChannelB}[1][]{\mkchannel[#1]b}
+\newcommand{\ChannelC}[1][]{\mkchannel[#1]c}
+\newcommand{\ChannelD}[1][]{\mkchannel[#1]d}
+
+\newcommand{\Derivation}{\mathcal{D}}
+
+\newcommand{\Fun}[2]{\lambda#1\ttdot#2}
+\newcommand{\Let}[3]{\mkkeyword{let}~#1~\tteq~#2~\mkkeyword{in}~#3}
+\newcommand{\Split}[4]{\Let{#1\ttcomma#2}{#3}{#4}}
+\newcommand{\Pair}[2]{\ttparens{#1\ttcomma#2}}
+\newcommand{\If}[3]{\mkkeyword{if}~#1~\mkkeyword{then}~#2~\mkkeyword{else}~#3}
+\newcommand{\Case}[5][]{%
+    \mkkeyword{match}~#2~\mkkeyword{with}~\set[#1]{#3~#4~\ttvarleftarrow~#5}}
+\newcommand{\True}{\mkkeyword{true}}
+\newcommand{\False}{\mkkeyword{false}}
+
+%%%%%%%%%%%%%%%%%%
+%%% POLARITIES %%%
+%%%%%%%%%%%%%%%%%%
+
+\newcommand{\Polarity}{\PolarityP}
+\newcommand{\PolarityP}{p}
+\newcommand{\PolarityQ}{q}
+
+\newcommand{\pplus}{{\ttplus}}
+\newcommand{\pminus}{{\vphantom{\ttplus}\ttminus}}
+\newcommand{\pinvalid}{{\ttasterisk}}
+
+%%%%%%%%%%%%%%%%%
+%%% PROCESSES %%%
+%%%%%%%%%%%%%%%%%
+
+\newcommand{\thread}[1]{\langle#1\rangle}
+\newcommand{\perror}{\mkkeyword{error}}
+\newcommand{\parop}{\mathbin{\ttbar}}
+\newcommand{\New}[1]{(\nu#1)}
+%\newcommand{\New}[1]{\mkkeyword{new}~#1~\mkkeyword{in}~}
+
+%%%%%%%%%%%%%%
+%%% LABELS %%%
+%%%%%%%%%%%%%%
+
+\newcommand{\ltau}{\tau}
+\newcommand{\lcomm}[2]{\mathtt{m}#1#2}
+\newcommand{\lclose}[1]{\mathtt{c}#1}
+
+%%%%%%%%%%%%%%%%%
+%%% FUNCTIONS %%%
+%%%%%%%%%%%%%%%%%
+
+\newcommand{\dom}[1]{\mathsf{dom}(#1)}
+\newcommand{\Close}{\mathsf{Close}}
+\newcommand{\fn}{\mathsf{fn}}
+\newcommand{\an}{\mathsf{an}}
+\newcommand{\fv}{\mathsf{fv}}
+\newcommand{\ftv}{\mathsf{ftv}}
+\newcommand{\vars}{\mathsf{vars}}
+\newcommand{\weight}[1]{\|#1\|}
+\newcommand{\TypeOf}{\mathsf{TypeOf}}
+\newcommand{\mureach}[1]{#1\text{-}\mathsf{reach}}
+\newcommand{\tail}[2]{\mathsf{tail}(#1, #2)}
+\newcommand{\sem}[1]{{\encrel}(#1)}
+
+\newcommand{\nocc}[2]{\#{#1}(#2)}
+
+%%%%%%%%%%%%%%%%%
+%%% RELATIONS %%%
+%%%%%%%%%%%%%%%%%
+
+\newcommand{\crel}{\mathrel{\mathcal{C}}}
+\newcommand{\drel}{\mathrel{\mathcal{D}}}
+\newcommand{\rrel}{\mathrel{\mathcal{R}}}
+\newcommand{\srel}{\mathrel{\mathcal{S}}}
+
+\newcommand{\encrel}{\crel}
+\newcommand{\decrel}{\drel}
+\newcommand{\encfun}[1]{\llbracket#1\rrbracket}
+\newcommand{\decfun}[1]{\encfun{#1}^{-1}}
+\newcommand{\psfun}[1]{\langle\langle#1\rangle\rangle}
+\newcommand{\dualrel}{\mathrel{\bot}}
+\newcommand{\dualt}{\dualrel_{\mathsf{t}}}
+\newcommand{\dualst}{\dualrel_{\mathsf{st}}}
+
+\newcommand{\wtp}[2]{#1 \vdash #2}
+\newcommand{\wte}[3]{#1 \vdash #2 : #3}
+
+\newcommand{\gen}{\succ}
+\newcommand{\boundby}{\mathrel{\downarrow}}
+
+\newcommand{\reach}{\prec}
+\newcommand{\reachAll}{\preceq}
+
+\newcommand{\eqdef}{\stackrel{\text{\tiny\upshape def}}{=}}
+
+\newcommand{\red}{\longrightarrow}
+\newcommand{\vred}{\longrightarrow}
+\newcommand{\nred}{\longarrownot\red}
+\newcommand{\wred}{\Longrightarrow}
+
+\newcommand{\tlred}[1]{\stackrel{#1}\longrightarrow}
+\newcommand{\lred}[1]{\tlred{\smash{#1}}}
+\newcommand{\nlred}[1]{\longarrownot\lred{\smash{#1}}}
+\newcommand{\wtlred}[1]{\stackrel{#1}\Longrightarrow}
+\newcommand{\wlred}[1]{\wtlred{\smash{#1}}}
+
+\newcommand{\un}{\mathsf{un}}
+\newcommand{\lin}{\mathsf{lin}}
+\newcommand{\fin}{\mathsf{fin}}
+
+\newcommand{\lp}[2]{\mathsf{L}^{#1}(#2)}
+\newcommand{\ea}{\mathcal{A}}
+\newcommand{\el}{\mathcal{L}}
+\newcommand{\elu}[1][]{XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX}
+
+\newcommand{\subt}{\leqslant}
+
+\newcommand{\tred}[1][]{\leadsto\ifblank{#1}{}{_{#1}}}
+
+%%%%%%%%%%%%%%%%%%%%
+%%% ENVIRONMENTS %%%
+%%%%%%%%%%%%%%%%%%%%
+
+%\theoremstyle{definition}
+\newtheorem{definition}{Definición}
+\newtheorem{remark}{Remark}
+%\newtheorem*{notation}{Notation}
+
+%\theoremstyle{plain}
+\newtheorem{theorem}{Teorema}
+\newtheorem{proof}{Demostración}
+\newtheorem{lemma}{Lema}
+\newtheorem{proposition}{Proposición}
+
+
+%\theoremstyle{note}
+%\newtheorem*{notation}{Notation}
+
+%\theoremstyle{plain}
+
+%\makeatletter
+%\newtheorem*{rep@theorem}{\rep@title}
+%\newcommand{\newreptheorem}[2]{%
+%\newenvironment{rep#1}[1]{%
+% \def\rep@title{#2 \ref{##1}}%
+% \begin{rep@theorem}}%
+% {\end{rep@theorem}}}
+%\makeatother
+
+%\newreptheorem{theorem}{Theorem}
+%\newreptheorem{lemma}{Lemma}
+
+
+%%%%%%%%%%%%%
+%%% NOTES %%%
+%%%%%%%%%%%%%
+
+\newcommand{\marginnote}[2]{%
+    \ifcomments%
+        {\makebox[0pt]{\color{magenta}$^\bigstar$}}%
+        \marginpar{\parbox{1.25cm}{\flushleft\tiny\sffamily\textbf{#1}: #2}}%
+    \fi%
+}
+\newcommand{\Luca}[1]{\marginnote{Luca}{\color{magenta}#1}}
+\newcommand{\Hernan}[1]{\marginnote{Hern\'an}{\color{magenta}#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% SESSION TYPE GRAMMAR %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\parens}[1]{(#1)}
+
+% \def\colorElem{\color{blue}}
+
+% \newcommand{\pcase}[3]{\xcase{myblue}{#1}{#2}{#3}}
+% \ifthenelse{\boolean{if-as-case}}{
+%   \newcommand{\pif}[3]{\pcase{#1}{#2}{#3}}
+% }{
+%   \newcommand{\pif}[3]{\mkkeyword{if}~#1~\mkkeyword{then}~#2~\mkkeyword{else}~#3}
+% }
+% \newcommand{\End}[1][\e]{#1}
+% \newcommand{\tbarrier}[1]{{\talloblong}#1}
+% \newcommand{\bin}[2][\e]{{?}\parens{#2:#1}.}
+% \newcommand{\bout}[2][\e]{{!}\parens{#2:#1}.}
+% \newcommand{\tcase}[3][\e]{\xcase{myred}{#1}{#2}{#3}}
+% \ifthenelse{\boolean{if-as-case}}{
+%   \newcommand{\tif}[3][\e]{\tcase[#1]{#2}{#3}}
+% }{
+%   \newcommand{\tif}[3][\e]{\mkkeyword{if}~#1~\mkkeyword{then}~#2~\mkkeyword{else}~#3}
+% }
+\newcommand{\xpoint}[3]{#1 \mathrel{#2} #3}
+\newcommand{\BinaryLabels}[2]{\set{\Tag[True]: #1,\ \Tag[False]: #2}}
+\newcommand{\PChoice}[1][p]{\prescript{}{#1}\Choice}
+\newcommand{\BinaryPChoice}[3][p]{\PChoice[#1]\BinaryLabels{#2}{#3}}
+\newcommand{\PBranch}[1][p]{\prescript{}{#1}\Branch}
+\newcommand{\BinaryPBranch}[3][p]{\PBranch[#1]\BinaryLabels{#2}{#3}}
+
+\newcommand{\ClosedSessionType}[1][p]{\langle #1 \rangle}
+
+\newcommand{\T}{T}
+
+\newcommand{\OI}{\lstinline[language=OCaml,style=INLINE]}
+
+\newcommand{\InputOCamlC}[2][]{%
+  \lstinputlisting[
+    language=OCaml,
+    style=DISPLAY,#1]{#2}%
+}
+
+\newcommand{\csum}[3][p]{#2 \mathrel{\prescript{}{#1}{\boxplus}} #3}
+\newcommand{\trees}[1]{\mathcal{T}\parens{#1}}

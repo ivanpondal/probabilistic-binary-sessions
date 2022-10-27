@@ -1,7 +1,7 @@
 .PHONY: clean all
 
-LATEX := docker run --platform=linux/amd64 --rm -v $(PWD):/workdir:z ivanpondal/thesis-latex pdflatex
-BIBTEX := docker run --platform=linux/amd64 --rm -v $(PWD):/workdir:z ivanpondal/thesis-latex bibtex
+LATEX := docker run --rm -v $(PWD):/workdir:z ivanpondal/thesis-latex pdflatex
+BIBTEX := docker run --rm -v $(PWD):/workdir:z ivanpondal/thesis-latex bibtex
 LATEXFLAGS := -interaction=nonstopmode
 
 all: tesis.pdf
@@ -12,7 +12,7 @@ clean:
 	*/.synctex.gz
 
 thesis-latex-docker: Dockerfile
-	docker build --platform=linux/amd64 . -t ivanpondal/thesis-latex
+	docker build -t ivanpondal/thesis-latex:latest .
 
 %.pdf: %.tex thesis-latex-docker
 	$(LATEX) $(LATEXFLAGS) tesis
