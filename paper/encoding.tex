@@ -1,1 +1,79 @@
-Hola, soy un inicio.
+Our implementation stems from the work done in \FuSe. In this section we present
+the changes needed on the encoding and types in order to model probabilistic
+choices and have the information required to compute the successful termination
+of a session type.
+
+\section{Encoding}
+
+\FuSe takes the encoding proposed in \cite{Dardha} further refined
+in~\cite{DBLP:journals/jfp/Padovani17}. The main idea is that a sequence of
+messages over a session can be modelled as a sequence of communications over
+single-use channels. In this model, each message transports a value along a
+fresh channel to continue the communication.
+
+This encoding depends on the following types:
+
+\begin{itemize}
+	\item $\tbottom$ represents an absent value.
+	\item $\tsession{\renc{}}{\senc{}}$ describes channels which can
+		receive messages of type $\renc{}$ and send of type $\senc{}$. Both
+		$\renc{}$ and $\senc{}$ can be set to $\tbottom$ if the channel does not
+		receive or send a value.
+\end{itemize}
+
+From this las representation, the following instances ar used to describe the
+possible terminations (one difference from \FuSe is the usage of
+$\DoneBottomType$ to distinguish each of these).
+
+\begin{itemize}
+	\item $\tsession{\DoneBottomType}{\DoneBottomType}$ represents a successful
+	termination.
+	\item $\tsession{\tbottom}{\tbottom}$ represents an unsuccessful
+	termination.
+\end{itemize}
+
+The relationship between session types $\SessionType$ and the types
+$\tsession\TypeT\TypeS$ is given by the following $\encfun\cdot$ function
+
+\begin{center}
+$\displaystyle
+  \begin{array}{@{}c@{}}
+    \textbf{Probabilistic session types encoding} \\
+    \hline
+    \hline
+    \begin{array}[t]{@{}r@{~}c@{~}l@{}}
+      \encfun\Done
+      & = &
+      \tsession\DoneBottomType\DoneBottomType
+      \\
+      \encfun\Idle
+      & = &
+      \tsession\tbottom\tbottom
+      \\
+      \encfun{\In\Type\SessionType}
+      & = &
+      \tsession{\encfun\Type\tmul\encfun\SessionType}\tbottom
+      \\
+      \encfun{\Out\Type\SessionType}
+      & = &
+      \tsession\tbottom{\encfun\Type\tmul\encfun{\dual\SessionType}}
+      \\
+      \encfun{\BinaryPBranch[p]{\SessionTypeT}{\SessionTypeS}}
+      & = &
+      \tsession{\BinaryLabels{\encfun{\SessionTypeT}}{\encfun{\SessionTypeS}}\tmul p}\tbottom
+      \\
+      \encfun{\BinaryPChoice[p]{\SessionTypeT}{\SessionTypeS}}
+      & = &
+      \tsession{\tbottom}{\BinaryLabels{\encfun{\dual\SessionTypeT}}{\encfun{\dual\SessionTypeS}}\tmul p}
+      \\
+      \encfun\etvar
+      & = &
+      \tsession{\renc\etvar}{\senc\etvar}
+      \\
+      \encfun{\sdual\etvar}
+      & = &
+      \tsession{\senc\etvar}{\renc\etvar}
+    \end{array}
+  \end{array}
+$
+\end{center}
