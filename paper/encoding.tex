@@ -77,3 +77,161 @@ $\displaystyle
   \end{array}
 $
 \end{center}
+
+homomorphically extended to missing types. We assume that for each session type
+variable $\etvar$ there are two distinct type variables $\senc\etvar$ and
+$\renc\etvar$.
+
+As an example, the session type $\In\tvar\etvar$ is coded as $\tsession{\tvar
+\tmul \tsession{\renc\etvar}{\senc\etvar}}\tbottom$, describing a channel which
+receives a message of type $\tvar \tmul \tsession{\renc\etvar}{\senc\etvar}$; a
+component of type $\tvar$ (the value to communicate) and another of type
+$\tsession{\renc\etvar}{\senc\etvar}$ (the channel where the communication will
+continue).
+
+When encoding session types that send a value or a choice, we must apply the
+dual to the continuation type. This is required because the continuation type
+describes the behavior the \emph{receiver} should follow. Additionally, this
+implementation detail allows a representation for duality of session types which
+works even when a type isn't fully instantiated.
+
+As an example, will take the probabilistic version of the type $\SessionType$
+encoding given at~\cite{DBLP:journals/jfp/Padovani17} $\SessionType =
+\BinaryPChoice[p]{\Tag[\Out\tvarA\In\tvarB\Done]}{\Tag[\Idle]}$
+\[
+\begin{array}{@{}rcl@{}}
+  \encfun\SessionType
+  & = & \tsession\tbottom{
+	  \BinaryLabels{\encfun{\In\tvarA\Out\tvarB\Done}}{\encfun\Idle}\tmul p
+    }
+  \\
+  & = & \tsession\tbottom{
+	  \BinaryLabels{\tsession{\tvarA\tmul\encfun{\Out\tvarB\Done}}{\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }
+  \\
+  & = & \tsession\tbottom{
+	  \BinaryLabels{\tsession{\tvarA\tmul\tsession{\tbottom}
+	                                              {\tvarB\tmul\encfun{\Done}}}
+	                         {\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }\\
+  & = & \tsession\tbottom{
+	  \BinaryLabels{\tsession{\tvarA\tmul\tsession{\tbottom}
+						      {\tvarB\tmul\tsession{\DoneBottomType}
+	                                                                   {\DoneBottomType}}}
+	                         {\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }
+\end{array}
+\]
+
+Then, its dual
+$\dual\SessionType = \BinaryPBranch{\In\tvarA\Out\tvarB\End}{\Idle}$
+\[
+\begin{array}{@{}rcl@{}}
+  \encfun{\dual\SessionType}
+  & = & \tsession{
+	  \BinaryLabels{\encfun{\In\tvarA\Out\tvarB\Done}}{\encfun\Idle}\tmul p
+    }\tbottom
+  \\
+  & = & \tsession{
+	  \BinaryLabels{\tsession{\tvarA\tmul\encfun{\Out\tvarB\Done}}{\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }\tbottom
+  \\
+  & = & \tsession{
+	  \BinaryLabels{\tsession{\tvarA\tmul\tsession{\tbottom}
+	                                              {\tvarB\tmul\encfun{\Done}}}
+	                         {\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }\tbottom
+  \\
+  & = & \tsession{
+	  \BinaryLabels{\tsession{\tvarA\tmul\tsession{\tbottom}
+						      {\tvarB\tmul\tsession{\DoneBottomType}
+	                                                                   {\DoneBottomType}}}
+	                         {\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }\tbottom
+\end{array}
+\]
+
+With this last example we note the encoding for $\dual\SessionType$ can be
+obtained from $\SessionType$ by swapping the components of its encoded pair.
+Just as with session types, we can prove the following property for
+probabilistic types:
+
+\begin{theorem}
+  \label{thm:duality}
+  Si $\encfun\SessionType = \tsession\TypeT\TypeS$, entonces
+  $\encfun{\dual\SessionType} = \tsession\TypeS\TypeT$.
+\end{theorem}
+\begin{proof}
+Follows mutatis mutandis the original proof given at~\cite{Dardha}.
+\end{proof}
+
+Equivalently, we may say that
+$\encfun\SessionTypeT = \tsession{\Type_1}{\Type_2}$ and
+$\encfun\SessionTypeS = \tsession{\TypeS_1}{\TypeS_2}$, therefore
+\[
+\SessionTypeT = \dual\SessionTypeS
+\iff
+\encfun\SessionTypeT = \encfun{\dual\SessionTypeS}
+\iff
+\TypeT_1 = \TypeS_2
+\wedge
+\TypeT_2 = \TypeS_1
+\]
+
+Just as with \FuSe, this allows reducing the problem of computing the dual of a
+sesion type to type equivalence. This also holds for unknown session types or
+partially instantiated ones: $\encfun\etvar =
+\tsession{\renc\etvar}{\senc\etvar}$ y $\encfun{\sdual\etvar} =
+\tsession{\senc\etvar}{\renc\etvar}$.
+
+\begin{table}[htb]
+	\begin{OCamlD}[frame=single]
+  type _0
+  type _1
+  type $p_0$ (* zero probability encoding alias *)
+  type $p_1$ (* probability one encoding alias *)
+  type ('r,'s) pst (* OCaml syntax for $\tsessihn\tvarR\tvarS$ *)
+  val create  : unit -> ('r,'s) pst * ('s,'r) pst
+  val close   : (_0,_0) pst -> unit
+  val idle    : (_1,_1) pst -> unit
+  val send    : 'a -> (_0,('a * ('s,'r) pst)) pst -> ('r,'s) pst
+  val receive : (('a * ('r,'s) pst),_0) pst -> 'a * ('r,'s) pst
+  val select_true  : (_0,[`True of ('r,'s) pst |
+                         `False of ('c,'d) pst] * $p_1$)
+                      -> ('r,'s) pst
+  val select_false : (_0,[`True of ('r,'s) pst |
+                         `False of ('c,'d) pst] * $p_0$)
+                      -> ('c,'d) pst
+  val pick   : $p$ ->
+             ((_0,[`True of ('r,'s) pst | `False of ('c,'d) pst]
+                  * $p_0$) -> 'a) ->
+             ((_0,[`True of ('r,'s) pst | `False of ('c,'d) pst]
+                  * $p_1$) -> 'a) ->
+             (_0,[`True of ('r,'s) pst | `False of ('c,'d) pst]
+                 * $p$) -> 'a
+  val branch : ([`True of ('r,'s) pst |
+                 `False of ('c,'d) pst] * $p$,_0)
+                -> [> `True of ('r,'s) pst | `False of ('c,'d) pst]
+	\end{OCamlD}
+	\caption{Probabilistic session types \OCaml interface.}
+	\label{tab:signature}
+\end{table}
+
+Having chosen a representation for probabilistic session types, we show the
+implementation of the \OCaml interface in Table \ref{tab:signature}. There is a
+direct correspondence between the signature of the functions present at Table
+\ref{tab:signature} and the primitives introduced at Tabla \ref{tab:prob_api}.
+It's easy to see how this encoding can make it hard to read a session type. This
+problem get worse once the protocols get more complex. For this reason, we have
+extended \texttt{rosetta}, an auxiliar tool from \FuSe, which implements the
+inverse function to the encoding and prints the types using the original
+probabilistic types notation (Section \ref{sec:gramatica_prob}). When presenting
+session types inferred by \OCaml we'll use the format generated by the tool in
+order to ease the reading (Details on \texttt{rosetta} are given on Chapter
+\ref{cap:prob_exito}).
