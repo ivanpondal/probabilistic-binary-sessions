@@ -7,7 +7,7 @@ exit_watcher() {
 }
 
 if [[ $OSTYPE == "darwin"* ]]; then
-	WATCHER="fswatch -1l 5 ."
+	WATCHER="fswatch -1l 1 ."
 else
 	WATCHER="inotifywait -e close_write -e delete -r ."
 fi
