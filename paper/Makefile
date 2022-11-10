@@ -2,7 +2,7 @@
 
 LATEX := docker run --rm -v $(PWD):/workdir:z ivanpondal/paper-latex pdflatex
 BIBTEX := docker run --rm -v $(PWD):/workdir:z ivanpondal/paper-latex bibtex
-LATEXFLAGS := -interaction=nonstopmode
+LATEXFLAGS := -interaction=errorstopmode
 
 all: paper.pdf
 

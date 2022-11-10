@@ -1,1 +1,317 @@
-Hola, soy un inicio.
+Our implementation stems from the work done in \FuSe. In this section we present
+the changes needed on the encoding and types in order to model probabilistic
+choices and have the information required to compute the successful termination
+of a session type.
+
+\section{Encoding}
+
+\FuSe takes the encoding proposed in \cite{Dardha} further refined
+in~\cite{DBLP:journals/jfp/Padovani17}. The main idea is that a sequence of
+messages over a session can be modelled as a sequence of communications over
+single-use channels. In this model, each message transports a value along a
+fresh channel to continue the communication.
+
+The encoding uses the following types:
+
+\begin{itemize}
+	\item $\tbottom$ represents an absent value.
+	\item $\tsession{\renc{}}{\senc{}}$ describes channels which can
+		receive messages of type $\renc{}$ and send of type $\senc{}$. Both
+		$\renc{}$ and $\senc{}$ can be set to $\tbottom$ if the channel does not
+		receive or send a value.
+\end{itemize}
+
+From this last representation, the following instances are used to describe
+termination states (one difference from \FuSe is the use of $\DoneBottomType$ to
+model the unsuccessful termination state).
+
+\begin{itemize}
+	\item $\tsession{\DoneBottomType}{\DoneBottomType}$ represents a successful
+	termination.
+	\item $\tsession{\tbottom}{\tbottom}$ represents an unsuccessful
+	termination.
+\end{itemize}
+
+The relationship between session types $\SessionType$ and the types
+$\tsession\TypeT\TypeS$ is given by the following $\encfun\cdot$ function
+
+\begin{center}
+$\displaystyle
+  \begin{array}{@{}c@{}}
+    \textbf{Probabilistic session types encoding} \\
+    \hline
+    \hline
+    \begin{array}[t]{@{}r@{~}c@{~}l@{}}
+      \encfun\Done
+      & = &
+      \tsession\DoneBottomType\DoneBottomType
+      \\
+      \encfun\Idle
+      & = &
+      \tsession\tbottom\tbottom
+      \\
+      \encfun{\In\Type\SessionType}
+      & = &
+      \tsession{\encfun\Type\tmul\encfun\SessionType}\tbottom
+      \\
+      \encfun{\Out\Type\SessionType}
+      & = &
+      \tsession\tbottom{\encfun\Type\tmul\encfun{\dual\SessionType}}
+      \\
+      \encfun{\BinaryPBranch[p]{\SessionTypeT}{\SessionTypeS}}
+      & = &
+      \tsession{\BinaryLabels{\encfun{\SessionTypeT}}{\encfun{\SessionTypeS}}\tmul p}\tbottom
+      \\
+      \encfun{\BinaryPChoice[p]{\SessionTypeT}{\SessionTypeS}}
+      & = &
+      \tsession{\tbottom}{\BinaryLabels{\encfun{\dual\SessionTypeT}}{\encfun{\dual\SessionTypeS}}\tmul p}
+      \\
+      \encfun\etvar
+      & = &
+      \tsession{\renc\etvar}{\senc\etvar}
+      \\
+      \encfun{\sdual\etvar}
+      & = &
+      \tsession{\senc\etvar}{\renc\etvar}
+    \end{array}
+  \end{array}
+$
+\end{center}
+
+homomorphically extended to missing types. We assume that for each session type
+variable $\etvar$ there are two distinct type variables $\senc\etvar$ and
+$\renc\etvar$.
+
+As an example, the session type $\In\tvar\etvar$ is coded as $\tsession{\tvar
+\tmul \tsession{\renc\etvar}{\senc\etvar}}\tbottom$, describing a channel which
+receives a message of type $\tvar \tmul \tsession{\renc\etvar}{\senc\etvar}$; a
+component of type $\tvar$ (the value to communicate) and another of type
+$\tsession{\renc\etvar}{\senc\etvar}$ (the channel where the communication will
+continue).
+
+When encoding session types that send a value or a choice, we must apply the
+dual to the continuation type. This is required because the continuation type
+describes the behavior the \emph{receiver} should follow. Additionally, this
+implementation detail allows a representation for duality of session types which
+works even when a type isn't fully instantiated.
+
+As an example, will take the probabilistic version of the type $\SessionType$
+encoding given at~\cite{DBLP:journals/jfp/Padovani17} $\SessionType =
+\BinaryPChoice[p]{\Tag[\Out\tvarA\In\tvarB\Done]}{\Tag[\Idle]}$
+\[
+\begin{array}{@{}rcl@{}}
+  \encfun\SessionType
+  & = & \tsession\tbottom{
+	  \BinaryLabels{\encfun{\In\tvarA\Out\tvarB\Done}}{\encfun\Idle}\tmul p
+    }
+  \\
+  & = & \tsession\tbottom{
+	  \BinaryLabels{\tsession{\tvarA\tmul\encfun{\Out\tvarB\Done}}{\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }
+  \\
+  & = & \tsession\tbottom{
+	  \BinaryLabels{\tsession{\tvarA\tmul\tsession{\tbottom}
+	                                              {\tvarB\tmul\encfun{\Done}}}
+	                         {\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }\\
+  & = & \tsession\tbottom{
+	  \BinaryLabels{\tsession{\tvarA\tmul\tsession{\tbottom}
+						      {\tvarB\tmul\tsession{\DoneBottomType}
+	                                                                   {\DoneBottomType}}}
+	                         {\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }
+\end{array}
+\]
+
+Then, its dual
+$\dual\SessionType = \BinaryPBranch{\In\tvarA\Out\tvarB\End}{\Idle}$
+\[
+\begin{array}{@{}rcl@{}}
+  \encfun{\dual\SessionType}
+  & = & \tsession{
+	  \BinaryLabels{\encfun{\In\tvarA\Out\tvarB\Done}}{\encfun\Idle}\tmul p
+    }\tbottom
+  \\
+  & = & \tsession{
+	  \BinaryLabels{\tsession{\tvarA\tmul\encfun{\Out\tvarB\Done}}{\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }\tbottom
+  \\
+  & = & \tsession{
+	  \BinaryLabels{\tsession{\tvarA\tmul\tsession{\tbottom}
+	                                              {\tvarB\tmul\encfun{\Done}}}
+	                         {\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }\tbottom
+  \\
+  & = & \tsession{
+	  \BinaryLabels{\tsession{\tvarA\tmul\tsession{\tbottom}
+						      {\tvarB\tmul\tsession{\DoneBottomType}
+	                                                                   {\DoneBottomType}}}
+	                         {\tbottom}}
+	               {\tsession\tbottom\tbottom}\tmul p
+  }\tbottom
+\end{array}
+\]
+
+With this last example we note the encoding for $\dual\SessionType$ can be
+obtained from $\SessionType$ by swapping the components of its encoded pair.
+Just as with session types, we can prove the following property for
+probabilistic types:
+
+\begin{theorem}
+  \label{thm:duality}
+  If $\encfun\SessionType = \tsession\TypeT\TypeS$, then
+  $\encfun{\dual\SessionType} = \tsession\TypeS\TypeT$.
+\end{theorem}
+\begin{proof}
+Follows mutatis mutandis the original proof given at~\cite{Dardha}.
+\end{proof}
+
+Equivalently, we may say that
+$\encfun\SessionTypeT = \tsession{\Type_1}{\Type_2}$ and
+$\encfun\SessionTypeS = \tsession{\TypeS_1}{\TypeS_2}$, therefore
+\[
+\SessionTypeT = \dual\SessionTypeS
+\iff
+\encfun\SessionTypeT = \encfun{\dual\SessionTypeS}
+\iff
+\TypeT_1 = \TypeS_2
+\wedge
+\TypeT_2 = \TypeS_1
+\]
+
+Just as with \FuSe, this allows computing the dual of a session type through
+type equivalence. This also holds for unknown session types or partially
+instantiated ones: $\encfun\etvar = \tsession{\renc\etvar}{\senc\etvar}$ and
+$\encfun{\sdual\etvar} = \tsession{\senc\etvar}{\renc\etvar}$.
+
+\begin{table}[htb]
+	\begin{OCamlD}[frame=single]
+  type _0
+  type _1
+  type $p_0$ (* zero probability encoding alias *)
+  type $p_1$ (* probability one encoding alias *)
+  type ('r,'s) pst (* OCaml syntax for $\tsession\tvarR\tvarS$ *)
+  val create  : unit -> ('r,'s) pst * ('s,'r) pst
+  val close   : (_0,_0) pst -> unit
+  val idle    : (_1,_1) pst -> unit
+  val send    : 'a -> (_0,('a * ('s,'r) pst)) pst -> ('r,'s) pst
+  val receive : (('a * ('r,'s) pst),_0) pst -> 'a * ('r,'s) pst
+  val select_true  : (_0,[`True of ('r,'s) pst |
+                         `False of ('c,'d) pst] * $p_1$)
+                      -> ('r,'s) pst
+  val select_false : (_0,[`True of ('r,'s) pst |
+                         `False of ('c,'d) pst] * $p_0$)
+                      -> ('c,'d) pst
+  val pick   : $p$ ->
+             ((_0,[`True of ('r,'s) pst | `False of ('c,'d) pst]
+                  * $p_0$) -> 'a) ->
+             ((_0,[`True of ('r,'s) pst | `False of ('c,'d) pst]
+                  * $p_1$) -> 'a) ->
+             (_0,[`True of ('r,'s) pst | `False of ('c,'d) pst]
+                 * $p$) -> 'a
+  val branch : ([`True of ('r,'s) pst |
+                 `False of ('c,'d) pst] * $p$,_0)
+                -> [> `True of ('r,'s) pst | `False of ('c,'d) pst]
+	\end{OCamlD}
+	\caption{Probabilistic session types \OCaml interface.}
+	\label{tab:signature}
+\end{table}
+
+Having chosen a representation for probabilistic session types, we show the
+implementation of the \OCaml interface in Table \ref{tab:signature}. There is a
+direct correspondence between the signature of the functions present at Table
+\ref{tab:signature} and the primitives introduced at Table \ref{tab:prob_api}.
+It's easy to see how this encoding results in session types which are hard to
+read. This problem gets worse once the protocols get more complex. For this
+reason, we have extended \texttt{rosetta}, an auxiliary tool from \FuSe, which
+implements the inverse function to the encoding and prints the types using the
+original probabilistic types notation (Section \ref{sec:gramatica_prob}). When
+presenting session types inferred by \OCaml we'll use the format generated by
+the tool in order to ease the reading (Details on \texttt{rosetta} are given on
+Chapter \ref{cap:prob_exito}).
+
+\subsection{Probability encoding}
+
+In our session types, choices carry in their encoding an associated probability
+$p$ which is also present as an argument of the \OI{pick} primitive. We begin by
+defining $p$ as the probability of sending $\BinaryPChoice{\etvar}{\etvarB}$ or
+receiving $\BinaryPBranch{\etvar}{\etvarB}$ the choice to continue with the
+$\Tag[True]$ branch of a session type.
+
+Normally we would consideru a floating point representation like \tfloat for
+this scenario, however this would not provide any compilation time information
+on the value of $p$. Having the value as a type allows for stronger interfaces
+as is the case with \OI{pick}, where the probability $p$ received as an argument
+must match with the one of the session type over which it's being applied (Table
+\ref{tab:prob_api}).
+
+Another advantage is being able to use this value for any sort of static
+analysis, a hard requirement for computing the success probability of a session
+type.
+
+\subsection{Modeling natural and rational numbers}
+
+For this work we chose to model $p$ as a rational number which is present at
+type level. To do so, we started by writing a type definition for natural
+numbers based on the construction through a successor function.
+
+\begin{table}[htb]
+\begin{OCamlD}[frame=single]
+      type _z
+      type _s
+      type _ nat = Z : _z nat | S : 'a nat -> (_s * 'a) nat
+\end{OCamlD}
+\caption{Natural numbers and zero representation}
+\label{tab:def_nat}
+\end{table}
+
+First we define the types \OI{_z} and \OI{_s} that will be used as labels to
+distinguish at type level between zero and the successor function. Then we
+define \OI{nat} as a GADT (Generalized Algebraic Data Type) present in
+\OCaml~\cite{YallopM} which allows adding restrictions on the parameters of its
+constructors. We define a constructor \OI{Z} which acts as zero and \OI{S} for
+the successor function, adding one to the natural it receives as an argument.
+Finally, naturals can be built trivially as shown in Table \ref{tab:ex_nat}.
+
+\begin{table}[htb]
+\begin{OCamlD}[frame=single]
+      let zero : _z nat = Z
+      let one : (_s * _z) nat = S Z
+      let two : (_s * (_s * _z)) nat = S (S Z)
+\end{OCamlD}
+
+\caption{Construction of natural numbers}
+\label{tab:ex_nat}
+\end{table}
+
+Once we have a representation for natural numbers, we can define \OI{frac} as
+another GADT that allows building rational numbers. In this case we use a pair
+where the first component is the numerator and the second the denominator,
+disallowing a zero division through a type restriction. This way, rationals can
+be defined as follows:
+
+\begin{table}[htb]
+\begin{OCamlD}[frame=single]
+	type _ frac = Fraction : 'a nat * (_s * 'b) nat ->
+	                        ('a nat * (_s * 'b) nat) frac
+\end{OCamlD}
+\caption{Rational numbers representation}
+\label{tab:def_rational}
+\end{table}
+
+As an example we show the construction of $\frac{1}{2}$.
+
+\begin{table}[H]
+\begin{OCamlD}[frame=single]
+	let one_half : ((_s * _z) nat *
+	                (_s * (_s * _z)) nat) frac
+	                = Fraction (S Z, S (S Z))
+\end{OCamlD}
+\caption{Rational number example}
+\label{tab:ex_rational}
+\end{table}
